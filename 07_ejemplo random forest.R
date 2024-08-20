@@ -22,6 +22,7 @@ nrows <- ceiling(nrows)
 ncols <- ceiling(ncols)
 
 # Crear el raster con la extensi?n y resoluci?n adecuada
+
 raster_template <- raster(nrows = nrows, ncols = ncols, crs = crs_project, ext = ext)
 
 ################################################################################
