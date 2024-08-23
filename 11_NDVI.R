@@ -17,14 +17,14 @@ crs_project = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 #                           ext = extent(MODIS))  # toma las extensiones
 #coords <- data.frame(x = -70.659566, y = -33.465694) #01 ohg  # Ejemplo con coordenadas de longitud y latitud
 #coords <- data.frame(x = -70.66517052, y = -33.54606688) #02 BSQ
-coords <- data.frame(x = -70.7503877, y = -33.43798487) #03 PDH
-# coords <- data.frame(x = -70.732100142, y = -33.43301075) #04 CNA
+#coords <- data.frame(x = -70.7503877, y = -33.43798487) #03 PDH
+#coords <- data.frame(x = -70.732100142, y = -33.43301075) #04 CNA
 #coords <- data.frame(x = -70.59475058, y = -33.59134682	) #05 PTA
 #coords <- data.frame(x = -70.732100142, y = -33.43301075) #06 FLD
-# coords <- data.frame(x = -70.52346222, y = -33.37639222) #07 CDE
-# coords <- data.frame(x = -70.74822755, y = -33.36576262) #08 QUI
-estacion <- "PDH"
-num_estacion <- "03"
+#coords <- data.frame(x = -70.52346222, y = -33.37639222) #07 CDE
+coords <- data.frame(x = -70.74822755, y = -33.36576262) #08 QUI
+estacion <- "QUI"
+num_estacion <- "08"
 
 
 punto <- SpatialPoints(coords, proj4string = CRS(crs_project))
@@ -74,5 +74,6 @@ for (i in 1:length(id)){
 
 View(df_rbind)
 write.csv(df_rbind,paste("D:/Josefina/Proyectos/ProyectoChile/dataset/proceed/NDVI/",num_estacion,"_",estacion,"_NDVI.csv",sep=""))
-
+######################################################
+#######################################################
 
