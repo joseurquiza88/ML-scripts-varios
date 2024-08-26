@@ -1,25 +1,20 @@
-# Productos MERRA - 2
-# https://disc.gsfc.nasa.gov/datasets?keywords=tavg1_2d_aer_Nx&page=1&temporalResolution=1%20hour
-# https://disc.gsfc.nasa.gov/datasets/M2T1NXAER_5.12.4/summary?keywords=tavg1_2d_aer_Nx
-
-#Como descargar MERRA-2
 # https://medium.com/@xhl272703370/tutorial-on-how-to-download-multiple-earthdata-urls-78c96df4c1c7
 # wget --load-cookies ./.urs_cookies --save-cookies ./.urs_cookies --keep-session-cookies --user=josefina88 --ask-password --content-disposition -i subset_M2T1NXAER_5.12.4_20240820_105646_.txt
 #######################################################################
 ########################################################################
 # Extraccion de datos de MERRA-2
-rm(list=ls())
+rm(list=ls())#
 
-coords <- data.frame(x = -70.659566, y = -33.465694) #01 ohg  # Ejemplo con coordenadas de longitud y latitud
+#coords <- data.frame(x = -70.659566, y = -33.465694) #01 ohg  # Ejemplo con coordenadas de longitud y latitud
 #coords <- data.frame(x = -70.66517052, y = -33.54606688) #02 BSQ
 #coords <- data.frame(x = -70.7503877, y = -33.43798487) #03 PDH
-# coords <- data.frame(x = -70.732100142, y = -33.43301075) #04 CNA
+#coords <- data.frame(x = -70.732100142, y = -33.43301075) #04 CNA
 #coords <- data.frame(x = -70.59475058, y = -33.59134682	) #05 PTA
 #coords <- data.frame(x = -70.732100142, y = -33.43301075) #06 FLD
-# coords <- data.frame(x = -70.52346222, y = -33.37639222) #07 CDE
-# coords <- data.frame(x = -70.74822755, y = -33.36576262) #08 QUI
-estacion <- "OHG"
-num_estacion <- "01"
+coords <- data.frame(x = -70.52346222, y = -33.37639222) #07 CDE
+#coords <- data.frame(x = -70.74822755, y = -33.36576262) #08 QUI
+estacion <- "CDE"
+num_estacion <- "07"
 
 crs_project <- "+proj=longlat +datum=WGS84"
 punto <- SpatialPoints(coords, proj4string = CRS(crs_project))
@@ -27,15 +22,16 @@ punto <- SpatialPoints(coords, proj4string = CRS(crs_project))
 
 
 #Variables: DMSSMASS,DMSSMASS, DUSMASS, OCSMASS, SO2SMASS, SO4SMASS, y SSSMASS
-
-dire <- "D:/Josefina/Proyectos/ProyectoChile/dataset/MERRA-2/2015/05-12-2015"
+year <- 2015
+dire <- paste("D:/Josefina/Proyectos/ProyectoChile/dataset/MERRA-2/",year, "/01-12-",year,sep="")
 setwd(dire)
 id <- list.files(path = getwd(),
                  pattern = "*.nc",
                  full.names = FALSE)
 
 for (i in 1:1){
-  ext = extent(-70.89626564382297,-70.54544288411844,-33.61652852593954,-33.33591657301113)#
+  # ext = extent(-70.89626564382297,-70.54544288411844,-33.61652852593954,-33.33591657301113)
+  ext = extent(-70.89626564382297,-70.49122311005938,-33.61652852593954,-33.33013269447868 )##
   #raster_template <- raster(nrows = 86, ncols = 87,   crs = crs_project, ext =ext)
   # Ejemplo de CRS, ajusta según sea necesario
   
@@ -90,7 +86,7 @@ for (i in 1:1){
     df_rbind_2<- rbind(df_rbind_2,df_rbind)
   }
 }
-View(df_rbind_2)
+#View(df_rbind_2)
 
 # Generamos dataframe por separado y arreglamos los nombres
 for (i in 1:1){
@@ -142,8 +138,8 @@ for (i in 1:1){
 }
 view(merged_df)
 
-write.csv(merged_df,paste("D:/Josefina/Proyectos/ProyectoChile/proceed/MERRA-2/2015/",num_estacion,"_",estacion,"_MERRA-2_01-04-2015.csv",sep=""))
-#######################################################################
+write.csv(merged_df,paste("D:/Josefina/Proyectos/ProyectoChile/proceed/MERRA-2/",year,"/",num_estacion,"_",estacion,"_MERRA-2_",year,".csv",sep=""))
+S#######################################################################
 ########################################################################
 # Generar raster / tif para hacer el mapaa
 
