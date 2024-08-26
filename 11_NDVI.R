@@ -21,10 +21,10 @@ crs_project = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 #coords <- data.frame(x = -70.732100142, y = -33.43301075) #04 CNA
 #coords <- data.frame(x = -70.59475058, y = -33.59134682	) #05 PTA
 #coords <- data.frame(x = -70.732100142, y = -33.43301075) #06 FLD
-#coords <- data.frame(x = -70.52346222, y = -33.37639222) #07 CDE
-coords <- data.frame(x = -70.74822755, y = -33.36576262) #08 QUI
-estacion <- "QUI"
-num_estacion <- "08"
+coords <- data.frame(x = -70.52346222, y = -33.37639222) #07 CDE
+#coords <- data.frame(x = -70.74822755, y = -33.36576262) #08 QUI
+estacion <- "CDE"
+num_estacion <- "07"
 
 
 punto <- SpatialPoints(coords, proj4string = CRS(crs_project))
@@ -52,7 +52,8 @@ for (i in 1:length(id)){
   nvdi_factor <- nvdi*0.0001   #factor de escala 
   
   # Template
-  ext = extent(-70.89626564382297,-70.54544288411844,-33.61652852593954,-33.33591657301113)#
+  # ext = extent(-70.89626564382297,-70.54544288411844,-33.61652852593954,-33.33591657301113)#
+  ext = extent(-70.89626564382297,-70.49122311005938,-33.61652852593954,-33.33013269447868 )##
   km_per_degree <- 111  # Aproximadamente 111 km por grado
   pixel_size_km <- 1  # Tamaño de píxel deseado en km
   resolution_degrees <- pixel_size_km / km_per_degree
