@@ -62,6 +62,24 @@ lm_cv_model <- train(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS +
 # Mostrar los resultados del modelo
 print(lm_cv_model)
 
+# Hacer predicciones
+predicciones <- predict(lm_cv_model, newdata = test_data)
+
+# Comparar predicciones con valores reales
+resultado <- data.frame(Real = test_data$PM25, Predicho = predicciones)
+print(resultado)
+
+
+# Calcular el error cuadrÃ¡tico medio (RMSE)
+rmse <- sqrt(mean((predicciones - test_data$PM25)^2))
+
+# Calcular el coeficiente de determinaciÃ³n (RÂ²)
+r_squared <- cor(predicciones, test_data$PM25)^2
+
+# Mostrar las mÃ©tricas de evaluaciÃ³n
+cat("RMSE:", rmse, "/n")
+cat("R²:", r_squared, "/n")
+
 # Guardar el modelo entrenado
 getwd()
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
