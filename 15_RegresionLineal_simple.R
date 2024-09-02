@@ -33,7 +33,7 @@ print(lm_cv_model)
 print(lm_cv_model$results)
 
 # Predecir en el conjunto de testeo
-lm_predictions <- predict(lm_model, newdata = test_data)
+lm_predictions <- predict(lm_cv_model, newdata = test_data)
 
 # Calcular el error cuadrático medio (RMSE)
 lm_rmse <- sqrt(mean((lm_predictions - test_data$PM25)^2))

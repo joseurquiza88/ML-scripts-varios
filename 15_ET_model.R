@@ -146,7 +146,7 @@ r_stack <- stack(maiac,NDVI,LandCover,BCSMASS ,
                  SO4SMASS,SSSMASS ,SSSMASS25,blh_mean,
                  sp_mean , d2m_mean, t2m_mean,v10_mean, 
                  u10_mean ,tp_mean ,DEM)
-#plot(r_stack)
+plot(r_stack)
 
 r_stack_df <- as.data.frame(r_stack, na.rm = TRUE)
 names(r_stack_df) <- c("AOD_055", "ndvi", "LandCover", "BCSMASS","DUSMASS",

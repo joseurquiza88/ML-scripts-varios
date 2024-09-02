@@ -1,0 +1,108 @@
+
+#### PRUEBAS DE PARTICION  DE DATOS
+
+rm(list=ls())
+# Generar datos aleatorios para las variables predictoras
+set.seed(42)
+data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/dataset/proceed/merge_tot/09_TOT_merge_tot.csv")
+data_completo <- data[complete.cases(data),]
+data_completo$date <- strptime(data_completo$date, format = "%d/%m/%Y")
+data_completo$dayWeek <- wday(data_completo$date, week_start = 1)
+
+###### ------  Modelo 1 - Aleatorio  ------  ##### 
+# Dividir el dataframe en 70% entrenamiento y 30% testeo
+train_index <- createDataPartition(data_completo$PM25, p = 0.7, list = FALSE)
+train_data <- data_completo[train_index, ]
+test_data <- data_completo[-train_index, ]
+dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
+setwd(dir)
+write.csv(train_data, paste(dir,"Modelo 1/M1_train.csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo 1/M1_test.csv",sep=""))
+
+
+################################################################
+# Modelo 2 - por años
+# Vemos cuanto datos hay por año
+year = 2024
+len_data <- nrow(data_completo[year(data_completo$date) == year ,])
+len_data
+# Para 2015 ==> 1584
+# Para 2016 ==> 1558
+# Para 2017 ==> 1567
+# Para 2018 ==> 1930
+# Para 2019 ==> 1917
+# Para 2020 ==> 2175
+# Para 2021 ==> 2127
+# Para 2022 ==> 1993
+# Para 2023 ==> 1784
+# Para 2024 ==> 0
+# Total = 16635
+# 2021-2023 testeo 35.5% ----- 2015-2020 Entrenamiento 64.5%
+# Dividimos los set de datos segun los años
+train_data <- data_completo[year(data_completo$date) == 2015 | year(data_completo$date) == 2016 |
+                            year(data_completo$date) == 2017 | year(data_completo$date) == 2018 |
+                              year(data_completo$date) == 2019 | year(data_completo$date) == 2020,]
+test_data <- data_completo[year(data_completo$date) == 2021 | year(data_completo$date) == 2022 |
+                            year(data_completo$date) == 2023,]
+# Corroboramos que esten todos los datos
+nrow(train_data) + nrow(test_data) == nrow(data_completo)
+
+# Guardamos datos
+dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
+setwd(dir)
+write.csv(train_data, paste(dir,"Modelo 2/M2_train.csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo 2/M2_test.csv",sep=""))
+
+################################################################
+# Modelo 3 - por estacion
+# Vemos cuanto datos hay por año
+estacion  = "QUI"
+len_data <- nrow(data_completo[data_completo$estacion == estacion ,])
+unique(data_completo$estacion) #"OHG" "BSQ" "CNA" "PDH" "FLD" "PTA" "CDE" "QUI"
+len_data
+# BSQ ==> 2119
+# OHG ==> 2140
+# CNA ==> 2182
+# PDH ==> 2134
+# FLD ==> 1961
+# PTA ==> 2140
+# CDE ==> 2084
+# QUI ==> 1875
+
+# Dejamos para testeo OHG que es la estacion del centro
+
+train_data <- data_completo[data_completo$estacion != "OHG",]
+test_data <- data_completo[data_completo$estacion == "OHG",]
+                             
+# Corroboramos que esten todos los datos
+nrow(train_data) + nrow(test_data) == nrow(data_completo)
+
+# Corroboramos que esten todos los datos
+(nrow(train_data) / nrow(data_completo))* 100 # 87%
+(nrow(test_data) / nrow(data_completo))*100 # 13%
+# Guardamos datos
+dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
+setwd(dir)
+write.csv(train_data, paste(dir,"Modelo 3/M3_train.csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo 3/M3_test.csv",sep=""))
+
+################################################################
+# Modelo 4 - por estacion pero dejamos de lado otra estacion BSQ
+# Dejamos para testeo BSQ
+
+train_data <- data_completo[data_completo$estacion != "BSQ",]
+test_data <- data_completo[data_completo$estacion == "BSQ",]
+
+# Corroboramos que esten todos los datos
+nrow(train_data) + nrow(test_data) == nrow(data_completo)
+
+# Corroboramos que esten todos los datos
+(nrow(train_data) / nrow(data_completo))* 100 # 87%
+(nrow(test_data) / nrow(data_completo))*100 # 13%
+# Guardamos datos
+dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
+setwd(dir)
+write.csv(train_data, paste(dir,"Modelo 4/M4_train.csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo 4/M4_test.csv",sep=""))
+
+

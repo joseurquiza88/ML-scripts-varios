@@ -3,16 +3,18 @@ library(randomForest)
 library(raster)
 library(caret) #version 4.2.3
 rm(list=ls())
-# Generar datos aleatorios para las variables predictoras
-set.seed(42)
-data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/dataset/proceed/merge_tot/08_TOT_merge_tot.csv")
-data_completo <- data[complete.cases(data),]
-data_completo$diaYear <- as.numeric(format(data_completo$date, "%j"))
-data_completo$month <- as.numeric(format(data_completo$date, "%B"))
-# Dividir el dataframe en 70% entrenamiento y 30% testeo
-train_index <- createDataPartition(data_completo$PM25, p = 0.7, list = FALSE)
-train_data <- data_completo[train_index, ]
-test_data <- data_completo[-train_index, ]
+
+#Data modelo 1
+#test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_test.csv")
+#train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_train.csv")
+
+#Data modelo 2
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 2/M2_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 2/M2_train.csv")
+
+#Data modelo 3
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 3/M3_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 3/M3_train.csv")
 
 
 # Entrenar el modelo de Random Forest
@@ -20,7 +22,7 @@ rf_model <- randomForest(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS +
                            DUSMASS + DUSMASS25 + OCSMASS + SO2SMASS+
                            SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
                            sp_mean + d2m_mean + t2m_mean + v10_mean + 
-                           u10_mean + tp_mean + DEM,
+                           u10_mean + tp_mean + DEM + dayWeek,
                          data = train_data,  importance = TRUE)
 
 # Mostrar la importancia de las variables
@@ -50,21 +52,35 @@ rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS +
                        DUSMASS + DUSMASS25 + OCSMASS + SO2SMASS+
                        SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
                        sp_mean + d2m_mean + t2m_mean + v10_mean + 
-                       u10_mean + tp_mean + DEM, data = train_data, 
-                     method = "rf", trControl = train_control)
+                       u10_mean + tp_mean + DEM + dayWeek, data = train_data, 
+                     method = "rf", trControl = train_control,importance = TRUE)
 
-11:29
-12:24
+13:39
 print(rf_cv_model)
 print(rf_cv_model$results)
 
+# Mostrar la importancia de las variables
+importance(rf_cv_model)
+
+# Predecir en el conjunto de testeo
+predictions <- predict(rf_cv_model, newdata = test_data)
+
+# Calcular el error cuadrÃ¡tico medio (RMSE)
+rmse <- sqrt(mean((predictions - test_data$PM25)^2))
+
+# Calcular el coeficiente de determinaciÃ³n (RÂ²)
+r_squared <- cor(predictions, test_data$PM25)^2
+
+# Mostrar las mÃ©tricas de evaluaciÃ³n
+cat("RMSE:", rmse, "/n")
+cat("R²:", r_squared, "/n")
 
 # Guardar el modelo entrenado
 getwd()
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
 save(rf_model, file="01-RF_260824.RData")
-save(rf_cv_model, file="01-RF_cv_260824.RData")
+save(rf_cv_model, file="01-RF_cv_M3-2908204.RData")
 
 
 print("Modelo Random Forest entrenado y guardado en 'random_forest_model.RData'.")

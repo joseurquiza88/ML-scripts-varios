@@ -10,8 +10,8 @@ date <- seq.Date(from = as.Date("2015-01-01"), to = as.Date("2024-07-31"), by = 
 # Crear el dataframe con la columna 'date'
 df_date <- data.frame(date = date)
 df_date$date <- strptime(df_date$date, format = "%Y-%m-%d")
-estacion <- "PTA"
-num_estacion <- "06"
+estacion <- "QUI"
+num_estacion <- "08"
 for (i in 1:1){
   ##################
   #01 Estaciones PM 25
@@ -131,4 +131,4 @@ for (i in 1:length(id)){
   data_rbind <- rbind(data_rbind,data)
 }
 
-write.csv(data_rbind, "08_TOT_merge_tot.csv")
+write.csv(data_rbind, "09_TOT_merge_tot.csv")
