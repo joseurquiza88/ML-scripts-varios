@@ -125,7 +125,7 @@ LandCover_function <- function(file, latlong.range = NULL, border.shp = NULL) {
       #corto en el buffer
       
       
-      f_LC_Types_sub <- subset(f_LC_Types, y >= latlong.range[3] &
+      f_LC_Types_sub <- subset(data_raster, y >= latlong.range[3] &
                                  y <= latlong.range[4] &
                                  x >= latlong.range[1] &
                                  x <= latlong.range[2])
@@ -204,7 +204,7 @@ f_LC_Type1_wgs84 <- projectRaster(LC_Type1,
                                   crs = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
 
-# Verificar la nueva proyección y resolución
+# Verificar la nueva proyecci?n y resoluci?n
 print(f_LC_Type1_wgs84)
 plot(f_LC_Type1_wgs84)
 
