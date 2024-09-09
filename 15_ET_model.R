@@ -1,18 +1,10 @@
 # Configurar la semilla para reproducibilidad
 set.seed(42)
 
-# Leer los datos
-data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/dataset/proceed/merge_tot/08_TOT_merge_tot.csv")
-data_completo <- data[complete.cases(data), ]
+#Data modelo 1
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_train.csv")
 
-# Crear columnas para el día del año y el mes
-data_completo$diaYear <- as.numeric(format(data_completo$date, "%j"))
-data_completo$month <- as.numeric(format(data_completo$date, "%m"))
-
-# Dividir el dataframe en 70% entrenamiento y 30% testeo
-train_index <- createDataPartition(data_completo$PM25, p = 0.7, list = FALSE)
-train_data <- data_completo[train_index, ]
-test_data <- data_completo[-train_index, ]
 
 # Definir el control de entrenamiento con validación cruzada de 10 pliegues
 train_control <- trainControl(method = "cv", number = 10)
@@ -35,6 +27,21 @@ et_model <- train(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS +
                   trControl = train_control, 
                   tuneGrid = ranger_grid,
                   importance = 'impurity')  # 'impurity' para importancia de variables
+ExTrees_cv_model <- train(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS +
+                       DUSMASS + DUSMASS25 + OCSMASS + SO2SMASS+
+                       SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
+                       sp_mean + d2m_mean + t2m_mean + v10_mean + 
+                       u10_mean + tp_mean + DEM + dayWeek, data = train_data, 
+                     method = "extraTrees", trControl = train_control,importance = TRUE)
+
+
+
+
+
+
+
+
+
 # 16:17
 # Mostrar los resultados del modelo
 print(et_model)

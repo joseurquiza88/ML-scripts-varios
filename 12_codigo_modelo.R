@@ -367,6 +367,113 @@ writeRaster(cropped_ERA_tp, "tiff/TP_raster", format="GTiff", overwrite=TRUE)
 writeRaster(cropped_ERA_v10, "tiff/V10_raster", format="GTiff", overwrite=TRUE)
 writeRaster(cropped_ERA_u10, "tiff/U10_raster", format="GTiff", overwrite=TRUE)
 
+
+
+
+###########################################################################
+# -----------------------   04 MERRA DIA  ------------------------------
+###########################################################################
+rm(list=ls())
+#04 MERRA
+#nameVar <- c("BCSMASS","DMSSMASS", "DUSMASS","DUSMASS25", "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS","SSSMASS25")
+#####01
+data_merra_BCSMASS_Dia <- raster("04_MERRA-2_Dia/MERRA2_400.tavg1_2d_aer_Nx.20190101.SUB.nc",varname="BCSMASS")
+SINU <- as.character(data_merra_BCSMASS_Dia@crs)
+data_merra_BCSMASS_Dia <- projectRaster(data_merra_BCSMASS_Dia,crs = crs_project)
+# Resamplear el raster original a la nueva resolución de 1km
+resampled_merra_BCSMASS_Dia <- raster::resample(data_merra_BCSMASS_Dia, ndvi_raster,method = "bilinear")
+cropped_merra_BCSMASS_Dia <- crop(resampled_merra_BCSMASS_Dia, extent(ndvi_raster))
+
+# 02
+data_merra_DMSSMASS_Dia <- raster("04_MERRA-2_Dia/MERRA2_400.tavg1_2d_aer_Nx.20190101.SUB.nc",varname="DMSSMASS")
+SINU <- as.character(data_merra_DMSSMASS_Dia@crs)
+data_merra_DMSSMASS_Dia <- projectRaster(data_merra_DMSSMASS_Dia,crs = crs_project)
+# Resamplear el raster original a la nueva resolución de 1km
+resampled_merra_DMSSMASS_Dia <- raster::resample(data_merra_DMSSMASS_Dia, ndvi_raster,method = "bilinear")
+cropped_merra_DMSSMASS_Dia <- crop(resampled_merra_DMSSMASS_Dia, extent(ndvi_raster))
+
+# 03
+data_merra_DUSMASS_Dia <- raster("04_MERRA-2_Dia/MERRA2_400.tavg1_2d_aer_Nx.20190101.SUB.nc",varname="DUSMASS")
+SINU <- as.character(data_merra_DUSMASS_Dia@crs)
+data_merra_DUSMASS_Dia <- projectRaster(data_merra_DUSMASS_Dia,crs = crs_project)
+# Resamplear el raster original a la nueva resolución de 1km
+resampled_merra_DUSMASS_Dia <- raster::resample(data_merra_DUSMASS_Dia, ndvi_raster,method = "bilinear")
+cropped_merra_DUSMASS_Dia <- crop(resampled_merra_DUSMASS_Dia, extent(ndvi_raster))
+
+# 04
+data_merra_DUSMASS25_Dia <- raster("04_MERRA-2_Dia/MERRA2_400.tavg1_2d_aer_Nx.20190101.SUB.nc",varname="DUSMASS25")
+SINU <- as.character(data_merra_DUSMASS25_Dia@crs)
+data_merra_DUSMASS25_Dia <- projectRaster(data_merra_DUSMASS25_Dia,crs = crs_project)
+# Resamplear el raster original a la nueva resolución de 1km
+resampled_merra_DUSMASS25_Dia <- raster::resample(data_merra_DUSMASS25_Dia, ndvi_raster,method = "bilinear")
+cropped_merra_DUSMASS25_Dia <- crop(resampled_merra_DUSMASS25_Dia, extent(ndvi_raster))
+
+# 05
+data_merra_OCSMASS_Dia <- raster("04_MERRA-2_Dia/MERRA2_400.tavg1_2d_aer_Nx.20190101.SUB.nc",varname="OCSMASS")
+SINU <- as.character(data_merra_OCSMASS_Dia@crs)
+data_merra_OCSMASS_Dia <- projectRaster(data_merra_OCSMASS_Dia,crs = crs_project)
+# Resamplear el raster original a la nueva resolución de 1km
+resampled_merra_OCSMASS_Dia <- raster::resample(data_merra_OCSMASS_Dia, ndvi_raster,method = "bilinear")
+cropped_merra_OCSMASS_Dia <- crop(resampled_merra_OCSMASS_Dia, extent(ndvi_raster))
+
+
+# 06
+#nameVar <- c("BCSMASS","DMSSMASS", "DUSMASS","DUSMASS25", "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS","SSSMASS25")
+data_merra_SO2SMASS_Dia <- raster("04_MERRA-2_Dia/MERRA2_400.tavg1_2d_aer_Nx.20190101.SUB.nc",varname="SO2SMASS")
+SINU <- as.character(data_merra_SO2SMASS_Dia@crs)
+data_merra_SO2SMASS_Dia <- projectRaster(data_merra_SO2SMASS_Dia,crs = crs_project)
+# Resamplear el raster original a la nueva resolución de 1km
+resampled_merra_SO2SMASS_Dia <- raster::resample(data_merra_SO2SMASS_Dia, ndvi_raster,method = "bilinear")
+cropped_merra_SO2SMASS_Dia <- crop(resampled_merra_SO2SMASS_Dia, extent(ndvi_raster))
+
+# 07
+#nameVar <- c(", "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS","SSSMASS25")
+
+data_merra_SO4SMASS_Dia <- raster("04_MERRA-2_Dia/MERRA2_400.tavg1_2d_aer_Nx.20190101.SUB.nc",varname="SO4SMASS")
+SINU <- as.character(data_merra_SO4SMASS_Dia@crs)
+data_merra_SO4SMASS_Dia <- projectRaster(data_merra_SO4SMASS_Dia,crs = crs_project)
+# Resamplear el raster original a la nueva resolución de 1km
+resampled_merra_SO4SMASS_Dia <- raster::resample(data_merra_SO4SMASS_Dia, ndvi_raster,method = "bilinear")
+cropped_merra_SO4SMASS_Dia <- crop(resampled_merra_SO4SMASS_Dia, extent(ndvi_raster))
+
+# 08
+#nameVar <- c(", "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS","SSSMASS25")
+data_merra_SSSMASS_Dia <- raster("04_MERRA-2_Dia/MERRA2_400.tavg1_2d_aer_Nx.20190101.SUB.nc",varname="SSSMASS")
+SINU <- as.character(data_merra_SSSMASS_Dia@crs)
+data_merra_SSSMASS_Dia <- projectRaster(data_merra_SSSMASS_Dia,crs = crs_project)
+# Resamplear el raster original a la nueva resolución de 1km
+resampled_merra_SSSMASS_Dia <- raster::resample(data_merra_SSSMASS_Dia, ndvi_raster,method = "bilinear")
+cropped_merra_SSSMASS_Dia <- crop(resampled_merra_SSSMASS_Dia, extent(ndvi_raster))
+
+# 09
+#nameVar <- c(", "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS25","SSSMASS2525")
+data_merra_SSSMASS25_Dia <- raster("04_MERRA-2_Dia/MERRA2_400.tavg1_2d_aer_Nx.20190101.SUB.nc",varname="SSSMASS25")
+SINU <- as.character(data_merra_SSSMASS25_Dia@crs)
+data_merra_SSSMASS25_Dia <- projectRaster(data_merra_SSSMASS25_Dia,crs = crs_project)
+# Resamplear el raster original a la nueva resolución de 1km
+resampled_merra_SSSMASS25_Dia <- raster::resample(data_merra_SSSMASS25_Dia, ndvi_raster,method = "bilinear")
+cropped_merra_SSSMASS25_Dia <- crop(resampled_merra_SSSMASS25_Dia, extent(ndvi_raster))
+
+# Guardar el raster procesado
+writeRaster(cropped_merra_BCSMASS_Dia, "tiff/BCSMASS_raster_Dia", format="GTiff", overwrite=TRUE)
+writeRaster(cropped_merra_DMSSMASS_Dia, "tiff/DMSSMASS_raster_Dia", format="GTiff", overwrite=TRUE)
+writeRaster(cropped_merra_DUSMASS_Dia, "tiff/DUSMASS_raster_Dia", format="GTiff", overwrite=TRUE)
+writeRaster(cropped_merra_DUSMASS25_Dia, "tiff/DUSMASS25_raster", format="GTiff", overwrite=TRUE)
+writeRaster(cropped_merra_OCSMASS_Dia, "tiff/OCSMASS_raster_Dia", format="GTiff", overwrite=TRUE)
+writeRaster(cropped_merra_SO2SMASS_Dia, "tiff/SO2SMASS_raster_Dia", format="GTiff", overwrite=TRUE)
+writeRaster(cropped_merra_SO4SMASS_Dia, "tiff/SO4SMASS_raster_Dia", format="GTiff", overwrite=TRUE)
+writeRaster(cropped_merra_SSSMASS_Dia, "tiff/SSSMASS_raster_Dia", format="GTiff", overwrite=TRUE)
+writeRaster(cropped_merra_SSSMASS25_Dia, "tiff/SSSMASS25_raster_Dia", format="GTiff", overwrite=TRUE)
+
+
+
+
+
+
+
+
+
+
 ###########################################################################
 # -----------------------   Todas las variables ---------------------------
 ###########################################################################

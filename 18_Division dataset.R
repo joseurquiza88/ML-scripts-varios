@@ -6,7 +6,7 @@ rm(list=ls())
 set.seed(42)
 data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/dataset/proceed/merge_tot/09_TOT_merge_tot.csv")
 data_completo <- data[complete.cases(data),]
-data_completo$date <- strptime(data_completo$date, format = "%d/%m/%Y")
+data_completo$date <- strptime(data_completo$date, format = "%Y-%m-%d")
 data_completo$dayWeek <- wday(data_completo$date, week_start = 1)
 
 ###### ------  Modelo 1 - Aleatorio  ------  ##### 

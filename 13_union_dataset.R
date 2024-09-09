@@ -97,10 +97,21 @@ for (i in 1:1){
   data_ERA <- subset(data_ERA, select = -c(X,estacion))
   data_ERA$date <- strptime(data_ERA$date, format = "%Y-%m-%d")
   
+  ##################
+  ### --- 07 MERRA-2 dia
+  data_MERRA_dia<- read.csv(paste("./MERRA-2_Dia/",num_estacion,"_",estacion, "_MERRA_Dia.csv",sep=""))
+  data_MERRA_dia <- data.frame(date = data_MERRA_dia$date, BCSMASS_dia = data_MERRA_dia$BCSMASS, 
+                           DMSSMASS_dia = data_MERRA_dia$DMSSMASS, DUSMASS_dia = data_MERRA_dia$DUSMASS, 
+                           DUSMASS25_dia = data_MERRA_dia$DUSMASS25, OCSMASS_dia = data_MERRA_dia$OCSMASS,
+                           SO2SMASS_dia = data_MERRA_dia$SO2SMASS,SO4SMASS_dia = data_MERRA_dia$SO4SMASS, 
+                           SSSMASS_dia = data_MERRA_dia$SSSMASS,SSSMASS25_dia= data_MERRA_dia$SSSMASS25)
+  
+  data_MERRA_dia$date <- strptime(data_MERRA_dia$date, format = "%Y%m%d")
+  
   ##############################
 
   # Lista de dataframes que quieres unir
-  dataframes <- list(df_date, data_pm, data_aod, data_NDVI_dia, data_LandCover_dia, data_MERRA, data_ERA)
+  dataframes <- list(df_date, data_pm, data_aod, data_NDVI_dia, data_LandCover_dia, data_MERRA,data_MERRA_dia, data_ERA)
   
   # Usar Reduce para hacer merge secuencial
   data_merged <- Reduce(function(x, y) merge(x, y, by = "date", all.x = TRUE), dataframes)
@@ -111,12 +122,13 @@ for (i in 1:1){
   data_merged$estacion <- estacion
 }
 ###############################################################
+View(data_merged)
 # Guardar archivo
-getwd()
+# getwd()
 name <- paste("./merge_tot/",num_estacion,"_",estacion,"_merge_tot.csv",sep="")
 write.csv(data_merged,name)
 
-View(data_merged)
+
 
 
 ###############################################################
