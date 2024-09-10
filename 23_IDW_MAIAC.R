@@ -82,6 +82,7 @@ for( i in 1:length(fs)){
   }
   
 }
-
+#########################
+#Guardamos csv del RMSE Medio de la interpolacion
 getwd()
 write.csv(RMSE_IDW,"MAIAC_RMSE_IDW.csv")
