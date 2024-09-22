@@ -1,4 +1,5 @@
-rm(list=ls())
+##rm(list=ls())
+#NDVI
 ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/tiff/01_NDVI/2024001-NDVI_raster.tif")
 
 ###########################################################################
@@ -327,13 +328,17 @@ for (i in 1:length(id)){
 #df_rbind <- data.frame()
 # Suponiendo que mi_dataframe es el objeto que no quieres eliminar
 rm(list = setdiff(ls(), "df_rbind"))
-
-# Leemos todas las variables generadas
-# Seteamos diretorio
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/tiff/")
-
-# Fecha de interés
-fechaInteres <- as.Date("31-01-2024", format = "%d-%m-%Y")
+dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/Salida/Salida_01-XGB_cv_M1-100924/"
+fechaInteres <- as.Date("01-01-2024", format = "%d-%m-%Y")
+#Modelos
+dir_modelos <- "D:/Josefina/Proyectos/ProyectoChile/modelos/modelo/"
+#load(paste(dir_modelos,"01-RF_cv_M1-050924.RData",sep=""))
+#load(paste(dir_modelos,"01-RF_cv_M2-050924.RData",sep=""))
+#load(paste(dir_modelos,"01-RF_cv_M3-050924.RData",sep=""))
+# load(paste(dir_modelos,"01-RF_cv_M4-060924.RData",sep=""))
+# load(paste(dir_modelos,"02-RF_cv_M1-090924.RData",sep=""))
+load(paste(dir_modelos,"01-XGB_cv_M1-100924.RData",sep=""))
 for (i in 1:1){
 
   ################# -----     00 MAIAC     -----
@@ -494,21 +499,10 @@ for (i in 1:1){
 ###############################################################
 ##################################################################
 ##############################################################
-#Modelos
-dir_modelos <- "D:/Josefina/Proyectos/ProyectoChile/modelos/modelo/"
-
-# Paso 1: Cargar el modelo
-
-load(paste(dir_modelos,"01-RF_cv_M1-050924.RData",sep=""))
-# load(paste(dir_modelos,"01-RF_cv_M2-050924.RData",sep=""))
-# load(paste(dir_modelos,"01-RF_cv_M3-050924.RData",sep=""))
-# load(paste(dir_modelos,"01-RF_cv_M4-060924.RData",sep=""))
-
 ####
 
 # Aplicar el modelo
 predictions <- predict(rf_cv_model, newdata = r_stack_df)
-
 # Crear un raster vac?o con la misma extensi?n y resoluci?n que el stack
 pred_raster <- raster(r_stack)
 
@@ -520,7 +514,6 @@ pred_raster[!is.na(values(r_stack[[1]]))] <- predictions
 
 #getwd()
 
-dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/Salida/"
 
 name_salida <- paste(dir_salida,"PM-",fechaInteres,"-01-RF_cv_M1-050924.tif",sep="")
 writeRaster(pred_raster, filename = name_salida, format = "GTiff", overwrite = TRUE)
@@ -548,3 +541,61 @@ writeRaster(pred_raster, filename = name_salida, format = "GTiff", overwrite = T
   
   df_rbind <- rbind(df_rbind,puntos_con_valores)
 }
+
+write.csv(df_rbind, paste(dir_salida,"salida_02-RF_cv_M1-090924_01-2024.csv",sep=""))
+
+
+
+#manualmente lo unimos con las estaciones sinca
+dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/Salida/"
+
+data_pm <- read.csv(paste(dir_salida,"salida_01-RF.csv",sep=""))
+data_pm <- data_pm[complete.cases(data_pm),]
+# Crear scatter plot con línea de regresión
+modelo <- lm(X02_RF.CV.M1.090924 ~ valor_sinca, data = data_pm)
+
+# Calcular R²
+r2 <- summary(modelo)$r.squared
+
+# Calcular RMSE (Root Mean Squared Error)
+rmse <- sqrt(mean((data_pm$X02_RF.CV.M1.090924 - predict(modelo))^2))
+
+# Calcular Bias
+bias <- mean(data_pm$X02_RF.CV.M1.090924 - data_pm$valor_sinca)
+
+pearson <- cor(data_pm$valor_sinca, data_pm$X02_RF.CV.M1.090924, method = "pearson")
+# Crear scatter plot con línea de regresión
+ggplot(data_pm, aes(x = valor_sinca, y = X02_RF.CV.M1.090924)) +
+  geom_point(color = "#99d8c9", ,alpha= 0.7,size = 2) +  # Puntos del scatter plot
+  geom_smooth(method = "lm", color = "red", se = FALSE) +  # Línea de regresión lineal
+  labs(x = "SINCA", y = "Prediccion", title = "Prediccion 01-2024 02-RF_cv_M1-090924") +
+  theme_classic() +
+  geom_text(aes(x = 8, y = 20,
+                label = paste("r2 = ",round(r2,2))),
+            stat = "unique",
+            size = 2.5, color = "Black")+
+  geom_text(aes(x = 7.8, y = 19.3,
+                label = paste("r = ",round(pearson,2))),
+            stat = "unique",
+            size = 2.5, color = "Black")+
+
+  geom_text(aes(x = 8.23, y = 18.7,
+                label = paste("RMSE = ",round(rmse,2))),
+            stat = "unique",
+            size = 2.5, color = "Black") +
+
+  
+  geom_text(aes(x = 8.10, y = 18,
+                label = paste("Bias = ",round(bias,2))),
+            stat = "unique",
+            size = 2.5, color = "Black")
+
+
+data_pm$Error_RF.CV.M1 <- data_pm$valor_sinca - data_pm$RF.CV.M1
+
+# Graficar
+ggplot(data_pm, aes(x = RF.CV.M1, y = Error_RF.CV.M1)) +
+  geom_point(color = "#99d8c9", alpha = 0.7, size = 2) +
+  geom_hline(yintercept = 0, color = "black", linetype = "dashed") +
+  labs(x = "Valor Predicho", y = "Error", title = "Error de Predicción") +
+  theme_classic()
