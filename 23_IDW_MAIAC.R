@@ -16,13 +16,14 @@ fs <- list.files(path = dir_maiac,
 # Crear raster template >>> spatial Pixels DF
 ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/tiff/01_NDVI/2024001-NDVI_raster.tif")
 raster_template <- ndvi_raster
+projection(raster_template) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 idw.grid <- rasterToPoints(raster_template, spatial = TRUE)
 gridded(idw.grid) <- TRUE   #SpatialPixelsDataFrame
 
 RMSE_IDW <- data.frame()
 kfold = 5 # numero de k-fold cross validation
 
-
+i<-148
 
 for( i in 1:length(fs)){
   print(i)
@@ -32,7 +33,7 @@ for( i in 1:length(fs)){
   num_na <- sum(is.na(raster_fs[]))
   if (num_na !=0){
     raster_points <- as.data.frame(rasterToPoints(raster_fs))
-    rm(raster_fs)
+    
     # length(mosaic_r.055)= 1056, el 10% 105
     # if(nrow(raster_points) > 3776){  #### control: raster con un 10% de datos
     if(nrow(raster_points) > 105){
@@ -71,7 +72,7 @@ for( i in 1:length(fs)){
                   format = "GTiff",
                   overwrite = TRUE)
       
-      rm(raster_template, train, test, kat.idw)
+      rm(raster_template, train, test, kat.idw,raster_fs)
       
     }
   }
@@ -79,6 +80,7 @@ for( i in 1:length(fs)){
     writeRaster(raster_fs, paste(dir_salida, filename, sep = ""), 
                 format = "GTiff",
                 overwrite = TRUE)
+    rm(raster_fs)
   }
   
 }

@@ -53,6 +53,13 @@ cat("R²:", r_squared, "\n")
 ####################################################################
 ####################################################################
 ####################################################################
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_train.csv")
+# Normalizar las variables entre 0 y 1 usando Min-Max
+preProc <- preProcess(train_data[, c("AOD_055", "ndvi",  "BCSMASS", "DUSMASS", "DUSMASS25", 
+                                        "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS", "SSSMASS25", "blh_mean", 
+                                        "sp_mean", "d2m_mean", "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM")], 
+                      method = "range")#"LandCover",
 # Multiples parametros
 # Definir el control de entrenamiento con validación cruzada de 10 pliegues
 train_control <- trainControl(method = "cv", number = 10)
@@ -205,7 +212,90 @@ plot(svr_predictions, abs_error,
      xlab = "Predicciones de PM2.5", 
      ylab = "Error Absoluto", 
      main = "Error Absoluto vs Predicciones (SVR)")
+################################################################################
+################################################################################
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_train.csv")
+# Normalizar las variables entre 0 y 1 usando Min-Max
+# Normalizar los datos
+preProc <- preProcess(train_data[, -which(names(train_data) == "PM25")], method = c("center", "scale"))
+train_data_normalized <- predict(preProc, train_data)
+train_data_normalized<- train_data_normalized[, c("AOD_055", "ndvi",  "BCSMASS", "DUSMASS", "DUSMASS25", "OCSMASS",
+                "SO2SMASS", "SO4SMASS", "SSSMASS", "SSSMASS25", "blh_mean","sp_mean",
+                "d2m_mean", "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM")]
 
+train_data_normalized$PM25 <- train_data$PM25
+
+test_data_normalized <- predict(preProc, test_data)
+test_data_normalized<- test_data_normalized[, c("AOD_055", "ndvi",  "BCSMASS", "DUSMASS", "DUSMASS25", "OCSMASS",
+                                                  "SO2SMASS", "SO4SMASS", "SSSMASS", "SSSMASS25", "blh_mean","sp_mean",
+                                                  "d2m_mean", "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM")]
+test_data_normalized$PM25 <- test_data$PM25
+# Definir el control de entrenamiento con validaciÃ³n cruzada de 10 pliegues
+train_control <- trainControl(method = "cv", number = 10)
+
+
+# Definir un grid para ajustar los hiperparámetros
+svr_grid <- expand.grid(sigma = 0.1,
+                        C = 100)
+
+# Entrenar el modelo SVR con validación cruzada y ajuste de hiperparámetros
+rf_cv_model_params <- train(PM25 ~ AOD_055 + ndvi +  BCSMASS + #LandCover
+                              DUSMASS + DUSMASS25 + OCSMASS + SO2SMASS +
+                              SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
+                              sp_mean + d2m_mean + t2m_mean + v10_mean + 
+                              u10_mean + tp_mean + DEM, data = train_data_normalized, 
+                            method = "svmRadial", trControl = train_control, 
+                            tuneGrid = svr_grid)
+12:43
+# Realizar predicciones en el conjunto de prueba
+predicciones <- predict(rf_cv_model_params, newdata = test_data_normalized)
+rmse_cv <- sqrt(mean((predicciones - test_data_normalized$PM25)^2))
+r_squared_cv <- cor(predicciones,test_data_normalized$PM25)^2
+mae_cv <- mean(abs(test_data_normalized$PM25 - predicciones))
+mape_cv <- mean(abs((test_data_normalized$PM25 - predicciones) / test_data_normalized$PM25)) * 100
+mse_cv <- mean((test_data_normalized$PM25 - predicciones)^2)
+medae_cv <- median(abs(test_data_normalized$PM25- predicciones))
+pearson_cor_cv <- cor(test_data_normalized$PM25, predicciones, method = "pearson")
+
+
+cat("R²:", r_squared_cv, "\n")
+print(paste("R pearson cv:", round(pearson_cor_cv, 3)))
+cat("RMSE:", rmse_cv, "\n")
+print(paste("MAE cv:", round(mae_cv, 3)))
+print(paste("MAPE cv:", round(mape_cv, 2), "%"))
+print(paste("MSE:", round(mse_cv, 3)))
+print(paste("MedAE cv:", round(medae_cv, 3)))
+min(predicciones)
+max(predicciones)
+
+#########################################################
+##########################################################
+#Predicciones con dataest de entrenamiento
+# Hacer predicciones
+predicciones_train <- predict(rf_cv_model_params, newdata = train_data_normalized)
+resultado_train <- data.frame(Real = train_data_normalized$PM25, Predicho = predicciones_train)
+rmse_cv_train <- sqrt(mean((predicciones_train - train_data_normalized$PM25)^2))
+r_squared_cv_train <- cor(predicciones_train, train_data_normalized$PM25)^2
+mae_cv_train <- mean(abs(train_data_normalized$PM25 - predicciones_train))
+mape_cv_train <- mean(abs((train_data_normalized$PM25 - predicciones_train) / train_data_normalized$PM25)) * 100
+mse_cv_train <- mean((train_data_normalized$PM25 - predicciones_train)^2)
+medae_cv_train <- median(abs(train_data_normalized$PM25 - predicciones_train))
+pearson_cor_cv_train <- cor(train_data_normalized$PM25, predicciones_train, method = "pearson")
+
+cat("R² train:", r_squared_cv_train, "\n")
+print(paste("R pearson cv train:", round(pearson_cor_cv_train, 3)))
+cat("RMSE train:", rmse_cv_train, "\n")
+print(paste("MAE train cv:", round(mae_cv_train, 3)))
+print(paste("MAPE train cv:", round(mape_cv_train, 2), "%"))
+print(paste("MSE train:", round(mse_cv_train, 3)))
+print(paste("MedAE traincv:", round(medae_cv_train, 3)))
+min(predicciones_train)
+max(predicciones_train)
+
+# Guardamos modelo
+setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
+save(ridge_model_cv, file="01-RLR-M5_250924.RData")
 ################################################################################
 ################################################################################
 # cargar el modelo y aplicalo a otro set de datos

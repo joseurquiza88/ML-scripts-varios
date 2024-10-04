@@ -10,12 +10,21 @@ train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDat
 
 # #Data modelo 2
 test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 2/M2_test.csv")
-train_data2 <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 2/M2_train.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 2/M2_train.csv")
 # 
 # #Data modelo 3
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 3/M3_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 3/M3_train.csv")
+# 
+# #Data modelo 4
 test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 4/M4_test.csv")
 train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 4/M4_train.csv")
-# 
+
+# #Data modelo 5
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_train.csv")
+
+
 
 # Entrenar el modelo de Random Forest
 rf_model <- randomForest(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS +
@@ -60,14 +69,11 @@ rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS +
                        u10_mean + tp_mean + DEM + dayWeek, data = train_data, 
                      method = "rf", trControl = train_control,importance = TRUE)
 
-13:39
-13:01
-16:04
-17:57
-07:54
+
 
 print(rf_cv_model)
 print(rf_cv_model$results)
+
 # Ver el número de árboles generados
 rf_cv_model$finalModel$ntree
 
@@ -76,7 +82,9 @@ importance(rf_cv_model)
 
 # Predecir en el conjunto de testeo
 predictions <- predict(rf_cv_model, newdata = test_data)
+predictions_train <- predict(rf_cv_model, newdata = train_data)
 a <- data.frame(predictions)
+b <- data.frame(predictions_train)
 predicciones_hora<- predictions
 ## Importancia de las variables
 importancia <- varImp(rf_cv_model, scale = TRUE)
@@ -98,66 +106,91 @@ ggplot(importancia_df, aes(x = reorder(Variable, Overall), y = Overall)) +
 
 
 #### Metricas:
+# postResample es una función del paquete caret en R que se utiliza para calcular
+#métricas de rendimiento del modelo
+# Calcular el error en el conjunto de entrenamiento
+error_train <- postResample(predictions_train, train_data$PM25)
+
+# Calcular el error en el conjunto de prueba
+error_test <- postResample(predictions, test_data$PM25)
+
 # Calcular el coeficiente de determinación (R²)
 lm_r_squared_hora <- cor(predicciones_hora, test_data$PM25)^2
+lm_r_squared_train <- cor(predictions_train, train_data$PM25)^2
 # lm_r_squared_horaTot <- cor(predicciones_horaTot, test_data$PM25)^2
 # lm_r_squared_dia <- cor(predicciones_dia, test_data$PM25)^2
 
 print(paste("R2 Hora:", round(lm_r_squared_hora, 2)))
+print(paste("R2 train:", round(lm_r_squared_train, 2)))
 #print(paste("R2 HoraTot:", round(lm_r_squared_horaTot, 2)))
 #print(paste("R2 dia:", round(lm_r_squared_dia, 2)))
 
 # Calcular el coeficiente de Pearson
 pearson_cor_hora <- cor(test_data$PM25, predicciones_hora, method = "pearson")
+pearson_train <- cor(train_data$PM25, predictions_train, method = "pearson")
+
 #pearson_cor_horaTot <- cor(test_data$PM25, predicciones_horaTot, method = "pearson")
 #pearson_cor_dia <- cor(test_data$PM25, predicciones_dia, method = "pearson")
 
 print(paste("R pearson hora:", round(pearson_cor_hora, 2)))
+print(paste("R pearson train:", round(pearson_train, 2)))
 #print(paste("R pearson horaTot:", round(pearson_cor_horaTot, 2)))
 #print(paste("R pearson dia:", round(pearson_cor_dia, 2)))
 
 
 # Calcular el error cuadrático medio (RMSE)
 lm_rmse_hora <- sqrt(mean((predicciones_hora - test_data$PM25)^2))
+lm_rmse_train <- sqrt(mean((predictions_train - train_data$PM25)^2))
 #lm_rmse_horaTot <- sqrt(mean((predicciones_horaTot - test_data$PM25)^2))
 #lm_rmse_dia <- sqrt(mean((predicciones_dia - test_data$PM25)^2))
 print(paste("RMSE Hora:", round(lm_rmse_hora, 2)))
+print(paste("RMSE train:", round(lm_rmse_train, 2)))
 #print(paste("RMSE HoraTot:", round(lm_rmse_horaTot, 2)))
 #print(paste("RMSE dia:", round(lm_rmse_dia, 2)))
 # 3. Calcular el MAE (Mean Absolute Error)
 mae_hora <- mean(abs(test_data$PM25 - predicciones_hora))
+mae_train <- mean(abs(train_data$PM25 - predictions_train))
 #mae_dia <- mean(abs(test_data$PM25 - predicciones_dia))
 print(paste("mae Hora:", round(mae_hora, 2)))
+print(paste("mae train:", round(mae_train, 2)))
 #print(paste("mae dia:", round(mae_dia, 2)))
 
 # 4. Calcular el MAPE (Mean Absolute Percentage Error)
 mape_hora <- mean(abs((test_data$PM25 - predicciones_hora) / test_data$PM25)) * 100
+mape_train <- mean(abs((train_data$PM25 - predictions_train) / train_data$PM25)) * 100
+
 #mape_dia <- mean(abs((test_data$PM25 - predicciones_dia) / test_data$PM25)) * 100
 
 print(paste("MAPE hora:", round(mape_hora, 2), "%"))
+print(paste("MAPE train:", round(mape_train, 2), "%"))
 #print(paste("MAPE dia:", round(mape_dia, 2), "%"))
 
 # 5. Calcular el MSE (Mean Squared Error)
 mse_hora <- mean((test_data$PM25 - predicciones_hora)^2)
+mse_train <- mean((train_data$PM25 - predictions_train)^2)
 #mse_dia <- mean((test_data$PM25 - predicciones_dia)^2)
 print(paste("MSE hora:", round(mse_hora, 2)))
+print(paste("MSE train:", round(mse_train, 2)))
 #print(paste("MSE dia:", round(mse_dia, 2)))
 
 # 6. Calcular el MedAE (Median Absolute Error)
 medae_hora <- median(abs(test_data$PM25 - predicciones_hora))
+medae_train <- median(abs(train_data$PM25 - predictions_train))
 #medae_dia <- median(abs(test_data$PM25 - predicciones_dia))
 
 print(paste("MedAE hora:", round(medae_hora,2)))
+print(paste("MedAE train:", round(medae_train,2)))
 #print(paste("MedAE dia:", round(medae_dia, 2)))
 
 
-
+View(a)
+View(b)
 # Guardar el modelo entrenado
 getwd()
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
 save(rf_model, file="01-RF_260824.RData")
-save(rf_cv_model, file="01-RF_cv_M4-060924.RData")
+save(rf_cv_model, file="01-RF_cv_M5-240924.RData")
 
 
 print("Modelo Random Forest entrenado y guardado en 'random_forest_model.RData'.")

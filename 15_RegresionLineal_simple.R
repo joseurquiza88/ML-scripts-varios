@@ -16,60 +16,122 @@
 
 dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
 setwd(dir)
-train_data <- read.csv(paste(dir,"Modelo 3/M3_train.csv",sep=""))
-test_data <- read.csv(paste(dir,"Modelo 3/M3_test.csv",sep=""))
+train_data <- read.csv(paste(dir,"Modelo 5/M5_train.csv",sep=""))
+test_data <- read.csv(paste(dir,"Modelo 5/M5_test.csv",sep=""))
 
 # Entrenar un modelo de regresión lineal simple con PM2.5 como dependiente y AOD_055 como independiente
-lm_model <- lm(PM25 ~ AOD_055, data = train_data)
+#lm_model <- lm(PM25 ~ AOD_055, data = train_data)
 
 # Resumen del modelo
-summary(lm_model)
+#summary(lm_model)
 
 # Definir el control de entrenamiento con validación cruzada de 10 pliegues
-#train_control <- trainControl(method = "cv", number = 10)
+train_control <- trainControl(method = "cv", number = 10)
 
 # Entrenar el modelo de regresión lineal con validación cruzada
-#lm_cv_model <- train(PM25 ~ AOD_055, data = train_data, 
- #                    method = "lm", trControl = train_control)
+lm_cv_model <- train(PM25 ~ AOD_055, data = train_data, 
+                    method = "lm", trControl = train_control)
 
 # Mostrar los resultados de la validación cruzada
-#print(lm_cv_model)
-#print(lm_cv_model$results)
+print(lm_cv_model)
+print(lm_cv_model$results)
 
 # Predecir en el conjunto de testeo
-lm_predictions <- predict(lm_model, newdata = test_data)
-#lm_predictions <- predict(lm_cv_model, newdata = test_data)
+#lm_predictions <- predict(lm_model, newdata = test_data)
+lm_predictions_cv <- predict(lm_cv_model, newdata = test_data)
 
 # Calcular el error cuadrático medio (RMSE)
-lm_rmse <- sqrt(mean((lm_predictions - test_data$PM25)^2))
+#lm_rmse <- sqrt(mean((lm_predictions - test_data$PM25)^2))
+lm_rmse_cv <- sqrt(mean((lm_predictions_cv - test_data$PM25)^2))
 
 # Calcular el coeficiente de determinación (R²)
-lm_r_squared <- cor(lm_predictions, test_data$PM25)^2
+#lm_r_squared <- cor(lm_predictions, test_data$PM25)^2
+lm_r_squared_cv <- cor(lm_predictions_cv, test_data$PM25)^2
 # 3. Calcular el MAE (Mean Absolute Error)
-mae <- mean(abs(test_data$PM25 - lm_predictions))
-print(paste("MAE:", round(mae, 3)))
+#mae <- mean(abs(test_data$PM25 - lm_predictions))
+mae_cv <- mean(abs(test_data$PM25 - lm_predictions_cv))
+#print(paste("MAE:", round(mae, 3)))
+
 
 # 4. Calcular el MAPE (Mean Absolute Percentage Error)
-mape <- mean(abs((test_data$PM25 - lm_predictions) / test_data$PM25)) * 100
-print(paste("MAPE:", round(mape, 2), "%"))
+#mape <- mean(abs((test_data$PM25 - lm_predictions) / test_data$PM25)) * 100
+#print(paste("MAPE:", round(mape, 2), "%"))
+
+mape_cv <- mean(abs((test_data$PM25 - lm_predictions_cv) / test_data$PM25)) * 100
+
 
 # 5. Calcular el MSE (Mean Squared Error)
-mse <- mean((test_data$PM25 - lm_predictions)^2)
-print(paste("MSE:", round(mse, 3)))
+#mse <- mean((test_data$PM25 - lm_predictions)^2)
+#print(paste("MSE:", round(mse, 3)))
+
+mse_cv <- mean((test_data$PM25 - lm_predictions_cv)^2)
+
 
 # 6. Calcular el MedAE (Median Absolute Error)
-medae <- median(abs(test_data$PM25 - lm_predictions))
-print(paste("MedAE:", round(medae, 3)))
-# Mostrar las métricas de evaluación
-cat("RMSE:", lm_rmse, "\n")
-cat("R²:", lm_r_squared, "\n")
+# medae <- median(abs(test_data$PM25 - lm_predictions))
+# print(paste("MedAE cv:", round(medae, 3)))
 
+medae_cv <- median(abs(test_data$PM25 - lm_predictions_cv))
 # Calcular el coeficiente de Pearson
 pearson_cor <- cor(test_data$PM25, lm_predictions, method = "pearson")
-print(paste("R pearson:", round(pearson_cor, 3)))
+# print(paste("R pearson:", round(pearson_cor, 3)))
+pearson_cor_cv <- cor(test_data$PM25, lm_predictions_cv, method = "pearson")
+
 
 spearman_cor <- cor(test_data$PM25, lm_predictions, method = "spearman")
-print(paste("R spearman:", round(pearson_cor, 3)))
+# print(paste("R spearman:", round(pearson_cor, 3)))
+# Mostrar las métricas de evaluación
+# cat("RMSE:", lm_rmse, "\n")
+# cat("R²:", lm_r_squared, "\n")
+
+
+cat("R²:", lm_r_squared_cv, "\n")
+print(paste("R pearson cv:", round(pearson_cor_cv, 3)))
+cat("RMSE:", lm_rmse_cv, "\n")
+print(paste("MAE cv:", round(mae_cv, 3)))
+print(paste("MAPE cv:", round(mape_cv, 2), "%"))
+print(paste("MSE:", round(mse_cv, 3)))
+print(paste("MedAE cv:", round(medae_cv, 3)))
+min(lm_predictions_cv)
+max(lm_predictions_cv)
+
+
+###############Metricas del train
+
+# Predecir en el conjunto de testeo
+lm_predictions_train <- predict(lm_cv_model, newdata = train_data)
+
+lm_rmse_cv_train <- sqrt(mean((lm_predictions_train - train_data$PM25)^2))
+
+lm_r_squared_cv_train <- cor(lm_predictions_train, train_data$PM25)^2
+# 3. Calcular el MAE (Mean Absolute Error)
+mae_train <- mean(abs(train_data$PM25 - lm_predictions_train))
+# 4. Calcular el MAPE (Mean Absolute Percentage Error)
+mape_train <- mean(abs((train_data$PM25 - lm_predictions_train) / train_data$PM25)) * 100
+# 5. Calcular el MSE (Mean Squared Error)
+mse_train <- mean((train_data$PM25 - lm_predictions_train)^2)
+medae_train <- median(abs(train_data$PM25 - lm_predictions_train))
+# Calcular el coeficiente de Pearson
+pearson_cor_train <- cor(train_data$PM25, lm_predictions_train, method = "pearson")
+
+
+cat("R²:", lm_r_squared_cv_train, "\n")
+print(paste("R pearson train:", round(pearson_cor_train, 3)))
+cat("RMSE train:", lm_rmse_cv_train, "\n")
+print(paste("MAE train:", round(mae_train, 3)))
+print(paste("MAPE train:", round(mape_train, 2), "%"))
+print(paste("MSE train:", round(mse_train, 3)))
+print(paste("MedAE train:", round(medae_train, 3)))
+min(lm_predictions_train)
+max(lm_predictions_train)
+
+
+setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
+save(lm_cv_model, file="01-RLS-M5_250924.RData")
+
+
+
+
 
 
 ##############################################################
