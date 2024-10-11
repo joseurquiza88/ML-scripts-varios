@@ -114,14 +114,25 @@ library(xgboost)
 library(caret)  # Para el cálculo de métricas
 
 # Leer los datos
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 4/M4_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 4/M4_train.csv")
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_train.csv")
 
 # Preparar los datos
-X <- train_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS", "DUSMASS", "DUSMASS25",
-                     "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS",
-                     "SSSMASS25", "blh_mean", "sp_mean", "d2m_mean",
-                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+# X <- train_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS", "DUSMASS", "DUSMASS25",
+#                      "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS",
+#                      "SSSMASS25", "blh_mean", "sp_mean", "d2m_mean",
+#                      "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+
+# X <- train_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
+#                      "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
+#                      "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
+#                      "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+#Sacamos landCover, DEM, SSSMASS_dia
+
+X <- train_data[ , c("AOD_055", "ndvi","BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
+                     "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", 
+                     "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
+                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "dayWeek")]
 
 y <- train_data$PM25
 
@@ -152,7 +163,8 @@ cv_results  <- xgb.cv(
   early_stopping_rounds = 20,       # Detener si no mejora
   verbose = TRUE                    # Mostrar progreso
 )
-09:48 09:51
+
+18:14
 # Obtener el número óptimo de rondas
 best_nrounds <- cv_results$best_iteration
 
@@ -162,12 +174,23 @@ xgb_cv_model <- xgb.train(
   data = dtrain,
   nrounds = best_nrounds
 )
+
 09:51
-# Preparar datos de prueba
-X_test <- test_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS", "DUSMASS", "DUSMASS25",
-                         "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS",
-                         "SSSMASS25", "blh_mean", "sp_mean", "d2m_mean",
-                         "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+# # Preparar datos de prueba
+# X_test <- test_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS", "DUSMASS", "DUSMASS25",
+#                          "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS",
+#                          "SSSMASS25", "blh_mean", "sp_mean", "d2m_mean",
+#                          "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+# X_test <- test_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
+#                          "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
+#                          "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
+#                          "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+X_test <- test_data[ , c("AOD_055", "ndvi", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
+                         "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", 
+                         "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
+                         "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "dayWeek")]
+
+
 y_test <- test_data$PM25
 
 dtest <- xgb.DMatrix(data = as.matrix(X_test), label = y_test)
@@ -178,6 +201,7 @@ predictions <- predict(xgb_cv_model, dtest)
 # Evaluar el modelo con el conjunto de prueba
 actuals <- y_test
 predicted <- predictions
+
 # Calcular métricas de rendimiento
 mse <- mean((actuals - predicted)^2)
 rmse <- sqrt(mse)
@@ -194,10 +218,12 @@ cat("MAE: ", round(mae,2), "\n")
 cat("MAPE: ", round(mape,2), "%\n")
 cat("MSE: ", round(mse,2), "\n")
 cat("MedAE: ", round(medae,2), "\n")
-
-# Realizar predicciones sobre el conjunto de entrenamiento
+min(predicted)
+max(predicted)
+0.# Realizar predicciones sobre el conjunto de entrenamiento
 train_predictions <- predict(xgb_cv_model, dtrain)
-
+min(train_predictions)
+max(train_predictions)
 # Evaluar el modelo en el conjunto de entrenamiento
 train_actuals <- y
 train_predicted <- train_predictions
@@ -206,20 +232,23 @@ train_rmse <- sqrt(train_mse)
 train_mae <- mean(abs(train_actuals - train_predicted))
 train_r2 <- cor(train_predicted, train_actuals)^2
 train_r <- cor(train_actuals, train_predicted, method = "pearson")
-
+train_mape <- mean(abs((train_actuals - train_predicted) / train_actuals)) * 100
+train_medae <- median(abs(train_actuals - train_predicted))
 # Imprimir métricas para el conjunto de entrenamiento
 cat("Training R2: ", round(train_r2,3), "\n")
 cat("Training R: ", round(train_r,3), "\n")
-cat("Training MSE: ", round(train_mse,3), "\n")
 cat("Training RMSE: ", round(train_rmse,3), "\n")
 cat("Training MAE: ", round(train_mae,3), "\n")
-
-
+cat("Training MAPE: ", round(train_mape,2), "%\n")
+cat("Training MSE: ", round(train_mse,3), "\n")
+cat("Training MedAE: ", round(train_medae,2), "\n")
+min(train_predictions)
+max(train_predictions)
 # gUARDAMOS MODELO
 # Sin cv
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
-save(xgb_cv_model, file="01-XGB_cv_M4-100924.RData")
+save(xgb_cv_model, file="04-XGB_cv_M5-071024.RData")
 
 
 ##################################################################
@@ -239,7 +268,7 @@ dir_modelos <- "D:/Josefina/Proyectos/ProyectoChile/modelos/modelo/"
 #load(paste(dir_modelos,"01-RF_cv_M3-050924.RData",sep=""))
 # load(paste(dir_modelos,"01-RF_cv_M4-060924.RData",sep=""))
 # load(paste(dir_modelos,"02-RF_cv_M1-090924.RData",sep=""))
-load(paste(dir_modelos,"01-XGB_cv_M4-100924.RData",sep=""))
+load(paste(dir_modelos,"01-XGB_cv_M3-100924.RData",sep=""))
 for (i in 1:1){
   
   ################# -----     00 MAIAC     -----
@@ -532,3 +561,7 @@ ggplot(data_pm, aes(x = pred, y = residuos)) +
   scale_x_continuous(limits = c(-5,130),breaks = c(0,20,40,60,80,100,120,140,160)) +  # Marcas en el eje x cada 5 unidades00
   scale_y_continuous(limits = c(-60,100),breaks = c(-60,-40,-20,0,20,40,60,80, 100)) # Marcas en el eje y cada 5 unidades
 
+
+importance_matrix <- xgb.importance(model = xgb_cv_model)
+xgb.plot.importance(importance_matrix = importance_matrix)
+importance_matrix

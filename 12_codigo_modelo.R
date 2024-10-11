@@ -126,8 +126,9 @@ rm(list=ls())
 #01 NDVI
 #https://lpdaac.usgs.gov/products/mod13a3v061/
 # data_ndvi <- "01_NDVI/MOD13A3.A2019001.h12v12.061.2020286171223.hdf"
+setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2015/")
 data_ndvi <- "01_NDVI/MOD13A3.A2024001.h12v12.061.2024038042531.hdf"
-data_ndvi <- "01_NDVI/MOD13A3.A2024032.h11v12.061.2024066072530.hdf"
+data_ndvi <- "01_NDVI/MOD13A3.A2015001.h12v12.061.2021319205906.hdf"
 
 crs_project <- "+proj=longlat +datum=WGS84"
 nombre_ndvi <- substr(data_ndvi,18,24)
