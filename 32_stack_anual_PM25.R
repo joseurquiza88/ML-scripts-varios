@@ -3,15 +3,10 @@
 library(raster)
 
 # Definir el directorio donde están tus archivos raster
-rm(list = ls())
-#dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/Salida/Salida_02-XGB_cv_M4-300924/"
-month <- c("01","02","03","04","05","06","07")#,"08","09","10","11","12")
-year <- "2024"
-for (i in 1:length(month)){
-  print(i)
-  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasDiarias/Salida_03-XGB_cv_M1-041024/",year,"/",month[i],sep="")
-  
-  
+
+year <- c(2015,2016,2017,2018,2019,2020,2021,2022,2023)
+for (i in 1:length(year)){
+  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasDiarias/Salida_03-XGB_cv_M1-041024/",year[i],"/",sep="")
   
   setwd(dir_salida)
   
@@ -20,21 +15,21 @@ for (i in 1:length(month)){
   lista_raster_recorte <- lista_raster
   #lista_raster_recorte
   len <- length(lista_raster_recorte)
-  print(c(month[i],len))
+  print(c(year[i],len))
   # Cargar los rasters en un RasterStack
   raster_stack <- stack(lista_raster_recorte)
   
-  # Calcular el promedio mensual y desviacion estandar
-  promedio_mensual <- calc(raster_stack, fun = mean, na.rm = TRUE)
-  sd_mensual <- calc(raster_stack, fun = sd, na.rm = TRUE)
+  # Calcular el promedio anual
+  promedio_anual <- calc(raster_stack, fun = mean, na.rm = TRUE)
+  sd_anual <- calc(raster_stack, fun = sd, na.rm = TRUE)
   # Calcular el coeficiente de variacion
-  coef_Var <- (sd_mensual / promedio_mensual) * 100
-  #plot(promedio_mensual)
+  coef_Var <- (sd_anual / promedio_anual) * 100
+  #plot(promedio_anual)
   modelo <- substr(lista_raster[1],15,33)
   # Guardar el resultado en un nuevo archivo raster
-  #dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasMensuales/Salida_03-XGB_cv_M1-041024/"
-  dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasMensuales/Salida_03-XGB_cv_M1-041024/Coef_Var/"
-  writeRaster(coef_Var, filename = paste(dir_salida,"coefVar_mensual_",month[i],"-",year,"-",modelo,".tif",sep=""), format = "GTiff", overwrite = TRUE)
+  # dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasAnuales/Salida_03-XGB_cv_M1-041024/"
+  dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasAnuales/Salida_03-XGB_cv_M1-041024/Coef_Var/"
+  writeRaster(coef_Var, filename = paste(dir_salida,"CoefVar_anual_",year[i],"-",modelo,".tif",sep=""), format = "GTiff", overwrite = TRUE)
 }
 ###########################################################################
 ############################################################################
@@ -56,7 +51,7 @@ data_estaciones_2024 <- read.csv("D:/Josefina/Proyectos/ProyectoChile/dataset/es
 
 # Convertir la columna 'date' a formato POSIXct
 data_estaciones_2024$date <- as.POSIXct(as.character(data_estaciones_2024$FECHA..YYMMDD.), format = "%y%m%d")
-data_estaciones_2024 <- data_estaciones_2024[year(data_estaciones_2024$date) >= 2024,]
+data_estaciones_2024 <- data_estaciones_2024[year(data_estaciones_2024$date) >= 2023,]
 data_estaciones_2024 <- data_estaciones_2024[complete.cases(data_estaciones_2024$estacion),]
 # Agregar una columna de año y mes
 data_estaciones_2024 <- data_estaciones_2024 %>%
@@ -70,9 +65,9 @@ promedios_mensuales <- data_estaciones_2024 %>%
   ungroup()                                # Desagrupar
 
 # Convertir el dataframe a formato más limpio (opcional)
-# promedios_mensuales <- promedios_mensuales %>%
-#   mutate(fecha = as.Date(paste(year, month, "01", sep = "-"))) %>% # Crear una fecha a partir del año y mes
-#   select(estacion, fecha, promedio_validados) # Seleccionar columnas de interés
+promedios_mensuales <- promedios_mensuales %>%
+  mutate(fecha = as.Date(paste(year, month, "01", sep = "-"))) %>% # Crear una fecha a partir del año y mes
+  select(estacion, fecha, promedio_validados) # Seleccionar columnas de interés
 
 # Mostrar el dataframe resultante
 print(promedios_mensuales)
@@ -92,15 +87,15 @@ library(lubridate)
 
 # Convertir la columna yearMonth a un formato Date si es un string
 library(lubridate)
-promedios_mensuales <- promedios_mensuales[promedios_mensuales$estacion]
+
 # Supongamos que la columna yearMonth tiene el formato "MM-YYYY"
 promedios_mensuales$yearMonth2 <- as.Date(paste0("01-", promedios_mensuales$yearMonth), format = "%d-%m-%Y")
 promedios_mensuales <- promedios_mensuales[promedios_mensuales$estacion != "TLG",]
 # Ahora la columna yearMonth está en formato de fecha Date
 # Si la columna ya está en formato correcto pero es un factor, puedes usar factor(levels=unique())
 
-# Crear el gráfico yearMonth
-ggplot(promedios_mensuales, aes(x = month, y = promedio_validados, color = estacion, group = estacion)) +
+# Crear el gráfico
+ggplot(promedios_mensuales, aes(x = yearMonth, y = promedio_validados, color = estacion, group = estacion)) +
   geom_line(size = 0.5) +                    # Agregar líneas
   geom_point(size = 1.5) +                   # Agregar puntos en las líneas
   labs(title = "Promedios Mensuales de PM2.5 por Estación", 

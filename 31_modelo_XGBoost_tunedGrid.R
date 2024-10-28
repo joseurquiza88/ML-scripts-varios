@@ -12,6 +12,7 @@ X <- train_data[, c("AOD_055", "ndvi", "LandCover", "BCSMASS_dia", "DUSMASS_dia"
                     "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM", "dayWeek")]
 
+
 y <- train_data$PM25
 
 # Convertir a un formato adecuado para caret
@@ -49,7 +50,7 @@ xgb_tuned <- train(
   maximize = FALSE                     # Minimizar RMSE
 )
 
-12:56
+16:41
 # Ver los mejores hiperparámetros encontrados
 print(xgb_tuned$bestTune)
 
@@ -100,7 +101,7 @@ cat("MSE: ", round(mse,2), "\n")
 cat("MedAE: ", round(medae,2), "\n")
 min(predicted)
 max(predicted)
-0.# Realizar predicciones sobre el conjunto de entrenamiento
+# Realizar predicciones sobre el conjunto de entrenamiento
 train_predictions <- predict(xgb_tuned, dtrain)
 min(train_predictions)
 max(train_predictions)
@@ -128,4 +129,4 @@ max(train_predictions)
 # Sin cv
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
-save(xgb_tuned, file="03-XGB_cv_M1-041024.RData")
+save(xgb_tuned, file="03-XGB_cv_M5-071024.RData")

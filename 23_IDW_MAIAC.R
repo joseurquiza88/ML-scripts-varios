@@ -4,8 +4,8 @@ library(dismo) #kfold
 library(caret)
 library(parallel)
 
-dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2015/tiff/00_MAIAC/00_MAIAC_IDW/"
-dir_maiac <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2015/tiff/00_MAIAC/"
+dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2022/tiff/00_MAIAC/00_MAIAC_IDW/"
+dir_maiac <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2022/tiff/00_MAIAC/"
 setwd(dir_maiac)
 crs_project = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
@@ -14,7 +14,7 @@ fs <- list.files(path = dir_maiac,
                  full.names = FALSE)
 
 # Crear raster template >>> spatial Pixels DF
-ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/tiff/01_NDVI/2024001-NDVI_raster.tif")
+ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/tiff/01_NDVI/2024001-NDVI_raster.tif")
 raster_template <- ndvi_raster
 projection(raster_template) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 idw.grid <- rasterToPoints(raster_template, spatial = TRUE)
@@ -23,7 +23,7 @@ gridded(idw.grid) <- TRUE   #SpatialPixelsDataFrame
 RMSE_IDW <- data.frame()
 kfold = 5 # numero de k-fold cross validation
 
-
+i<-144
 
 for( i in 1:length(fs)){
   print(i)
@@ -87,4 +87,4 @@ for( i in 1:length(fs)){
 #########################
 #Guardamos csv del RMSE Medio de la interpolacion
 getwd()
-write.csv(RMSE_IDW,"MAIAC_RMSE_IDW_Prediccion_2015.csv")
+write.csv(RMSE_IDW,"MAIAC_RMSE_IDW.csv")

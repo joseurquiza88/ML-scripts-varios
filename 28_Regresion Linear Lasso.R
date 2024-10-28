@@ -9,8 +9,8 @@ library(glmnet)
 # Abrimos archivos de train y test
 dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
 setwd(dir)
-train_data <- read.csv(paste(dir,"Modelo 2/M2_train.csv",sep=""))
-test_data <- read.csv(paste(dir,"Modelo 2/M2_test.csv",sep=""))
+train_data <- read.csv(paste(dir,"Modelo 5/M5_train.csv",sep=""))
+test_data <- read.csv(paste(dir,"Modelo 5/M5_test.csv",sep=""))
 
 # Fórmula del modelo y el control de entrenamiento con validación cruzada
 
@@ -100,4 +100,4 @@ max(predicciones_train)
 
 # Guardamos modelo
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
-save(lasso_model_cv, file="01-RLL-M3_250924.RData")
+save(lasso_model_cv, file="01-RLL-M5_250924.RData")

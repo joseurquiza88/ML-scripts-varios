@@ -6,12 +6,17 @@
 library(rpart)
 library(rpart.plot)
 
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 2/M2_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 2/M2_train.csv")
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_train.csv")
 
 # Definir la fórmula del modelo
 formula <- PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS + DUSMASS + DUSMASS25 + 
   OCSMASS + SO2SMASS + SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
+  sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean + tp_mean + DEM + dayWeek
+
+# Definir la fórmula del modelo
+formula <- PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS_dia + DUSMASS_dia + DUSMASS25_dia + 
+  OCSMASS_dia + SO2SMASS_dia + SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
   sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean + tp_mean + DEM + dayWeek
 
 cs_trControl = trainControl(
@@ -108,6 +113,6 @@ min(predicciones_test)
 max(predicciones_test)
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
-save(treeBag_model_cv, file="01-TreeBag_cv_M5-250924.RData")
+save(treeBag_model_cv, file="02-TreeBag_cv_M1-141024.RData")
 
 

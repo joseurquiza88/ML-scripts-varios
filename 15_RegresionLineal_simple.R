@@ -16,8 +16,8 @@
 
 dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
 setwd(dir)
-train_data <- read.csv(paste(dir,"Modelo 5/M5_train.csv",sep=""))
-test_data <- read.csv(paste(dir,"Modelo 5/M5_test.csv",sep=""))
+train_data <- read.csv(paste(dir,"Modelo 1/M1_train.csv",sep=""))
+test_data <- read.csv(paste(dir,"Modelo 1/M1_test.csv",sep=""))
 
 # Entrenar un modelo de regresión lineal simple con PM2.5 como dependiente y AOD_055 como independiente
 #lm_model <- lm(PM25 ~ AOD_055, data = train_data)
@@ -96,6 +96,21 @@ min(lm_predictions_cv)
 max(lm_predictions_cv)
 
 
+modelo <- lm(lm_predictions_cv ~ test_data$PM25, data = df_predict)
+# Calcular R?
+r2 <- summary(modelo)$r.squared
+
+# Calcular RMSE (Root Mean Squared Error)
+#rmse <- sqrt(mean((data_pm$X02_RF.CV.M1.090924 - predict(modelo))^2))
+rmse <- sqrt(mean((lm_predictions_cv - test_data$PM25)^2))
+
+# Calcular Bias
+# bias <- mean(data_pm$X02_RF.CV.M1.090924 - data_pm$valor_sinca)
+bias <- mean(lm_predictions_cv - test_data$PM25)
+
+# pearson <- cor(data_pm$valor_sinca, data_pm$X02_RF.CV.M1.090924, method = "pearson")
+pearson <- cor(test_data$PM25, lm_predictions_cv, method = "pearson")
+lm_r_squared_cv,pearson_cor_cv lm_rmse_cv
 ###############Metricas del train
 
 # Predecir en el conjunto de testeo
@@ -137,9 +152,10 @@ save(lm_cv_model, file="01-RLS-M5_250924.RData")
 ##############################################################
 ############################################################
 # PLOTS
+df_predict <- data.frame(predicciones = lm_predictions_train,observados=train_data$PM25)
 # Plot predictions vs test data
 # Plot predictions vs test data
-ggplot(my_data,aes(predicted, observed)) +
+ggplot(df_predict,aes(predicciones, observados)) +
   geom_point(color = "darkred", alpha = 0.5) + 
   geom_smooth(method=lm)+ ggtitle('Linear Regression ') +
   ggtitle("Linear Regression: Prediction vs Test Data") +
@@ -152,6 +168,44 @@ ggplot(my_data,aes(predicted, observed)) +
         axis.title.x = element_text(size = 14),
         axis.title.y = element_text(size = 14))
 
+
+
+plot <- ggplot(df_predict, aes(x = observados , y = predicciones)) +
+  geom_point(color = "#99d8c9", alpha = 0.8, size = 2) +  # Puntos del scatter plot
+  geom_smooth(method = "lm", color = "red", se = FALSE) +  # Línea de regresión lineal
+  labs(x = "Observado", y = "Predicción", title = "Prediccion PM2.5 = f(AOD)") +
+  theme_classic() +
+  
+  scale_x_continuous(limits = c(0, 160), breaks = seq(0, 160, by = 40)) +  # Ticks en el eje X
+  scale_y_continuous(limits = c(0, 160), breaks = seq(0, 160, by = 40)) +  # Ticks en el eje Y
+  
+  # Añadir texto para R^2
+  geom_text(aes(x = 15, y = 120),
+            label = expression(R^2 == 0.025),  # Coloca aquí el valor real de R^2
+            size = 4, color = "Black") +
+  
+  # Añadir texto para coeficiente de correlación Pearson (r)
+  geom_text(aes(x = 14, y = 110), 
+            label = paste("r = ", round(pearson, 2)), 
+            size = 4, color = "Black") +
+  
+  # Añadir texto para RMSE
+  geom_text(aes(x = 18.1, y = 100), 
+            label = paste("RMSE = ", round(rmse, 2)), 
+            size = 4, color = "Black") +
+  
+  # Añadir texto para Bias
+  geom_text(aes(x = 15.8, y = 90), 
+            label = paste("Bias = ", round(bias, 2)), 
+            size = 4, color = "Black") +
+  
+  # Aumentar el tamaño de los ticks en los ejes X e Y
+  theme(
+    axis.text.x = element_text(size = 12),  # Tamaño de los ticks en el eje X
+    axis.text.y = element_text(size = 12)   # Tamaño de los ticks en el eje Y
+  )
+
+ggsave("D:/Josefina/Proyectos/ProyectoChile/plots/SeriesTemporales/Salida_regresionLineal.png", plot = plot, width = 10, height = 6, dpi = 300)
 
 ################################################################
 ###################################################################

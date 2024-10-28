@@ -126,9 +126,14 @@ rm(list=ls())
 #01 NDVI
 #https://lpdaac.usgs.gov/products/mod13a3v061/
 # data_ndvi <- "01_NDVI/MOD13A3.A2019001.h12v12.061.2020286171223.hdf"
-setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2015/")
-data_ndvi <- "01_NDVI/MOD13A3.A2024001.h12v12.061.2024038042531.hdf"
-data_ndvi <- "01_NDVI/MOD13A3.A2015001.h12v12.061.2021319205906.hdf"
+ndvi_raster_recorte <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/tiff/01_NDVI/2024001-NDVI_raster.tif")
+
+#data_ndvi <- "01_NDVI/MOD13A3.A2024001.h12v12.061.2024038042531.hdf"
+#data_ndvi <- "01_NDVI/MOD13A3.A2024032.h12v12.061.2024066072938.hdf"
+#data_ndvi <- "01_NDVI/MOD13A3.A2024061.h12v12.061.2024099105114.hdf"
+#data_ndvi <- "01_NDVI/MOD13A3.A2024092.h12v12.061.2024133221811.hdf"
+#data_ndvi <- "01_NDVI/MOD13A3.A2024122.h12v12.061.2024162174007.hdf"
+data_ndvi <- "01_NDVI/MOD13A3.A2024153.h12v12.061.2024195023145.hdf"
 
 crs_project <- "+proj=longlat +datum=WGS84"
 nombre_ndvi <- substr(data_ndvi,18,24)
@@ -142,7 +147,8 @@ ndvi <- projectRaster(ndvi,crs = crs_project)
 ndvi <- ndvi* 	0.0001   #factor de escala 
 
 # Recortamos al area de interes
-cropped_ndvi <- crop(ndvi, extent(raster_template))
+#cropped_ndvi <- crop(ndvi, extent(raster_template))
+cropped_ndvi <- crop(ndvi, extent(ndvi_raster_recorte))
 
 # Imagen ndvi
 ndvi_raster <- cropped_ndvi

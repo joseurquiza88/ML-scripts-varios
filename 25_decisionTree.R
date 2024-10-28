@@ -9,6 +9,11 @@ formula <- PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS + DUSMASS + DUSMASS25 +
   OCSMASS + SO2SMASS + SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
   sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean + tp_mean + DEM + dayWeek
 
+# Definir la fórmula del modelo
+formula <- PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS_dia + DUSMASS_dia  + DUSMASS25_dia  + 
+  OCSMASS_dia  + SO2SMASS_dia  + SO4SMASS_dia  + SSSMASS_dia  + SSSMASS25_dia  + blh_mean +
+  sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean + tp_mean + DEM + dayWeek
+
 
 # Crear el modelo con rpart
 decision_tree_model <- rpart(formula, data = train_data, method = "anova")  # Para regresión usa "anova"
@@ -147,7 +152,7 @@ max(predicciones_train)
 
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
-save(decision_tree_model_cv, file="01-DTree_cv_M5-250924.RData")
+save(decision_tree_model_cv, file="02-DTree_cv_M1-141024.RData")
 
 ##############################################################################
 ##############################################################################

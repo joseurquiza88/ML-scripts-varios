@@ -65,6 +65,12 @@ lm_cv_model <- train(PM25 ~ AOD_055 + ndvi +  LandCover + BCSMASS +
                        sp_mean + d2m_mean + t2m_mean + v10_mean + 
                        u10_mean + tp_mean + DEM + dayWeek,
                      data = train_data, method = "lm", trControl = train_control)
+lm_cv_model <- train(PM25 ~ AOD_055 + ndvi +  LandCover + BCSMASS_dia +
+                       DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia +
+                       SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
+                       sp_mean + d2m_mean + t2m_mean + v10_mean + 
+                       u10_mean + tp_mean + DEM + dayWeek,
+                     data = train_data, method = "lm", trControl = train_control)
 
 # Mostrar los resultados del modelo
 print(lm_cv_model)
@@ -134,7 +140,7 @@ getwd()
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
 # save(lm_model, file="01-RL_260824.RData")
-save(lm_cv_model, file="01-RLM_cv_M2-250924.RData")
+save(lm_cv_model, file="02-RLM_cv_M1-141024.RData")
 
 
 print("Modelo Random Forest entrenado y guardado en 'random_forest_model.RData'.")

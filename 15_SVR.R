@@ -56,8 +56,8 @@ cat("R²:", r_squared, "\n")
 test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_test.csv")
 train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_train.csv")
 # Normalizar las variables entre 0 y 1 usando Min-Max
-preProc <- preProcess(train_data[, c("AOD_055", "ndvi",  "BCSMASS", "DUSMASS", "DUSMASS25", 
-                                        "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS", "SSSMASS25", "blh_mean", 
+preProc <- preProcess(train_data[, c("AOD_055", "ndvi",  "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia", 
+                                        "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia", "SSSMASS25_dia", "blh_mean", 
                                         "sp_mean", "d2m_mean", "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM")], 
                       method = "range")#"LandCover",
 # Multiples parametros
@@ -109,21 +109,26 @@ cat("R²:", r_squared, "\n")
 # varios parametros para comprobar
 # Definir el control de entrenamiento con validaciÃ³n cruzada de 10 pliegues
 train_control <- trainControl(method = "cv", number = 10)
-
+train_control <- trainControl(
+  method = "cv",          # Método de validación cruzada
+  number = 10,            # Número de pliegues para la validación cruzada
+  verboseIter = TRUE,     # Mostrar progreso de entrenamiento
+  allowParallel = TRUE    # Permitir procesamiento paralelo
+)
 
 # Definir un grid para ajustar los hiperparámetros
-svr_grid <- expand.grid(sigma = c(0.01, 0.05, 0.1),
-                        C = c(1, 10, 100))
+svr_grid <- expand.grid(sigma = c(0.05, 0.1),
+                        C = c(100))
 
 # Entrenar el modelo SVR con validación cruzada y ajuste de hiperparámetros
-rf_cv_model_params <- train(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS +
-                        DUSMASS + DUSMASS25 + OCSMASS + SO2SMASS +
-                        SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
+rf_cv_model_params <- train(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS_dia +
+                        DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia +
+                        SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
                         sp_mean + d2m_mean + t2m_mean + v10_mean + 
                         u10_mean + tp_mean + DEM, data = train_data, 
                       method = "svmRadial", trControl = train_control, 
                       tuneGrid = svr_grid)
-# tiempo ==> 14:00 14:30
+# tiempo ==> 09:17
 # Mostrar los resultados del modelo
 print(rf_cv_model_params)
 print(rf_cv_model_params$results)
@@ -220,19 +225,25 @@ train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDat
 # Normalizar los datos
 preProc <- preProcess(train_data[, -which(names(train_data) == "PM25")], method = c("center", "scale"))
 train_data_normalized <- predict(preProc, train_data)
-train_data_normalized<- train_data_normalized[, c("AOD_055", "ndvi",  "BCSMASS", "DUSMASS", "DUSMASS25", "OCSMASS",
-                "SO2SMASS", "SO4SMASS", "SSSMASS", "SSSMASS25", "blh_mean","sp_mean",
+train_data_normalized<- train_data_normalized[, c("AOD_055", "ndvi",  "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia", "OCSMASS_dia",
+                "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia", "SSSMASS25_dia", "blh_mean","sp_mean",
                 "d2m_mean", "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM")]
 
 train_data_normalized$PM25 <- train_data$PM25
 
 test_data_normalized <- predict(preProc, test_data)
-test_data_normalized<- test_data_normalized[, c("AOD_055", "ndvi",  "BCSMASS", "DUSMASS", "DUSMASS25", "OCSMASS",
-                                                  "SO2SMASS", "SO4SMASS", "SSSMASS", "SSSMASS25", "blh_mean","sp_mean",
+test_data_normalized<- test_data_normalized[, c("AOD_055", "ndvi",  "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia", "OCSMASS_dia",
+                                                  "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia", "SSSMASS25_dia", "blh_mean","sp_mean",
                                                   "d2m_mean", "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM")]
 test_data_normalized$PM25 <- test_data$PM25
 # Definir el control de entrenamiento con validaciÃ³n cruzada de 10 pliegues
-train_control <- trainControl(method = "cv", number = 10)
+train_control <- trainControl(
+  method = "cv",          # Método de validación cruzada
+  number = 10,            # Número de pliegues para la validación cruzada
+  verboseIter = TRUE,     # Mostrar progreso de entrenamiento
+  allowParallel = TRUE    # Permitir procesamiento paralelo
+)
+
 
 
 # Definir un grid para ajustar los hiperparámetros
@@ -240,14 +251,14 @@ svr_grid <- expand.grid(sigma = 0.1,
                         C = 100)
 
 # Entrenar el modelo SVR con validación cruzada y ajuste de hiperparámetros
-rf_cv_model_params <- train(PM25 ~ AOD_055 + ndvi +  BCSMASS + #LandCover
-                              DUSMASS + DUSMASS25 + OCSMASS + SO2SMASS +
-                              SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
+rf_cv_model_params <- train(PM25 ~ AOD_055 + ndvi +  BCSMASS_dia + #LandCover
+                              DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia +
+                              SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
                               sp_mean + d2m_mean + t2m_mean + v10_mean + 
                               u10_mean + tp_mean + DEM, data = train_data_normalized, 
-                            method = "svmRadial", trControl = train_control, 
+                            method = "svmRadial", #trControl = train_control, 
                             tuneGrid = svr_grid)
-12:43
+09:25
 # Realizar predicciones en el conjunto de prueba
 predicciones <- predict(rf_cv_model_params, newdata = test_data_normalized)
 rmse_cv <- sqrt(mean((predicciones - test_data_normalized$PM25)^2))

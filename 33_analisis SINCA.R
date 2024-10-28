@@ -143,3 +143,29 @@ ggplot(data_estaciones) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
+
+################## Faltante / existencia de datos
+
+serie_fechas <- data.frame(date = seq(as.Date("2015-01-01"), as.Date("2024-05-31"), by = "day"))
+
+
+data_estaciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/dataset/estaciones/diarios/PM25_tot.csv",colClasses = c("FECHA..YYMMDD."  = "character"))
+
+data_estaciones$date <- as.POSIXct(as.character(data_estaciones$FECHA..YYMMDD.), format = "%y%m%d")
+data_estaciones <- data_estaciones[year(data_estaciones$date) >= 2015, ]
+data_estaciones <- data_estaciones[!is.na(data_estaciones$estacion),]
+#data_estaciones <- data_estaciones[data_estaciones$Registros.completos != 0 ,]
+
+
+estacion <- "TLG"
+unique(data_estaciones$estacion)
+# [1] "BSQ"    NA       "CDE"    "CER-I"  "CER-II" "CNA"    "FLD"    "IND"   
+# [9] "OHG"    "PDH"    "PTA"    "QUI"    "QUI-I"  "TLG" 
+data_estaciones_subt <- data_estaciones[data_estaciones$estacion == estacion,]
+#data_estaciones_subt <- data_estaciones_subt[complete.cases(data_estaciones_subt$Registros.completos),]
+data_estaciones_subt <- data_estaciones_subt[complete.cases(data_estaciones_subt$Registros.validados),]
+
+length(data_estaciones_subt$Registros.completos) / length(serie_fechas$date)
+#
+
+

@@ -105,4 +105,59 @@ setwd(dir)
 write.csv(train_data, paste(dir,"Modelo 4/M4_train.csv",sep=""))
 write.csv(test_data, paste(dir,"Modelo 4/M4_test.csv",sep=""))
 
+###### ------  Modelo 5 - Aleatorio eliminando outliers segun IQX  ------  ##### 
+# Dividir el dataframe en 70% entrenamiento y 30% testeo
+## Segun Bagheri 2022
+# Calcular el primer cuartil (Q1)
+Q1 <- quantile(data_completo$PM25, 0.25)
 
+# Calcular el tercer cuartil (Q3)
+Q3 <- quantile(data_completo$PM25, 0.75)
+
+# Calcular el rango intercuartílico (IQR)
+IQR_value <- IQR(data_completo$PM25)
+
+# Filtrar los datos que cumplen la condición Q1 - IQR < AOD550 < Q3 + IQR
+data_completo_filtered <- data_completo[data_completo$PM25 > (Q1 - IQR_value) & data_completo$PM25 < (Q3 + IQR_value), ]
+
+# Imprimir los resultados
+cat("Primer cuartil (Q1):", Q1, "\n")
+cat("Tercer cuartil (Q3):", Q3, "\n")
+hist(data_completo$PM25)
+hist(data_completo_filtered$PM25)
+
+
+train_index <- createDataPartition(data_completo_filtered$PM25, p = 0.7, list = FALSE)
+train_data <- data_completo_filtered[train_index, ]
+test_data <- data_completo_filtered[-train_index, ]
+dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
+setwd(dir)
+write.csv(train_data, paste(dir,"Modelo 5/M5_train.csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo 5/M5_test.csv",sep=""))
+
+
+###### ------  Modelo 6 - Aleatorio eliminando outliers segun sd  ------  ##### 
+# Dividir el dataframe en 70% entrenamiento y 30% testeo
+
+# Calcular la media (µ)
+mean_value <- mean(data_completo$PM25)
+
+# Calcular la desviación estándar (??)
+sd_value <- sd(data_completo$PM25)
+
+
+# Calcular la puntuación Z
+data_completo$z_score <- (data_completo$PM25 - mean_value) / sd_value
+
+# Filtrar los datos que tengan un Z-score entre -3 y 3 (datos dentro de 3 desviaciones estándar)
+data_completo_filtered <- data_completo[abs(data_completo$z_score) < 3, ]
+
+
+
+train_index <- createDataPartition(data_completo_filtered$PM25, p = 0.7, list = FALSE)
+train_data <- data_completo_filtered[train_index, ]
+test_data <- data_completo_filtered[-train_index, ]
+dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
+setwd(dir)
+write.csv(train_data, paste(dir,"Modelo 5/M5_train.csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo 5/M5_test.csv",sep=""))

@@ -104,7 +104,7 @@ cat("Training MAE: ", round(train_mae,3), "\n")
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
 save(xgb_model, file="01-XGB_M4-100924.RData")
-load("01-XGB_M2-100924.RData")
+load("03-XGB_cv_M2-071024.RData")
 #################################################################
 ####################################################################
 #################################################################
@@ -114,8 +114,8 @@ library(xgboost)
 library(caret)  # Para el cálculo de métricas
 
 # Leer los datos
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_train.csv")
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 4/M4_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 4/M4_train.csv")
 
 # Preparar los datos
 # X <- train_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS", "DUSMASS", "DUSMASS25",
@@ -127,12 +127,14 @@ train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDat
 #                      "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
 #                      "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
 #                      "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
-#Sacamos landCover, DEM, SSSMASS_dia
+#A. Sacamos landCover, DEM, SSSMASS_dia
+#B. Sacamos landCover, DEM
+#C. Sacamos landCover, SSSMASS_dia
+#D. Sacamos landCover, SSSMASS25_dia
+#E. Sacamos landCover, U10
 
-X <- train_data[ , c("AOD_055", "ndvi","BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
-                     "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", 
-                     "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
-                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "dayWeek")]
+X <- train_data[ , c("AOD_055", "ndvi","LandCover", "blh_mean", "sp_mean", "d2m_mean",
+                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
 
 y <- train_data$PM25
 
@@ -164,7 +166,7 @@ cv_results  <- xgb.cv(
   verbose = TRUE                    # Mostrar progreso
 )
 
-18:14
+06:11
 # Obtener el número óptimo de rondas
 best_nrounds <- cv_results$best_iteration
 
@@ -185,11 +187,10 @@ xgb_cv_model <- xgb.train(
 #                          "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
 #                          "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
 #                          "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
-X_test <- test_data[ , c("AOD_055", "ndvi", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
-                         "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", 
-                         "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
-                         "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "dayWeek")]
-
+# 
+X_test <- test_data[ , c("AOD_055", "ndvi","LandCover", "blh_mean", "sp_mean", "d2m_mean",
+                         "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+# 
 
 y_test <- test_data$PM25
 
@@ -248,7 +249,7 @@ max(train_predictions)
 # Sin cv
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
-save(xgb_cv_model, file="04-XGB_cv_M5-071024.RData")
+save(xgb_cv_model, file="06-XGB_cv_M3-181024.RData")
 
 
 ##################################################################
