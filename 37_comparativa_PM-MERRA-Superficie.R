@@ -3,10 +3,10 @@
 
 data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/dataset/proceed/merge_tot/09_TOT_merge_tot.csv")
 data <- data[complete.cases(data$PM25),]
-data$PM25_MERRA <- data$DUSMASS_dia + data$OCSMASS_dia + data$BCSMASS_dia + data$SSSMASS_dia + 
+data$PM25_MERRA <- data$DUSMASS_dia + data$OCSMASS_dia + data$BCSMASS_dia + data$SSSMASS25_dia + 
   data$SO4SMASS_dia * (132.14/96.06)
 
-data$PM25_MERRA_hora <- data$DUSMASS + data$OCSMASS + data$BCSMASS + data$SSSMASS + 
+data$PM25_MERRA_hora <- data$DUSMASS + data$OCSMASS + data$BCSMASS + data$SSSMASS25 + 
   data$SO4SMASS * (132.14/96.06)
 #PM2.5 = DUSMASS25 + OCSMASS+ BCSMASS + SSSMASS25 + SO4SMASS* (132.14/96.06)
 
@@ -40,10 +40,10 @@ r2 <- summary(modelo)$r.squared
 correlacion <- cor(data$PM25, data$PM25_MERRA_hora)
 
 # Predicciones del modelo
-#predicciones <- predict(modelo, newdata = data$PM25_MERRA_hora)
+#predicciones <- predict(modelo, newdata = data$PM25_MERRA)
 
 # Calcular el RMSE
-#rmse <- sqrt(mean((data$PM25_MERRA - predicciones)^2))
+rmse <- sqrt(mean((data$PM25_MERRA - predicciones)^2))
 
 # Calcular el sesgo (bias)
 bias <- mean(data$PM25_MERRA- predicciones)
@@ -59,3 +59,31 @@ cat("Bias:", bias, "\n")
 
 
 
+# Calculo de métricas de desempeño
+R2 <- summary(modelo)$r.squared
+RMSE <- sqrt(mean(residuals(modelo)^2))
+Bias <- mean(data$PM25_MERRA - data$PM25)
+n <- nrow(data)
+
+# Crear el gráfico con ggplot2
+plot <- ggplot(data, aes(x = PM25, y = PM25_MERRA)) +
+  geom_point(color = "#3690c0", size = 1.5, alpha = 0.6) +  # Puntos de datos
+  geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE, linetype = "dashed") +  # Línea de regresión
+  #scale_y_continuous(limits = c(0, 200),breaks = seq(0, 200, by = 50)) +  # Ticks cada 10 en el eje Y
+  #scale_x_continuous(limits = c(0, 200),breaks = seq(0, 200, by = 50)) +  # Ticks cada 10 en el eje Y
+  labs(
+    x = "SINCA",
+    y = "Prediccion",
+    title = "Salida_03-XGB_cv_M1-041024 - Periodo 2015-2024 - Total",
+    subtitle = paste(
+      "R2 =", round(R2, 3),
+      "| RMSE =", round(RMSE, 2),
+      "| Bias =", round(Bias, 2),
+      "| n =", n
+    )
+  ) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+plot
+# Mostrar el gráfico
+print(plot)

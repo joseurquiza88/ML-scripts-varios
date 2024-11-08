@@ -5,15 +5,14 @@ library(raster)
 # Definir el directorio donde están tus archivos raster
 rm(list = ls())
 #dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/Salida/Salida_02-XGB_cv_M4-300924/"
-month <- c("01","02","03","04","05","06","07")#,"08","09","10","11","12")
-year <- "2024"
+month <- c("01","02","03","04","05","06","07","08","09","10","11","12")
+year <- "2015"
 for (i in 1:length(month)){
   print(i)
-  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasDiarias/Salida_03-XGB_cv_M1-041024/",year,"/",month[i],sep="")
+  #dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasDiarias/Salida_03-XGB_cv_M1-041024/",year,"/",month[i],sep="")
+  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/Talca/modelos/dataset_ejemplo/Prediccion_2015/Salida/diario/Salida_02-RF_cv_M1-250924/",year,"/",month[i],sep="")
   
-  
-  
-  setwd(dir_salida)
+    setwd(dir_salida)
   
   # Lista de archivos raster (ajusta la extensión según sea necesario)
   lista_raster <- list.files(pattern = "*.tif") # Cambia la extensión si es necesario
@@ -33,8 +32,10 @@ for (i in 1:length(month)){
   modelo <- substr(lista_raster[1],15,33)
   # Guardar el resultado en un nuevo archivo raster
   #dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasMensuales/Salida_03-XGB_cv_M1-041024/"
-  dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasMensuales/Salida_03-XGB_cv_M1-041024/Coef_Var/"
-  writeRaster(coef_Var, filename = paste(dir_salida,"coefVar_mensual_",month[i],"-",year,"-",modelo,".tif",sep=""), format = "GTiff", overwrite = TRUE)
+  #dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasMensuales/Salida_03-XGB_cv_M1-041024/Coef_Var/"
+  dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/Talca/modelos/dataset_ejemplo/Prediccion_2015/Salida/SalidasMensuales/Salida_02-RF_cv_M1-250924/"
+  
+  writeRaster(promedio_mensual, filename = paste(dir_salida,"mensual_",month[i],"-",year,"-",modelo,".tif",sep=""), format = "GTiff", overwrite = TRUE)
 }
 ###########################################################################
 ############################################################################
@@ -135,3 +136,36 @@ plot <- ggplot(promedios_mensuales, aes(x = yearMonth2, y = promedio_validados, 
 
 # Guardar el gráfico en formato PNG
 ggsave("D:/Josefina/Proyectos/ProyectoChile/plots/SeriesTemporales/SerieTemp_SINCA_2023-2024.png", plot = plot, width = 10, height = 6, dpi = 300)
+
+
+
+#########################################3
+setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasMensuales/Salida_03-XGB_cv_M1-041024/Coef_Var/")
+lista_raster <- list.files(pattern = "*.tif") 
+
+df_rbind <- data.frame()
+for (x in 1:length(lista_raster)){
+  print(x)
+  data <- raster(lista_raster[x])
+  name <- substr(lista_raster[x],17,23)
+  mean <- cellStats(data, stat = 'mean', na.rm = TRUE)
+  df <- data.frame(name=name, mean = mean)
+  df_rbind <- rbind(df_rbind,df)
+}
+df_rbind$date <- as.Date(paste0("01-", df_rbind$name), format = "%d-%m-%Y")
+ggplot(df_rbind) +
+  geom_col(mapping = aes(x = date, y = mean, fill = date))+ theme_classic()
+
+
+library(lubridate)
+library(ggplot2)
+
+# Asegúrate de que la columna `date` esté en formato Date
+df_rbind$date <- as.Date(df_rbind$date)
+
+# Crear el gráfico con colores según el año
+ggplot(df_rbind) +
+  geom_col(mapping = aes(x = date, y = mean, fill = factor(year(date)))) +
+  theme_classic() +
+  scale_y_continuous(limits = c(0, 100),breaks = seq(0, 100, by = 20)) +  # Ticks cada 10 en el eje Y
+  labs(fill = "Año",y= "Coef Var (%)", title = "03-XGB_cv_M1-041024")  # Agregar etiqueta para la leyenda

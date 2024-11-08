@@ -9,12 +9,13 @@ datos <- read.csv(data, colClasses = c("character", "numeric", "numeric", "numer
 datos$date  <- strptime(datos$FECHA..YYMMDD., format = "%y%m%d")
 df <- data.frame(fecha = datos$date,
                                valor = datos$Registros.validados,
-                               estacion = datos$Site,
+                               valor_completos = datos$Registros.completos,
+                               estacion = datos$estacion,
                                year = year(datos$date),
                                variable = "PM25")             
   
-
-name <- paste("D:/Josefina/Proyectos/ProyectoChile/dataset/proceed/estaciones_media_dia_V02/",num_estacion,"-",estacion,"_PM25.csv",sep="")
+View(df)
+name <- paste("D:/Josefina/Proyectos/ProyectoChile/dataset/proceed/PM25/",num_estacion,"-",estacion,"_PM25.csv",sep="")
 write.csv(df,name)
 
 ############################################################################################################

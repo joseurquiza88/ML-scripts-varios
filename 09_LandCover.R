@@ -195,8 +195,11 @@ write.csv(hdf_df_250_2,"D:/Josefina/Proyectos/ProyectoChile/proceed/LandCover/07
 ####################################################################
 #####################################################################
 #####################################################################
-
-file <- id[1]
+# Talca
+dire <- "D:/Josefina/Proyectos/ProyectoChile/talca/dataset/LandCover"
+id <- dir(dire, pattern = ".hdf")
+setwd(dire)
+file <- id[3]
 sds <- get_subdatasets(file)
 gdal_translate(sds[1], dst_dataset = paste0('LC_Type1', basename(file), '.tiff'))#, b = nUHnd) # mask is UHnd number
 LC_Type1<- raster(paste0('LC_Type1', basename(file), '.tiff'))
@@ -232,12 +235,26 @@ raster_template <- raster(nrows = 239, ncols = 158,
                           crs = crs_project ,
                           ext = extent(shape))  # toma las extensiones
 
+#TALCA
+ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/NDVI/NDVI_raster/NDVI_raster.tif")
+
+raster_template<- ndvi_raster
+# # Recortar
+data_recorte <- crop(f_LC_Type1_wgs84, raster_template)  #recorto imagen para Valencia
 data_resampling <- raster::resample(data_recorte, raster_template)
 
 plot(data_resampling)
 print(data_resampling)
-# Guardar
-writeRaster(data_resampling , 
-            "D:/Josefina/Proyectos/ProyectoChile/dataset/LandCover/data/tiff/LandCover_resampled.tif", 
+# # Guardar
+# writeRaster(data_resampling , 
+#             "D:/Josefina/Proyectos/ProyectoChile/dataset/LandCover/data/tiff/LandCover_resampled.tif", 
+#             format = "GTiff",
+#             overwrite = TRUE)
+
+
+writeRaster(data_resampling ,
+            "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/tiff/02_LandCover/_LandCover_resampled.tif",
             format = "GTiff",
             overwrite = TRUE)
+
+

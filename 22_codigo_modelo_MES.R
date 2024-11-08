@@ -1,6 +1,7 @@
 ##rm(list=ls())
 #NDVI
-ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/tiff/01_NDVI/2024001-NDVI_raster.tif")
+# ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/tiff/01_NDVI/2024001-NDVI_raster.tif")
+ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI/NDVI_raster/NDVI_raster.tif")
 
 ###########################################################################
 # -----------------------   01 MAIAC  ------------------------------
@@ -104,7 +105,9 @@ rm(list=ls())
 #https://lpdaac.usgs.gov/products/mod13a3v061/
 # data_ndvi <- "01_NDVI/MOD13A3.A2019001.h12v12.061.2020286171223.hdf"
 ndvi_raster_recorte <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/tiff/01_NDVI/2024001-NDVI_raster.tif")
-# 
+ndvi_raster_recorte <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI/NDVI_raster/NDVI_raster.tif")
+ndvi_raster_recorte <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/tiff/05_ERA5/2015-01-01-BLH_raster.tif")
+
 # #data_ndvi <- "01_NDVI/MOD13A3.A2024001.h12v12.061.2024038042531.hdf"
 # #data_ndvi <- "01_NDVI/MOD13A3.A2024032.h12v12.061.2024066072938.hdf"
 # #data_ndvi <- "01_NDVI/MOD13A3.A2024061.h12v12.061.2024099105114.hdf"
@@ -114,8 +117,10 @@ ndvi_raster_recorte <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/datas
 
 
 
-dir_ndvi <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/01_NDVI"
-dir_ndvi_guardado <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/"
+# dir_ndvi <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/01_NDVI"
+dir_ndvi <- "D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI"
+# dir_ndvi_guardado <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/"
+dir_ndvi_guardado <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/"
 setwd(dir_ndvi)
 id <- list.files(path = dir_ndvi,
                  pattern = "*.hdf",
@@ -150,26 +155,32 @@ for (i in 1:length(id)){
   
   ## Guardamos raster 
   # writeRaster(ndvi_raster, filename = "tiff/NDVI_raster", format = "GTiff", overwrite = TRUE)
-  writeRaster(ndvi_raster, filename = paste(dir_ndvi_guardado,"/tiff/01_NDVI/",nombre_ndvi,"-NDVI_raster",sep = ""), format = "GTiff", overwrite = TRUE)
+  writeRaster(ndvi_raster, filename = paste(dir_ndvi_guardado,"tiff/01_NDVI/",nombre_ndvi,"-NDVI_raster",sep = ""), format = "GTiff", overwrite = TRUE)
 
 }
 
 ###########################################################################
 # -----------------------   05 ERA  ------------------------------
 ###########################################################################
+ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI/NDVI_raster/NDVI_raster.tif")
 
 #05 ERA
 #####01
 # nameVar <- c("t2m", "d2m", "sp", "u10", "v10", "blh", "tp")
+#Santiago
+# dir_era <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/05_ERA5/"
+# dir_era_guardado <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/"
 
-dir_era <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/05_ERA5/"
-dir_era_guardado <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/"
+#Talca
+dir_era <- "D:/Josefina/Proyectos/ProyectoChile/talca/dataset/meteoSatelital/2015"
+dir_era_guardado <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/"
+
 setwd(dir_era)
 id <- list.files(path = dir_era,
                  pattern = "*.nc",
                  full.names = FALSE)
 crs_project <- "+proj=longlat +datum=WGS84"
-for (i in 1:length(id)){
+for (i in 62:length(id)){
   print(i)
   era5 <- id[i]
   nombre_era <- substr(era5,0,10)
@@ -250,9 +261,15 @@ for (i in 1:length(id)){
 # data_merra_BCSMASS <- raster("04_MERRA-2/MERRA2_400.tavg1_2d_aer_Nx.20190101.SUB.nc",varname="BCSMASS")
 #merra <- "04_MERRA-2/MERRA2_400.tavg1_2d_aer_Nx.20240101.SUB.nc"
 
-dir_merra <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2022/04_MERRA-2_Dia/"
-dir_merra_guardado <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2022/"
+# dir_merra <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2022/04_MERRA-2_Dia/"
+# dir_merra_guardado <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2022/"
+
+dir_merra <- "D:/Josefina/Proyectos/ProyectoChile/talca/dataset/04_MERRA-2_Dia/2015/01-06-2015"
+dir_merra_guardado <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/"
+
 setwd(dir_merra)
+
+
 id <- list.files(path = dir_merra,
                  pattern = "*.nc",
                  full.names = FALSE)
@@ -271,13 +288,13 @@ for(i in 1:length(id)){
   resampled_merra_BCSMASS <- raster::resample(data_merra_BCSMASS, ndvi_raster,method = "bilinear")
   cropped_merra_BCSMASS <- crop(resampled_merra_BCSMASS, extent(ndvi_raster))
   
-  # 02
-  data_merra_DMSSMASS <- raster(merra,varname="DMSSMASS")
-  SINU <- as.character(data_merra_DMSSMASS@crs)
-  data_merra_DMSSMASS <- projectRaster(data_merra_DMSSMASS,crs = crs_project)
+  # 02 en el modelo final, al final no la consideramos nos olvidamos :(
+  #data_merra_DMSSMASS <- raster(merra,varname="DMSSMASS")
+  #SINU <- as.character(data_merra_DMSSMASS@crs)
+  #data_merra_DMSSMASS <- projectRaster(data_merra_DMSSMASS,crs = crs_project)
   # Resamplear el raster original a la nueva resoluci?n de 1km
-  resampled_merra_DMSSMASS <- raster::resample(data_merra_DMSSMASS, ndvi_raster,method = "bilinear")
-  cropped_merra_DMSSMASS <- crop(resampled_merra_DMSSMASS, extent(ndvi_raster))
+  #resampled_merra_DMSSMASS <- raster::resample(data_merra_DMSSMASS, ndvi_raster,method = "bilinear")
+  #cropped_merra_DMSSMASS <- crop(resampled_merra_DMSSMASS, extent(ndvi_raster))
   
   # 03
   data_merra_DUSMASS <- raster(merra,varname="DUSMASS")
@@ -353,7 +370,7 @@ for(i in 1:length(id)){
   # writeRaster(cropped_merra_SSSMASS25, paste(dir_merra_guardado,"/tiff/04_MERRA-2/",nombre_merra,"-SSSMASS25_raster",sep=""), format="GTiff", overwrite=TRUE)
   # Guardar el raster procesado
   writeRaster(cropped_merra_BCSMASS, paste(dir_merra_guardado,"/tiff/04_MERRA-2_Dia/",nombre_merra,"-BCSMASS_raster",sep=""), format="GTiff", overwrite=TRUE)
-  writeRaster(cropped_merra_DMSSMASS,paste(dir_merra_guardado,"/tiff/04_MERRA-2_Dia/",nombre_merra,"-DMSSMASS_raster",sep=""), format="GTiff", overwrite=TRUE)
+  #writeRaster(cropped_merra_DMSSMASS,paste(dir_merra_guardado,"/tiff/04_MERRA-2_Dia/",nombre_merra,"-DMSSMASS_raster",sep=""), format="GTiff", overwrite=TRUE)
   writeRaster(cropped_merra_DUSMASS, paste(dir_merra_guardado,"/tiff/04_MERRA-2_Dia/",nombre_merra,"-DUSMASS_raster",sep=""), format="GTiff", overwrite=TRUE)
   writeRaster(cropped_merra_DUSMASS25, paste(dir_merra_guardado,"/tiff/04_MERRA-2_Dia/",nombre_merra,"-DUSMASS25_raster",sep=""), format="GTiff", overwrite=TRUE)
   writeRaster(cropped_merra_OCSMASS, paste(dir_merra_guardado,"/tiff/04_MERRA-2_Dia/",nombre_merra,"-OCSMASS_raster",sep=""), format="GTiff", overwrite=TRUE)
@@ -363,6 +380,7 @@ for(i in 1:length(id)){
   writeRaster(cropped_merra_SSSMASS25, paste(dir_merra_guardado,"/tiff/04_MERRA-2_Dia/",nombre_merra,"-SSSMASS25_raster",sep=""), format="GTiff", overwrite=TRUE)
   
   }
+
 
 ###########################################################################
 # -----------------------   06 dayweek  ------------------------------
@@ -744,7 +762,7 @@ Interestyear = 2024
 # data_estaciones_2024$date <- as.POSIXct(as.character(data_estaciones_2024$date), format = "%y%m%d")
 data_estaciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/dataset/estaciones/diarios/PM25_tot.csv",colClasses = c("FECHA..YYMMDD."  = "character"))
 data_estaciones$date <- as.POSIXct(as.character(data_estaciones$FECHA..YYMMDD.), format = "%y%m%d")
-data_estaciones <- data_estaciones[year(data_estaciones$date) == Interestyear,]
+#data_estaciones <- data_estaciones[year(data_estaciones$date) == Interestyear,]
 data_estaciones <- data_estaciones[complete.cases(data_estaciones$Registros.completos),]
 
 length(unique(data_estaciones$estacion))
@@ -759,10 +777,10 @@ data_estaciones <- data_estaciones[data_estaciones$estacion == "CER-I" |
 # prediccion_2024$date <- as.POSIXct(as.character(prediccion_2024$date), format = "%d/%m/%Y")
 #prediccion_modelo <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2015/Salida/Salida_03-XGB_cv_M1-041024/salida_03-XGB_cv_M1-041024_prediccion_2015.csv")
 #prediccion_modelo <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2015/Salida/Salida_02-XGB_cv_M1-300924/Salida_02-XGB_cv_M1-300924.csv")
-prediccion_modelo <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/Salida_03-XGB_cv_M1-041024/Salida_03-XGB_cv_M1-041024.csv")
+prediccion_modelo <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasDiarias/Salida_03-XGB_cv_M1-041024/Salida_03-XGB_cv_M1-041024.csv")
 
 prediccion_modelo <- prediccion_modelo[complete.cases(prediccion_modelo$valor_raster),]
-prediccion_modelo$date <- as.POSIXct(as.character(prediccion_modelo$date), format = "%d/%m/%Y")
+prediccion_modelo$date <- as.POSIXct(as.character(prediccion_modelo$date), format = "%Y-%m-%d")
 
 
 # Ejemplo: Hacer un merge entre puntos y valores_raster basado en dos columnas
@@ -775,6 +793,7 @@ data_merge <- prediccion_modelo %>%
 # data_pm <- data_merge[complete.cases(data_merge$Registros.validados),]
 data_pm <- data_merge[complete.cases(data_merge$Registros.completos),]
 data_pm <- data_pm[data_pm$valor_raster>0,]
+data_pm <- data_pm[complete.cases(data_pm$estacion),]
 # Crear scatter plot con l?nea de regresi?n
 #modelo <- lm(X02_RF.CV.M1.090924 ~ valor_sinca, data = data_pm)
 # modelo <- lm(valor_raster ~ Registros.validados, data = data_pm)
@@ -829,7 +848,7 @@ plot <- ggplot(data_pm, aes(x = Registros.completos , y = valor_raster)) +
     axis.text.y = element_text(size = 12)   # Tamaño de los ticks en el eje Y
   )
 
-
+plot
 ggsave("D:/Josefina/Proyectos/ProyectoChile/plots/SeriesTemporales/Salida_03-XGB_cv_M1-041024_regresion_Tot2024.png", plot = plot, width = 10, height = 6, dpi = 300)
 
 data_pm$Error_RF.CV.M1 <- data_pm$valor_sinca - data_pm$RF.CV.M1

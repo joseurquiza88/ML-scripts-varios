@@ -24,6 +24,9 @@ train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDat
 test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_test.csv")
 train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_train.csv")
 
+# #Data modelo 6
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 6/M6_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 6/M6_train.csv")
 
 
 # Entrenar el modelo de Random Forest
@@ -69,12 +72,21 @@ train_control <- trainControl(
 #                        u10_mean + tp_mean + DEM + dayWeek, data = train_data, 
 #                      method = "rf", trControl = train_control,importance = TRUE)
 # 
-rf_cv_model <- train(log(PM25) ~ AOD_055 + ndvi + LandCover + BCSMASS_dia +
+rf_cv_model <- train(log(PM25) ~ log(AOD_055) + log(ndvi) + log(LandCover) + log(BCSMASS_dia) +
+                                log(DUSMASS_dia) + log(DUSMASS25_dia) + log(OCSMASS_dia) + log(SO2SMASS_dia)+
+                                log(SO4SMASS_dia) + log(SSSMASS_dia) + log(SSSMASS25_dia) + log(blh_mean) +
+                                log(sp_mean) + log(d2m_mean) + log(t2m_mean) + log(v10_mean) + log(u10_mean) +
+                                log(tp_mean) + log(DEM) + log(dayWeek), data = train_data, method = "rf", 
+                     trControl = train_control,importance = TRUE)
+train_data <- train_data[complete.cases(train_data),]
+test_data <- test_data[complete.cases(test_data),]
+rf_cv_model <- train(PM25_Completo ~ AOD_055 + ndvi + LandCover + BCSMASS_dia +
                        DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia+
-                       SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
-                       sp_mean + d2m_mean + t2m_mean + v10_mean +
-                       u10_mean + tp_mean + DEM + dayWeek, data = train_data,
-                     method = "rf", trControl = train_control,importance = TRUE)
+                      SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
+                       sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean +
+                       tp_mean + DEM + dayWeek, data = train_data, method = "rf", 
+                     trControl = train_control,importance = TRUE)
+
 # rf_cv_model <- train(PM25 ~ AOD_055 + ndvi  + BCSMASS_dia +
 #                        DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia+
 #                        SO4SMASS_dia + SSSMASS_dia + blh_mean +
@@ -136,11 +148,12 @@ error_train <- postResample(predictions_train, train_data$PM25)
 error_test <- postResample(predictions, test_data$PM25)
 
 # Calcular el coeficiente de determinación (R²)
-lm_r_squared_hora <- cor(predicciones_hora, test_data$PM25)^2
-lm_r_squared_train <- cor(predictions_train, train_data$PM25)^2
+lm_r_squared_hora <- cor(predicciones_hora, test_data$PM25_Completo)^2
+lm_r_squared_train <- cor(predictions_train, train_data$PM25_Completo)^2
 
 # Calcular el coeficiente de Pearson
-pearson_cor_hora <- cor(test_data$PM25, predicciones_hora, method = "pearson")
+pearson_cor_hora <- cor(test_data$PM25_Completo, predicciones_hora, method = "pearson")
+
 pearson_train <- cor(train_data$PM25, predictions_train, method = "pearson")
 
 # Calcular el error cuadrático medio (RMSE)
@@ -188,7 +201,7 @@ View(b)
 getwd()
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
-save(rf_cv_model, file="07-RF_cv_M3-241024-E.RData")
+save(rf_cv_model, file="02-RF_cv_M6-281024.RData")
 
 
 print("Modelo Random Forest entrenado y guardado en 'random_forest_model.RData'.")
@@ -198,7 +211,7 @@ print("Modelo Random Forest entrenado y guardado en 'random_forest_model.RData'.
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
 # Paso 1: Cargar el modelo
-load("04-RF_cv_M1-091024-C.RData")
+load("02-RF_cv_M6-281024.RData")
 load("01-RF_cv_M1-050924.RData")
 load("01-RF_cv_M2-050924.RData")
 load("01-RF_cv_M3-050924.RData")

@@ -5,7 +5,11 @@ rm(list=ls())
 # Generar datos aleatorios para las variables predictoras
 set.seed(42)
 data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/dataset/proceed/merge_tot/09_TOT_merge_tot.csv")
-data_completo <- data[complete.cases(data),]
+# data_completo <- data[complete.cases(data),]
+data_completo <- data[complete.cases(data$PM25_Completo),]
+data_completo <- data_completo %>%
+  dplyr::select(-PM25)
+#data_completo2 <- data[complete.cases(data),]
 data_completo$date <- strptime(data_completo$date, format = "%Y-%m-%d")
 data_completo$dayWeek <- wday(data_completo$date, week_start = 1)
 
@@ -16,8 +20,9 @@ train_data <- data_completo[train_index, ]
 test_data <- data_completo[-train_index, ]
 dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
 setwd(dir)
-write.csv(train_data, paste(dir,"Modelo 1/M1_train.csv",sep=""))
-write.csv(test_data, paste(dir,"Modelo 1/M1_test.csv",sep=""))
+
+write.csv(train_data, paste(dir,"Modelo 6/M6_train.csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo 6/M6_test.csv",sep=""))
 
 
 ################################################################

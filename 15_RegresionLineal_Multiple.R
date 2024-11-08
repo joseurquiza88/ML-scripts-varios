@@ -53,8 +53,8 @@ cat("R²:", r_squared, "/n")
 ####################################################################
 dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
 setwd(dir)
-train_data <- read.csv(paste(dir,"Modelo 5/M5_train.csv",sep=""))
-test_data <- read.csv(paste(dir,"Modelo 5/M5_test.csv",sep=""))
+train_data <- read.csv(paste(dir,"Modelo 1/M1_train.csv",sep=""))
+test_data <- read.csv(paste(dir,"Modelo 1/M1_test.csv",sep=""))
 # Definir el control de entrenamiento con validaciÃ³n cruzada de 10 pliegues
 train_control <- trainControl(method = "cv", number = 10)
 
@@ -72,11 +72,21 @@ lm_cv_model <- train(PM25 ~ AOD_055 + ndvi +  LandCover + BCSMASS_dia +
                        u10_mean + tp_mean + DEM + dayWeek,
                      data = train_data, method = "lm", trControl = train_control)
 
+lm_cv_model <- train(log(PM25) ~ AOD_055 + ndvi +  LandCover + BCSMASS_dia +
+                       DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia +
+                       SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
+                       sp_mean + d2m_mean + t2m_mean + v10_mean + 
+                       u10_mean + tp_mean + DEM + dayWeek,
+                     data = train_data, method = "lm", trControl = train_control)
+
 # Mostrar los resultados del modelo
 print(lm_cv_model)
 
 # Hacer predicciones
 predicciones <- predict(lm_cv_model, newdata = test_data)
+predicciones <- exp(predicciones)
+
+
 
 # Comparar predicciones con valores reales
 resultado <- data.frame(Real = test_data$PM25, Predicho = predicciones)
@@ -106,7 +116,7 @@ max(predicciones)
 #Predicciones con dataest de entrenamiento
 # Hacer predicciones
 predicciones_train <- predict(lm_cv_model, newdata = train_data)
-
+predicciones_train <- exp(predicciones_train)
 # Comparar predicciones con valores reales
 resultado_train <- data.frame(Real = train_data$PM25, Predicho = predicciones_train)
 

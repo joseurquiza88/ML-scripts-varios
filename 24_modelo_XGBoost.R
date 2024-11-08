@@ -5,8 +5,8 @@ library(Matrix)
 # Supongamos que tienes un dataframe llamado 'train_data' con la variable objetivo 'PM25'
 # y las características que mencionaste.
 #Data modelo 1
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_train.csv")
+test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 6/M6_test.csv")
+train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 6/M6_train.csv")
 
 # Supongamos que tienes un dataframe llamado 'train_data' con la variable objetivo 'PM25'
 # y las características que mencionaste.
@@ -123,21 +123,21 @@ train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDat
 #                      "SSSMASS25", "blh_mean", "sp_mean", "d2m_mean",
 #                      "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
 
-# X <- train_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
-#                      "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
-#                      "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
-#                      "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+X <- train_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
+                     "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
+                     "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
+                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
 #A. Sacamos landCover, DEM, SSSMASS_dia
 #B. Sacamos landCover, DEM
 #C. Sacamos landCover, SSSMASS_dia
 #D. Sacamos landCover, SSSMASS25_dia
 #E. Sacamos landCover, U10
 
-X <- train_data[ , c("AOD_055", "ndvi","LandCover", "blh_mean", "sp_mean", "d2m_mean",
-                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+# X <- train_data[ , c("AOD_055", "ndvi","LandCover", "blh_mean", "sp_mean", "d2m_mean",
+#                      "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
 
+# y <- log(train_data$PM25)
 y <- train_data$PM25
-
 # Convertir a matrices xgboost
 dtrain <- xgb.DMatrix(data = as.matrix(X), label = y)
 
@@ -166,7 +166,7 @@ cv_results  <- xgb.cv(
   verbose = TRUE                    # Mostrar progreso
 )
 
-06:11
+15:27 15:32
 # Obtener el número óptimo de rondas
 best_nrounds <- cv_results$best_iteration
 
@@ -188,21 +188,27 @@ xgb_cv_model <- xgb.train(
 #                          "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
 #                          "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
 # 
-X_test <- test_data[ , c("AOD_055", "ndvi","LandCover", "blh_mean", "sp_mean", "d2m_mean",
-                         "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
-# 
 
+X_test <- test_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
+                     "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
+                     "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
+                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+
+# y_test <- log(test_data$PM25)
 y_test <- test_data$PM25
 
 dtest <- xgb.DMatrix(data = as.matrix(X_test), label = y_test)
 
 # Realizar predicciones sobre el conjunto de prueba
 predictions <- predict(xgb_cv_model, dtest)
+#test_preds <- exp(predictions) # para log
+
+
 
 # Evaluar el modelo con el conjunto de prueba
 actuals <- y_test
 predicted <- predictions
-
+# predicted <- test_preds #para log
 # Calcular métricas de rendimiento
 mse <- mean((actuals - predicted)^2)
 rmse <- sqrt(mse)
@@ -211,6 +217,11 @@ r2 <- cor(predicted, actuals)^2
 r <- cor(actuals, predicted, method = "pearson")
 mape <- mean(abs((actuals - predicted) / actuals)) * 100
 medae <- median(abs(actuals - predicted))
+
+
+
+
+
 # Imprimir métricas
 cat("R2: ", round(r2,2), "\n")
 cat("R: ", round(r,2), "\n")
@@ -223,6 +234,8 @@ min(predicted)
 max(predicted)
 0.# Realizar predicciones sobre el conjunto de entrenamiento
 train_predictions <- predict(xgb_cv_model, dtrain)
+# train_predictions <- exp(train_predictions) # para log
+
 min(train_predictions)
 max(train_predictions)
 # Evaluar el modelo en el conjunto de entrenamiento
@@ -236,12 +249,12 @@ train_r <- cor(train_actuals, train_predicted, method = "pearson")
 train_mape <- mean(abs((train_actuals - train_predicted) / train_actuals)) * 100
 train_medae <- median(abs(train_actuals - train_predicted))
 # Imprimir métricas para el conjunto de entrenamiento
-cat("Training R2: ", round(train_r2,3), "\n")
-cat("Training R: ", round(train_r,3), "\n")
-cat("Training RMSE: ", round(train_rmse,3), "\n")
-cat("Training MAE: ", round(train_mae,3), "\n")
+cat("Training R2: ", round(train_r2,2), "\n")
+cat("Training R: ", round(train_r,2), "\n")
+cat("Training RMSE: ", round(train_rmse,2), "\n")
+cat("Training MAE: ", round(train_mae,2), "\n")
 cat("Training MAPE: ", round(train_mape,2), "%\n")
-cat("Training MSE: ", round(train_mse,3), "\n")
+cat("Training MSE: ", round(train_mse,2), "\n")
 cat("Training MedAE: ", round(train_medae,2), "\n")
 min(train_predictions)
 max(train_predictions)
@@ -249,7 +262,7 @@ max(train_predictions)
 # Sin cv
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 
-save(xgb_cv_model, file="06-XGB_cv_M3-181024.RData")
+save(xgb_cv_model, file="02-XGB_cv_M6-281024.RData")
 
 
 ##################################################################

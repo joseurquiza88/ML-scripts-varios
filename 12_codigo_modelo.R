@@ -11,6 +11,10 @@ polygon_shapefile <-  readOGR("D:/Josefina/Proyectos/ProyectoChile/shape/data_re
 #01 Generamos un Raster template
 #ext = extent(-70.89626564382297,-70.54544288411844,-33.61652852593954,-33.33591657301113)#
 ext = extent(polygon_shapefile)
+ext  <- ext(BCSMASS_raster)
+nrows <- 27
+ncols <- 33
+
 km_per_degree <- 111  # Aproximadamente 111 km por grado
 pixel_size_km <- 1  # Tama?o de p?xel deseado en km
 # Calcular la resoluci?n en grados
@@ -23,6 +27,7 @@ nrows <- ceiling(nrows)
 ncols <- ceiling(ncols)
 # Crear el raster con la extensi?n y resoluci?n adecuada
 raster_template <- raster(nrows = nrows, ncols = ncols, crs = crs_project, ext = extent(polygon_shapefile))
+raster_template <- raster(nrows = nrows, ncols = ncols, crs = crs_project, ext = extent(BCSMASS_raster))
 
 #seteamos directorio
 # setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/")

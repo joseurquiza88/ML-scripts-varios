@@ -16,7 +16,7 @@ for (i in 1:1){
   ##################
   #01 Estaciones PM 25
   data_pm <- read.csv(paste("./PM25/",num_estacion,"-",estacion,"_PM25.csv",sep=""))
-  data_pm <- data.frame(date=data_pm$fecha, estacion=data_pm$estacion, PM25 = data_pm$valor)
+  data_pm <- data.frame(date=data_pm$fecha, estacion=data_pm$estacion, PM25 = data_pm$valor,PM25_Completo = data_pm$valor_completos)
   data_pm$date  <- strptime(data_pm$date, format = "%Y-%m-%d")
   
   ##################
@@ -32,7 +32,7 @@ for (i in 1:1){
   data_NDVI$date  <- strptime(data_NDVI$date, format = "%Y%j")
   names(data_NDVI)
   
-  # Función para expandir los valores mensuales a todos los días del mes
+  # Funci?n para expandir los valores mensuales a todos los d?as del mes
   expandir_mensual <- function(df_mensual) {
     do.call("rbind", lapply(1:nrow(df_mensual), function(i) {
       start_date <- df_mensual$date[i]
@@ -55,10 +55,10 @@ for (i in 1:1){
     end_date <- as.Date("2024-08-26")
     all_dates <- seq(start_date, end_date, by = "day")
     
-    # Calcular el número de días totales
+    # Calcular el n?mero de d?as totales
     total_days <- length(all_dates)
     
-    # Ajustar el número de repeticiones para que coincida con la cantidad total de días
+    # Ajustar el n?mero de repeticiones para que coincida con la cantidad total de d?as
     repeat_count <- ceiling(total_days / nrow(df_anual))
     expanded_values <- rep(df_anual$LandCover_IGBP, each = repeat_count)
     
@@ -116,7 +116,7 @@ for (i in 1:1){
   # Usar Reduce para hacer merge secuencial
   data_merged <- Reduce(function(x, y) merge(x, y, by = "date", all.x = TRUE), dataframes)
   
-  # Añadir la columna DEM
+  # A?adir la columna DEM
   data_merged$DEM <- data_DEM_estacion
   
   data_merged$estacion <- estacion
@@ -144,3 +144,12 @@ for (i in 1:length(id)){
 }
 
 write.csv(data_rbind, "09_TOT_merge_tot.csv")
+
+setwd(dir)
+df <- read.csv("09_TOT_merge_tot.csv")
+
+df_menosPM25 <-  dplyr::select(df, -PM25)
+df_menosPM25 <- df_menosPM25[complete.cases(df_menosPM25),]
+
+df_menosPM25_completo <-  dplyr::select(df, -PM25_Completo)
+df_menosPM25_completo <- df_menosPM25_completo[complete.cases(df_menosPM25_completo),]

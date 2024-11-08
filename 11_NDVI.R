@@ -7,7 +7,7 @@ rm(list=ls())
 crs_project = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
 # Uso imagen del STACK de MODIS MCD19A2 como modelo para crear raster
-# tomo el stack porq tiene el tamaño que me interesa conservar
+# tomo el stack porq tiene el tama?o que me interesa conservar
 
 # MODIS <- raster("/home/usuario/Sol/aire_comunitat/stack/month/AOD_mes_01_max.tif")
 # MODIS <- st_read("D:/Josefina/Proyectos/ProyectoChile/shape/data_referencia/santiago_4326.shp")
@@ -54,8 +54,9 @@ for (i in 1:length(id)){
   # Template
   # ext = extent(-70.89626564382297,-70.54544288411844,-33.61652852593954,-33.33591657301113)#
   ext = extent(-70.89626564382297,-70.49122311005938,-33.61652852593954,-33.33013269447868 )##
+  
   km_per_degree <- 111  # Aproximadamente 111 km por grado
-  pixel_size_km <- 1  # Tamaño de píxel deseado en km
+  pixel_size_km <- 1  # Tama?o de p?xel deseado en km
   resolution_degrees <- pixel_size_km / km_per_degree
   nrows <- (ext@ymax - ext@ymin) / resolution_degrees
   ncols <- (ext@xmax - ext@xmin) / resolution_degrees
