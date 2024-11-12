@@ -1,7 +1,7 @@
 # Procesamiento de era en el pixel de la estacion de monitoreo EMCI_DS-PM25
-nameVar = "t2m"
+nameVar = "blh"
 #process_era5 <- function (coordenadas_sitio,sitio,path){
-  year <- 2017
+  year <- 2019
   data_estacciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/sitios.csv")
   data_estacciones <- data_estacciones[data_estacciones$Considerado == "SI",]
   puntos <- data_estacciones
@@ -20,8 +20,8 @@ nameVar = "t2m"
                    pattern = "*.nc",
                    full.names = FALSE)
   
-  
-  for (i in 1:length(id)){
+  i<-
+  for (i in 159:length(id)){
     
     #print(paste("Esto es i = ", i, sep= ""))
     file.name = id[i]

@@ -4,7 +4,7 @@
 rm(list=ls())
 # dire <- "DJosefina/Proyectos/ProyectoChile/dataset/meteoSatelital/2015/02-2015/proceed/v10"
 tipo <- "blh"
-year <- 2015
+year <- 2019
 dire <- paste("D:/Josefina/Proyectos/ProyectoChile/SP/proceed/05_ERA5/",year,"/",tipo,sep="")
 
 
