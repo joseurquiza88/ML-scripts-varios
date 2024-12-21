@@ -1,6 +1,8 @@
 # sp
 
-ndvi_raster <- "D:/Josefina/Proyectos/ProyectoChile/SP/dataset/01_NDVI/MOD13A3.A2015001.h13v11.061.2021319205855.hdf"
+#ndvi_raster <- "D:/Josefina/Proyectos/ProyectoChile/SP/dataset/01_NDVI/MOD13A3.A2015001.h13v11.061.2021319205855.hdf"
+ndvi_raster <- "D:/Josefina/Proyectos/ProyectoChile/MX/dataset/01_NDVI/MOD13A3.A2015091.h08v07.061.2021323202627.hdf"
+setwd("D:/Josefina/Proyectos/ProyectoChile/MX/dataset/01_NDVI/")
 file.name <- ndvi_raster
 sds <- get_subdatasets(file.name)
 # Optical_Depth_055

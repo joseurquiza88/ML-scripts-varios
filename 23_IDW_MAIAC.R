@@ -8,9 +8,12 @@ library(parallel)
 # dir_maiac <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2022/tiff/00_MAIAC/"
 
 #TALCA
-dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/tiff/00_MAIAC/00_MAIAC_IDW/"
-dir_maiac <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/tiff/00_MAIAC/"
-
+# dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/tiff/00_MAIAC/00_MAIAC_IDW/"
+# dir_maiac <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/tiff/00_MAIAC/"
+estacion<- "BA"
+#SP
+dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/tiff/00_MAIAC/00_MAIAC_IDW_02/",sep="")
+dir_maiac <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/tiff/00_MAIAC/00_MAIAC_IDW/",sep="")
 
 setwd(dir_maiac)
 crs_project = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
@@ -19,9 +22,7 @@ fs <- list.files(path = dir_maiac,
                  pattern = "tif",
                  full.names = FALSE)
 
-# Crear raster template >>> spatial Pixels DF
-# ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/tiff/01_NDVI/2024001-NDVI_raster.tif")
-ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI/NDVI_raster/NDVI_raster.tif")
+ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
 
 
 raster_template <- ndvi_raster
@@ -30,11 +31,11 @@ idw.grid <- rasterToPoints(raster_template, spatial = TRUE)
 gridded(idw.grid) <- TRUE   #SpatialPixelsDataFrame
 
 RMSE_IDW <- data.frame()
-kfold = 5 # numero de k-fold cross validation
+kfold = 3 # numero de k-fold cross validation
 
-i<-144
+i<-1
 
-for( i in 1:length(fs)){
+for( i in 226:length(fs)){
   print(i)
   raster_fs <- raster(fs[i], sep="")
   filename <- paste("IDW-", fs[i], sep="")
@@ -48,6 +49,8 @@ for( i in 1:length(fs)){
     #as.data.frame(rasterToPoints(raster_template)) ## 891 pixeles, el 10% ==> 90 pixeles
     # if(nrow(raster_points) > 3776){  #### control: raster con un 10% de datos
     # if(nrow(raster_points) > 105){ ## SANTIAGO
+    ## SP 5235 pixeles ==> 10% 523 / 5% 261 PIXELES, 3% 157pixeles
+    ## BA 8028.8pixeles ==> 20%
     if(nrow(raster_points) > 5){
       coordinates(raster_points) <- ~x+y
       #raster_points@proj4string

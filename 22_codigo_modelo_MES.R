@@ -1,22 +1,27 @@
 ##rm(list=ls())
 #NDVI
-# ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/tiff/01_NDVI/2024001-NDVI_raster.tif")
-ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI/NDVI_raster/NDVI_raster.tif")
+
+estacion <- "BA"
+ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
+
+
 
 ###########################################################################
 # -----------------------   01 MAIAC  ------------------------------
 ###########################################################################
 
-#data_maiac <- "00_MAIAC/MCD19A2.A2019001.h12v12.061.2023123150048.hdf"
 
-dir_maiac <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/00_MAIAC"
-dir_maiac_guardado <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/"
+dir_maiac <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/00_MAIAC/2022",sep="")
+dir_maiac_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/",sep="")
+
 setwd(dir_maiac)
 id <- list.files(path = dir_maiac,
                  pattern = "*.hdf",
                  full.names = FALSE)
 crs_project <- "+proj=longlat +datum=WGS84"
+raster_template <- ndvi_raster
 # 08:51
+i<-1
 for (i in 1:length(id)){
   print(i)
   data_maiac <- id[i]
@@ -36,7 +41,7 @@ for (i in 1:length(id)){
 
   # Lista para guardar los rasters procesados
   rasters_list <- list()
-  for (nband in 1 : length(orbit)) {
+  for (nband in 1: length(orbit)) {
 
     #print(paste('Band:', orbit[nband]))
     
@@ -56,9 +61,13 @@ for (i in 1:length(id)){
     proj4string(r.QA) <- CRS(SINU)
     r.055 <- projectRaster(r.055,crs = crs_project)
     r.QA <- projectRaster(r.QA,crs = crs_project)
-    r.055  <- r.055 * 0.001   #factor de escala
+    r.055 <- r.055 * 0.001   #factor de escala
     cropped_r.055 <- crop(r.055, extent(ndvi_raster))
     cropped_QA <- crop(r.QA, extent(ndvi_raster))
+    
+    cropped_r.055 <- raster::resample(cropped_r.055, raster_template)
+    
+    cropped_QA <- raster::resample(cropped_QA , raster_template)
     # 1) Aplicar mascara de calidad (QA= 0000) a imagenes MODIS
     cropped_QA[ cropped_QA] <- as.integer(substring(intToBin(cropped_QA[cropped_QA]), 4, 7)) #nos quedamos con los bits 8-11
     cropped_QA[ cropped_QA != 0] <- NA
@@ -82,10 +91,10 @@ for (i in 1:length(id)){
   }
   
     ## Guardamos raster 
-  writeRaster(mosaic_r.055, filename = paste(dir_maiac_guardado,"/tiff/00_MAIAC/",nombre_maiac,"-MAIAC_raster",sep = ""), format = "GTiff", overwrite = TRUE)
+  writeRaster(mosaic_r.055, filename = paste(dir_maiac_guardado,"tiff/00_MAIAC/",nombre_maiac,"-MAIAC_raster",sep = ""), format = "GTiff", overwrite = TRUE)
   
 }
-# cuantos valores NA hay
+1# cuantos valores NA hay
 num_na <- sum(is.na(mosaic_r.055[]))
 
 # Mostrar la cantidad de valores NA
@@ -104,29 +113,21 @@ rm(list=ls())
 #01 NDVI
 #https://lpdaac.usgs.gov/products/mod13a3v061/
 # data_ndvi <- "01_NDVI/MOD13A3.A2019001.h12v12.061.2020286171223.hdf"
-ndvi_raster_recorte <- raster("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/tiff/01_NDVI/2024001-NDVI_raster.tif")
-ndvi_raster_recorte <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI/NDVI_raster/NDVI_raster.tif")
-ndvi_raster_recorte <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/tiff/05_ERA5/2015-01-01-BLH_raster.tif")
-
-# #data_ndvi <- "01_NDVI/MOD13A3.A2024001.h12v12.061.2024038042531.hdf"
-# #data_ndvi <- "01_NDVI/MOD13A3.A2024032.h12v12.061.2024066072938.hdf"
-# #data_ndvi <- "01_NDVI/MOD13A3.A2024061.h12v12.061.2024099105114.hdf"
-# #data_ndvi <- "01_NDVI/MOD13A3.A2024092.h12v12.061.2024133221811.hdf"
-# #data_ndvi <- "01_NDVI/MOD13A3.A2024122.h12v12.061.2024162174007.hdf"
-# data_ndvi <- "01_NDVI/MOD13A3.A2024153.h12v12.061.2024195023145.hdf"
 
 
 
 # dir_ndvi <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/01_NDVI"
-dir_ndvi <- "D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI"
-# dir_ndvi_guardado <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/"
-dir_ndvi_guardado <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/"
+dir_ndvi <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/01_NDVI",sep="")
+dir_ndvi_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/",sep = "")
+
+ndvi_raster_recorte<- ndvi_raster
 setwd(dir_ndvi)
 id <- list.files(path = dir_ndvi,
                  pattern = "*.hdf",
                  full.names = FALSE)
 crs_project <- "+proj=longlat +datum=WGS84"
 # 08:51
+i<-1
 for (i in 1:length(id)){
   print(i)
   data_ndvi <- id[i]
@@ -147,6 +148,7 @@ for (i in 1:length(id)){
   # Recortamos al area de interes
   #cropped_ndvi <- crop(ndvi, extent(raster_template))
   cropped_ndvi <- crop(ndvi, extent(ndvi_raster_recorte))
+  cropped_ndvi <- raster::resample(cropped_ndvi, ndvi_raster_recorte)
   
   # Imagen ndvi
   ndvi_raster <- cropped_ndvi
@@ -162,25 +164,21 @@ for (i in 1:length(id)){
 ###########################################################################
 # -----------------------   05 ERA  ------------------------------
 ###########################################################################
-ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI/NDVI_raster/NDVI_raster.tif")
+# ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI/NDVI_raster/NDVI_raster.tif")
+estacion <- "BA"
+ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
 
-#05 ERA
-#####01
-# nameVar <- c("t2m", "d2m", "sp", "u10", "v10", "blh", "tp")
-#Santiago
-# dir_era <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/05_ERA5/"
-# dir_era_guardado <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/"
+dir_era <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/2022/",sep="")
+dir_era_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"modelos/dataset_ejemplo/Prediccion_2022/",sep="")
 
-#Talca
-dir_era <- "D:/Josefina/Proyectos/ProyectoChile/talca/dataset/meteoSatelital/2015"
-dir_era_guardado <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/"
+
 
 setwd(dir_era)
 id <- list.files(path = dir_era,
                  pattern = "*.nc",
                  full.names = FALSE)
 crs_project <- "+proj=longlat +datum=WGS84"
-for (i in 62:length(id)){
+for (i in 245:length(id)){
   print(i)
   era5 <- id[i]
   nombre_era <- substr(era5,0,10)
@@ -233,12 +231,12 @@ for (i in 62:length(id)){
   cropped_ERA_blh  <- crop(resampled_ERA_blh, extent(ndvi_raster))
   
   ### 07
-  data_ERA_tp <- brick(era5,varname="tp")
-  data_ERA_tp_mean <- calc(data_ERA_tp, mean, na.rm=TRUE)
-  SINU <- as.character(data_ERA_tp_mean@crs)
-  data_ERA_tp_mean <- projectRaster(data_ERA_tp_mean,crs = crs_project)
-  resampled_ERA_tp <- raster::resample(data_ERA_tp_mean, ndvi_raster,method = "bilinear")
-  cropped_ERA_tp  <- crop(resampled_ERA_tp, extent(ndvi_raster))
+  # data_ERA_tp <- brick(era5,varname="tp")
+  # data_ERA_tp_mean <- calc(data_ERA_tp, mean, na.rm=TRUE)
+  # SINU <- as.character(data_ERA_tp_mean@crs)
+  # data_ERA_tp_mean <- projectRaster(data_ERA_tp_mean,crs = crs_project)
+  # resampled_ERA_tp <- raster::resample(data_ERA_tp_mean, ndvi_raster,method = "bilinear")
+  # cropped_ERA_tp  <- crop(resampled_ERA_tp, extent(ndvi_raster))
   
   ## guardamos
   
@@ -246,7 +244,7 @@ for (i in 62:length(id)){
   writeRaster(cropped_ERA_t2m, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-T2M_raster",sep=""), format="GTiff", overwrite=TRUE)
   writeRaster(cropped_ERA_d2m, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-D2M_raster",sep=""), format="GTiff", overwrite=TRUE)
   writeRaster(cropped_ERA_sp, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-SP_raster",sep=""), format="GTiff", overwrite=TRUE)
-  writeRaster(cropped_ERA_tp, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-TP_raster",sep=""), format="GTiff", overwrite=TRUE)
+  #writeRaster(cropped_ERA_tp, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-TP_raster",sep=""), format="GTiff", overwrite=TRUE)
   writeRaster(cropped_ERA_v10, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-V10_raster",sep=""), format="GTiff", overwrite=TRUE)
   writeRaster(cropped_ERA_u10, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-U10_raster",sep=""), format="GTiff", overwrite=TRUE)
 
@@ -254,18 +252,13 @@ for (i in 62:length(id)){
 ###########################################################################
 # -----------------------   04 MERRA  ------------------------------
 ###########################################################################
+#SP
+estacion <- "BA"
+ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
 
-#04 MERRA
-#nameVar <- c("BCSMASS","DMSSMASS", "DUSMASS","DUSMASS25", "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS","SSSMASS25")
-#####01
-# data_merra_BCSMASS <- raster("04_MERRA-2/MERRA2_400.tavg1_2d_aer_Nx.20190101.SUB.nc",varname="BCSMASS")
-#merra <- "04_MERRA-2/MERRA2_400.tavg1_2d_aer_Nx.20240101.SUB.nc"
+dir_merra <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/04_MERRA-2_Dia/2022/",sep="")
 
-# dir_merra <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2022/04_MERRA-2_Dia/"
-# dir_merra_guardado <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2022/"
-
-dir_merra <- "D:/Josefina/Proyectos/ProyectoChile/talca/dataset/04_MERRA-2_Dia/2015/01-06-2015"
-dir_merra_guardado <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/"
+dir_merra_guardado <-paste( "D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/",sep="")
 
 setwd(dir_merra)
 
@@ -386,13 +379,18 @@ for(i in 1:length(id)){
 # -----------------------   06 dayweek  ------------------------------
 ###########################################################################
 #01-01-2016 dayweek = 2
-dir_era <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/05_ERA5"
-dir_weekDay_guardado <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/"
+estacion <- "BA"
+ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
+dir_era <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/TP/2022",sep="")
+dir_weekDay_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/",sep="")
+
+
 setwd(dir_era)
 id <- list.files(path = dir_era,
                  pattern = "*.nc",
                  full.names = FALSE)
 crs_project <- "+proj=longlat +datum=WGS84"
+i<-1
 for (i in 1:length(id)){
   print(i)
   era5 <- id[i]
@@ -410,6 +408,7 @@ for (i in 1:length(id)){
 
 }
 
+
 ###########################################################################
 ###########################################################################
 #Usar version de r 2.3.4
@@ -420,17 +419,19 @@ for (i in 1:length(id)){
 df_rbind <- data.frame()
 # Suponiendo que mi_dataframe es el objeto que no quieres eliminar
 rm(list = setdiff(ls(), "df_rbind"))
-setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2019/tiff/")
+estacion <- "BA"
+setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/tiff/",sep=""))
 
-dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2019/Salida/Salida_03-XGB_cv_M1-041024/"
+dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/salidas/SalidasDiarias/Salida_02-RF_cv_M1-171224_BA/",sep="")
 # Fechas de inter?s
-fechaInicio <- as.Date("20-12-2019", format = "%d-%m-%Y")
-fechaFin <- as.Date("31-12-2019", format = "%d-%m-%Y")
+fechaInicio <- as.Date("04-02-2022", format = "%d-%m-%Y")
+fechaFin <- as.Date("28-02-2022", format = "%d-%m-%Y")
 lista_fecha <- data.frame(date=seq.Date(fechaInicio, fechaFin, by = "day"))
-dir_modelos <- "D:/Josefina/Proyectos/ProyectoChile/modelos/modelo/"
-load(paste(dir_modelos,"03-XGB_cv_M1-041024.RData",sep=""))
+dir_modelos <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo/",sep="")
+load(paste(dir_modelos,"02-RF_cv_M1-171224_BA.RData",sep=""))
 #for (i in 1:1){
 lista_fecha$date[j]
+j<-2
 for (j in 1:nrow(lista_fecha)) {
   print(j)
   fechaInteres <- as.Date(lista_fecha$date[j], format = "%d-%m-%Y")
@@ -459,7 +460,7 @@ for (j in 1:nrow(lista_fecha)) {
   ################### -----     NDVI     -----
   # Como es modis tambien la fecha es juliana pero ojo es un dato mensual
   # fechaNDVI<- as.Date("01-01-2024", format = "%d-%m-%Y")
-  fechaNDVI<- as.Date("01-12-2019", format = "%d-%m-%Y")
+  fechaNDVI<- as.Date("01-02-2022", format = "%d-%m-%Y")
   #fechaNDVI<- as.Date("01-04-2024", format = "%d-%m-%Y")
   yearNdvi <- year(fechaNDVI)
   dayJulianNDVI <- as.numeric(fechaNDVI - as.Date(paste0(format(fechaNDVI, "%Y"), "-01-01"))) + 1
@@ -486,11 +487,11 @@ for (j in 1:nrow(lista_fecha)) {
   # MCD12Q1.A2024001.h12v12.061.2022169161028.hdf
   
   
-  yearLandCover <- year(fechaNDVI)
-  LandCoverDate <- paste(yearLandCover,"001",sep = "")
-  LandCover_raster <- raster(paste("02_LandCover/",LandCoverDate,"-LandCover_raster.tif",sep=""))
-  LandCover_NA <- sum(is.na(LandCover_raster[]))
-  print(c("landCover",LandCover_NA))
+  # yearLandCover <- year(fechaNDVI)
+  # LandCoverDate <- paste(yearLandCover,"001",sep = "")
+  # LandCover_raster <- raster(paste("02_LandCover/",LandCoverDate,"-LandCover_raster.tif",sep=""))
+  # LandCover_NA <- sum(is.na(LandCover_raster[]))
+  # print(c("landCover",LandCover_NA))
   #plot(LandCover_raster)
   
   ################# -----     DEM     -----
@@ -511,9 +512,9 @@ for (j in 1:nrow(lista_fecha)) {
   
   ## DMSSMASS
   # DMSSMASS_raster <- raster(paste("04_MERRA-2/",fechaInteres_MERRA,"-DMSSMASS_raster.tif",sep=""))
-  DMSSMASS_raster <- raster(paste("04_MERRA-2_Dia/",fechaInteres_MERRA,"-DMSSMASS_raster.tif",sep=""))
-  DMSSMASS_raster_NA <- sum(is.na(DMSSMASS_raster[]))
-  print(c("DMSSMASS",DMSSMASS_raster_NA))
+  #DMSSMASS_raster <- raster(paste("04_MERRA-2_Dia/",fechaInteres_MERRA,"-DMSSMASS_raster.tif",sep=""))
+  #DMSSMASS_raster_NA <- sum(is.na(DMSSMASS_raster[]))
+  #print(c("DMSSMASS",DMSSMASS_raster_NA))
   #plot(DMSSMASS_raster)
   
   ## DUSMASS
@@ -611,7 +612,7 @@ for (j in 1:nrow(lista_fecha)) {
   print(c("dayWeek",dayWeek_raster_NA))
   ##### STACK
   
-  r_stack <- stack(MAIAC_raster,NDVI_raster,LandCover_raster,
+  r_stack <- stack(MAIAC_raster,NDVI_raster,#,#LandCover_raster 
                    BCSMASS_raster ,DUSMASS_raster,DUSMASS25_raster,
                    OCSMASS_raster,SO2SMASS_raster, SO4SMASS_raster,
                    SSSMASS_raster ,SSSMASS25_raster,BLH_raster,
@@ -633,34 +634,33 @@ for (j in 1:nrow(lista_fecha)) {
   #                         "u10_mean" ,"tp_mean" , 
   #                         "DEM","dayWeek")
   
-  names(r_stack_df) <- c( "AOD_055" ,"ndvi",
-                          "LandCover","BCSMASS_dia",
-                          "DUSMASS_dia","DUSMASS25_dia",
-                          "OCSMASS_dia","SO2SMASS_dia",
-                          "SO4SMASS_dia","SSSMASS_dia",
-                          "SSSMASS25_dia","blh_mean" ,
-                          "sp_mean","d2m_mean",
-                          "t2m_mean","v10_mean",
-                          "u10_mean" ,"tp_mean" , 
-                          "DEM","dayWeek")
+  names(r_stack_df) <- c( "AOD_055" ,"ndvi", #"LandCover",
+                          "BCSMASS_dia","DUSMASS_dia",
+                          "DUSMASS25_dia","OCSMASS_dia",
+                          "SO2SMASS_dia","SO4SMASS_dia",
+                          "SSSMASS_dia","SSSMASS25_dia",
+                          "blh_mean" ,"sp_mean",
+                          "d2m_mean","t2m_mean",
+                          "v10_mean","u10_mean" ,
+                          "tp_mean" , "DEM","dayWeek")
 ###############################################################
 ##################################################################
 ##############################################################
 ####
 
 # Aplicar el modelo
-# predictions <- predict(rf_cv_model, newdata = r_stack_df)
+predictions <- predict(rf_cv_model, newdata = r_stack_df)
   
 # Para XGB
-  X_test <- r_stack_df[ , c("AOD_055", "ndvi", "LandCover","BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
-                           "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
-                           "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
-                           "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
-
-  
-  dtest <- as.matrix(X_test)
-  # dtest <- xgb.DMatrix(data = as.matrix(X_test))
-  predictions <- predict(xgb_tuned, newdata = dtest)
+  # X_test <- r_stack_df[ , c("AOD_055", "ndvi", "LandCover","BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
+  #                          "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
+  #                          "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
+  #                          "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+  # 
+  # 
+  # dtest <- as.matrix(X_test)
+  # # dtest <- xgb.DMatrix(data = as.matrix(X_test))
+  # predictions <- predict(xgb_tuned, newdata = dtest)
 # predictions <- predict(xgb_cv_model, newdata = dtest)
   # dtest <- as.matrix(X_test)
   # dtrain <- as.matrix(X)
@@ -678,31 +678,31 @@ pred_raster[!is.na(values(r_stack[[1]]))] <- predictions
 #getwd()
 
 
-name_salida <- paste(dir_salida,"PM-",fechaInteres,"-03-XGB_cv_M1-041024.tif",sep="")
+name_salida <- paste(dir_salida,"PM-",fechaInteres,"-02-RF_cv_M1-171224_BA.tif",sep="")
 writeRaster(pred_raster, filename = name_salida, format = "GTiff", overwrite = TRUE)
 
-##############################################################
-# # Definir coordenadas (por ejemplo, latitud y longitud)
-#for (x in 1:1){
-  # Dataframe con coordenadas y nombres de estaciones
-  puntos <- data.frame(
-    lon = c(-70.659566, -70.66517052, -70.73210014, -70.58813772, -70.52346222, -70.7503877, -70.59475058, -70.74822755,-70.70497123797023,-70.71950144777533,-70.65122931421972),
-    lat = c(-33.465694, -33.54606688, -33.43301075, -33.51610874, -33.37639222, -33.43798487, -33.59134682, -33.36576262,-33.4952767527216,-33.4928995961536,-33.422304539963896 ),
-    estacion = c("OHG", "BSQ", "CNA", "FLD", "CDE", "PDH", "PTA", "QUI","CER-II","CER-I","IND")
-  )
-
-  # Extraer los valores del raster en las coordenadas especificadas
-  valores_raster <- extract(pred_raster, puntos[, c("lon", "lat")])
-
-  # Unir los valores del raster al dataframe original
-  puntos_con_valores <- puntos %>%
-    mutate(valor_raster = valores_raster)
-
-  # Mostrar el dataframe resultante
-  # print(puntos_con_valores)
-  puntos_con_valores$date <- fechaInteres
-
-  df_rbind <- rbind(df_rbind,puntos_con_valores)
+# ##############################################################
+# # # Definir coordenadas (por ejemplo, latitud y longitud)
+# #for (x in 1:1){
+#   # Dataframe con coordenadas y nombres de estaciones
+#   puntos <- data.frame(
+#     lon = c(-70.659566, -70.66517052, -70.73210014, -70.58813772, -70.52346222, -70.7503877, -70.59475058, -70.74822755,-70.70497123797023,-70.71950144777533,-70.65122931421972),
+#     lat = c(-33.465694, -33.54606688, -33.43301075, -33.51610874, -33.37639222, -33.43798487, -33.59134682, -33.36576262,-33.4952767527216,-33.4928995961536,-33.422304539963896 ),
+#     estacion = c("OHG", "BSQ", "CNA", "FLD", "CDE", "PDH", "PTA", "QUI","CER-II","CER-I","IND")
+#   )
+# 
+#   # Extraer los valores del raster en las coordenadas especificadas
+#   valores_raster <- extract(pred_raster, puntos[, c("lon", "lat")])
+# 
+#   # Unir los valores del raster al dataframe original
+#   puntos_con_valores <- puntos %>%
+#     mutate(valor_raster = valores_raster)
+# 
+#   # Mostrar el dataframe resultante
+#   # print(puntos_con_valores)
+#   puntos_con_valores$date <- fechaInteres
+# 
+#   df_rbind <- rbind(df_rbind,puntos_con_valores)
 }
 View(df_rbind)
 

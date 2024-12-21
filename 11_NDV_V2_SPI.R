@@ -1,24 +1,33 @@
 # 
 # # https://github.com/solrepresa/AQ-Valencia/blob/1732eab4542b64bb9429d7a89e9a4611b52acd12/src/AC_15.R#L7
 rm(list=ls())
+estacion <- "BA"
 
-dir_raster = "D:/Josefina/Proyectos/ProyectoChile/SP/dataset/01_NDVI/"
+# dir_raster = "D:/Josefina/Proyectos/ProyectoChile/SP/dataset/01_NDVI/"
+dir_raster = paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/01_NDVI/",sep="")
 
 setwd(dir_raster)
 
 id <- dir(dir_raster, pattern = ".hdf")
 
+#################### SP
+# data_estacciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/sitios.csv")
+# data_estacciones <- data_estacciones[data_estacciones$Considerado == "SI",]
+# data_estacciones <- data_estacciones[22:24,]
+# puntos <- data_estacciones
+# puntos$estacion <- puntos$Nombre.sitio 
+#raster_template <- raster("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/rasterTemplate/raster_template.tif")
 
-data_estacciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/sitios.csv")
+#################### MX
+data_estacciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/sitios_",estacion,".csv",sep=""))
 data_estacciones <- data_estacciones[data_estacciones$Considerado == "SI",]
 puntos <- data_estacciones
-puntos$estacion <- puntos$Nombre.sitio 
+raster_template <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
 
 crs_project <- "+proj=longlat +datum=WGS84"
 
 
 
-raster_template <- raster("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/rasterTemplate/raster_template.tif")
 df_rbind<- data.frame()
 
 
@@ -56,7 +65,8 @@ for (i in 1:length(id)){
 }
 
 View(df_rbind)
-write.csv(df_rbind,"D:/Josefina/Proyectos/ProyectoChile/SP/proceed/01_NDVI/SP_NDVI.csv")
+write.csv(df_rbind,paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/01_NDVI/",estacion,"_NDVI_V02.csv",sep=""))
+
 ######################################################
 #######################################################
 

@@ -17,6 +17,7 @@ set.seed(42)
 
 
 dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
+dir <- "D:/Josefina/Proyectos/ProyectoChile/SP/modelos/ParticionDataSet/"
 setwd(dir)
 train_data <- read.csv(paste(dir,"Modelo 1/M1_train.csv",sep=""))
 test_data <- read.csv(paste(dir,"Modelo 1/M1_test.csv",sep=""))
@@ -71,12 +72,39 @@ lm_cv_model <- train(PM25 ~ AOD_055 + ndvi +  LandCover + BCSMASS_dia +
                        sp_mean + d2m_mean + t2m_mean + v10_mean + 
                        u10_mean + tp_mean + DEM + dayWeek,
                      data = train_data, method = "lm", trControl = train_control)
+names(train_data)
+# SP
+names(test_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",                 
+                      "ndvi" ,  "BCSMASS_dia",                  
+                      "DUSMASS_dia" ,"DUSMASS25_dia", "OCSMASS_dia", "SO2SMASS_dia" ,"SO4SMASS_dia",
+                      "SSSMASS_dia", "SSSMASS25_dia",                 
+                      "blh_mean","blh_min","blh_max"  ,"blh_sd","blh_mean_subt", "sp_mean",                  
+                      "sp_min", "sp_max","sp_sd"   ,"sp_mean_subt","d2m_mean","d2m_min",                  
+                      "d2m_max","d2m_sd" , "d2m_mean_subt",  "t2m_mean", "t2m_min", "t2m_max",                  
+                      "t2m_sd",  "t2m_mean_subt", "v10_mean",  "v10_min" , "v10_max" ,"v10_sd"  ,                 
+                      "v10_mean_subt", "u10_mean" , "u10_min"  , "u10_max","u10_sd",
+                      "u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
 
-lm_cv_model <- train(log(PM25) ~ AOD_055 + ndvi +  LandCover + BCSMASS_dia +
+names(train_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",                 
+                       "ndvi" ,  "BCSMASS_dia",                  
+                       "DUSMASS_dia" ,"DUSMASS25_dia", "OCSMASS_dia", "SO2SMASS_dia" ,"SO4SMASS_dia",
+                       "SSSMASS_dia",  "SSSMASS25_dia",                  
+                       "blh_mean","blh_min","blh_max"  ,"blh_sd","blh_mean_subt", "sp_mean",                  
+                       "sp_min", "sp_max","sp_sd"   ,"sp_mean_subt","d2m_mean","d2m_min",                  
+                       "d2m_max","d2m_sd" , "d2m_mean_subt",  "t2m_mean", "t2m_min", "t2m_max",                  
+                       "t2m_sd",  "t2m_mean_subt", "v10_mean",  "v10_min" , "v10_max" ,"v10_sd"  ,                 
+                       "v10_mean_subt", "u10_mean" , "u10_min"  , "u10_max","u10_sd",
+                       "u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
+
+
+lm_cv_model <- train(PM25 ~ AOD_055 + ndvi +   BCSMASS_dia + #LandCover
                        DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia +
                        SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
                        sp_mean + d2m_mean + t2m_mean + v10_mean + 
                        u10_mean + tp_mean + DEM + dayWeek,
+                     data = train_data, method = "lm", trControl = train_control)
+
+lm_cv_model <- train(PM25 ~ AOD_055,
                      data = train_data, method = "lm", trControl = train_control)
 
 # Mostrar los resultados del modelo
@@ -84,7 +112,7 @@ print(lm_cv_model)
 
 # Hacer predicciones
 predicciones <- predict(lm_cv_model, newdata = test_data)
-predicciones <- exp(predicciones)
+#predicciones <- exp(predicciones)
 
 
 
@@ -116,7 +144,7 @@ max(predicciones)
 #Predicciones con dataest de entrenamiento
 # Hacer predicciones
 predicciones_train <- predict(lm_cv_model, newdata = train_data)
-predicciones_train <- exp(predicciones_train)
+#predicciones_train <- exp(predicciones_train)
 # Comparar predicciones con valores reales
 resultado_train <- data.frame(Real = train_data$PM25, Predicho = predicciones_train)
 

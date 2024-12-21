@@ -4,9 +4,12 @@ library(Matrix)
 
 # Supongamos que tienes un dataframe llamado 'train_data' con la variable objetivo 'PM25'
 # y las características que mencionaste.
+rm(list=ls())
+estacion <- "BA"
+modelo <- "1"
 #Data modelo 1
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 6/M6_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 6/M6_train.csv")
+test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_test_",estacion,".csv",sep=""))
+train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_train_",estacion,".csv",sep=""))
 
 # Supongamos que tienes un dataframe llamado 'train_data' con la variable objetivo 'PM25'
 # y las características que mencionaste.
@@ -123,10 +126,10 @@ train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDat
 #                      "SSSMASS25", "blh_mean", "sp_mean", "d2m_mean",
 #                      "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
 
-X <- train_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
+X <- train_data[ , c("AOD_055", "ndvi", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
                      "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
                      "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
-                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")] #"LandCover",
 #A. Sacamos landCover, DEM, SSSMASS_dia
 #B. Sacamos landCover, DEM
 #C. Sacamos landCover, SSSMASS_dia
@@ -166,7 +169,7 @@ cv_results  <- xgb.cv(
   verbose = TRUE                    # Mostrar progreso
 )
 
-15:27 15:32
+
 # Obtener el número óptimo de rondas
 best_nrounds <- cv_results$best_iteration
 
@@ -189,10 +192,10 @@ xgb_cv_model <- xgb.train(
 #                          "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
 # 
 
-X_test <- test_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
+X_test <- test_data[ , c("AOD_055", "ndvi","BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
                      "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
                      "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
-                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]#"LandCover", 
 
 # y_test <- log(test_data$PM25)
 y_test <- test_data$PM25
@@ -261,8 +264,9 @@ max(train_predictions)
 # gUARDAMOS MODELO
 # Sin cv
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
+setwd("D:/Josefina/Proyectos/ProyectoChile/SP/modelos/modelo")
 
-save(xgb_cv_model, file="02-XGB_cv_M6-281024.RData")
+save(xgb_cv_model, file="02-XGB_cv_M1-131124_SP.RData")
 
 
 ##################################################################

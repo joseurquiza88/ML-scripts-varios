@@ -5,14 +5,16 @@ library(raster)
 # Definir el directorio donde están tus archivos raster
 rm(list = ls())
 #dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/Salida/Salida_02-XGB_cv_M4-300924/"
-month <- c("01","02","03","04","05","06","07","08","09","10","11","12")
-year <- "2015"
+month <- c("01","02","03","04","05","06","07","08","09","10")#,"11","12")
+year <- "2024"
+i<-1
+month <- c("01")
+estacion <- "BA"
 for (i in 1:length(month)){
   print(i)
   #dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasDiarias/Salida_03-XGB_cv_M1-041024/",year,"/",month[i],sep="")
-  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/Talca/modelos/dataset_ejemplo/Prediccion_2015/Salida/diario/Salida_02-RF_cv_M1-250924/",year,"/",month[i],sep="")
-  
-    setwd(dir_salida)
+  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/salidas/SalidasDiarias/Salida_02-RF_cv_M1-171224_BA/",year,"/",month[i],sep="")
+  setwd(dir_salida)
   
   # Lista de archivos raster (ajusta la extensión según sea necesario)
   lista_raster <- list.files(pattern = "*.tif") # Cambia la extensión si es necesario
@@ -25,15 +27,15 @@ for (i in 1:length(month)){
   
   # Calcular el promedio mensual y desviacion estandar
   promedio_mensual <- calc(raster_stack, fun = mean, na.rm = TRUE)
-  sd_mensual <- calc(raster_stack, fun = sd, na.rm = TRUE)
+  #sd_mensual <- calc(raster_stack, fun = sd, na.rm = TRUE)
   # Calcular el coeficiente de variacion
-  coef_Var <- (sd_mensual / promedio_mensual) * 100
+  #coef_Var <- (sd_mensual / promedio_mensual) * 100
   #plot(promedio_mensual)
-  modelo <- substr(lista_raster[1],15,33)
+  modelo <- substr(lista_raster[1],15,35)
   # Guardar el resultado en un nuevo archivo raster
   #dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasMensuales/Salida_03-XGB_cv_M1-041024/"
   #dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasMensuales/Salida_03-XGB_cv_M1-041024/Coef_Var/"
-  dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/Talca/modelos/dataset_ejemplo/Prediccion_2015/Salida/SalidasMensuales/Salida_02-RF_cv_M1-250924/"
+  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/salidas/SalidasMensuales/Salida_02-RF_cv_M1-171224_BA/",year,"/",sep="")
   
   writeRaster(promedio_mensual, filename = paste(dir_salida,"mensual_",month[i],"-",year,"-",modelo,".tif",sep=""), format = "GTiff", overwrite = TRUE)
 }

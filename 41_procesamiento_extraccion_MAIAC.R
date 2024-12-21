@@ -20,8 +20,8 @@ setwd(dir_raster)
 
 id <- dir(dir_raster, pattern = ".hdf")
 df_rbind_tot <- data.frame()
-#i<-1
-#file.name <- id[i]
+i<-3
+file.name <- id[i]
   
   #  Function to obtain info AOD 470 and 550 MAIAC
   #readMCD19A2 <- function(file.name, latlong.range = NULL) {
@@ -81,18 +81,19 @@ for (i in 1:length(id)){
       r.055_factor_mask <- mask(r.055_factor ,  r.qa )
       r.047_factor_mask <- mask(r.047_factor ,  r.qa )
       
+      r.055_factor_mask <- raster::crop(r.055_factor_mask , raster_template)
+      r.055_factor_mask <- raster::crop(r.047_factor_mask , raster_template)
+      
       r.055_resampling <- raster::resample(r.055_factor_mask , raster_template)
       r.047_resampling <- raster::resample(r.047_factor_mask , raster_template)
-      
-      
-      
-      
       
       valores_raster_055 <- extract(r.055_resampling, puntos[, c("long", "lat")])
       valores_raster_047 <- extract(r.047_resampling, puntos[, c("long", "lat")])
       puntos_con_valores <- puntos %>%
         mutate(valores_raster_055 = valores_raster_055) %>%
         mutate(valores_raster_047 = valores_raster_047)
+      
+      
       
       
       df <- data.frame (date= date,nband = nband, value_055=puntos_con_valores$valores_raster_055,

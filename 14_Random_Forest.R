@@ -4,29 +4,10 @@ library(raster)
 library(caret) #version 4.2.3
 rm(list=ls())
 
+estacion <- "MX"
 #Data modelo 1
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_train.csv")
-
-# #Data modelo 2
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 2/M2_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 2/M2_train.csv")
-# 
-# #Data modelo 3
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 3/M3_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 3/M3_train.csv")
-# 
-# #Data modelo 4
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 4/M4_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 4/M4_train.csv")
-
-# #Data modelo 5
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_train.csv")
-
-# #Data modelo 6
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 6/M6_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 6/M6_train.csv")
+test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_1/M1_test_",estacion,".csv",sep=""))
+train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_1/M1_train_",estacion,".csv",sep=""))
 
 
 # Entrenar el modelo de Random Forest
@@ -72,21 +53,39 @@ train_control <- trainControl(
 #                        u10_mean + tp_mean + DEM + dayWeek, data = train_data, 
 #                      method = "rf", trControl = train_control,importance = TRUE)
 # 
-rf_cv_model <- train(log(PM25) ~ log(AOD_055) + log(ndvi) + log(LandCover) + log(BCSMASS_dia) +
-                                log(DUSMASS_dia) + log(DUSMASS25_dia) + log(OCSMASS_dia) + log(SO2SMASS_dia)+
-                                log(SO4SMASS_dia) + log(SSSMASS_dia) + log(SSSMASS25_dia) + log(blh_mean) +
-                                log(sp_mean) + log(d2m_mean) + log(t2m_mean) + log(v10_mean) + log(u10_mean) +
-                                log(tp_mean) + log(DEM) + log(dayWeek), data = train_data, method = "rf", 
-                     trControl = train_control,importance = TRUE)
-train_data <- train_data[complete.cases(train_data),]
-test_data <- test_data[complete.cases(test_data),]
-rf_cv_model <- train(PM25_Completo ~ AOD_055 + ndvi + LandCover + BCSMASS_dia +
-                       DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia+
-                      SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
+
+names(test_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",                 
+                      "ndvi" ,  "BCSMASS_dia",                  
+"DUSMASS_dia" ,"DUSMASS25_dia", "OCSMASS_dia", "SO2SMASS_dia" ,"SO4SMASS_dia",
+"SSSMASS_dia", "SSSMASS25_dia",                 
+"blh_mean","blh_min","blh_max"  ,"blh_sd","blh_mean_subt", "sp_mean",                  
+ "sp_min", "sp_max","sp_sd"   ,"sp_mean_subt","d2m_mean","d2m_min",                  
+ "d2m_max","d2m_sd" , "d2m_mean_subt",  "t2m_mean", "t2m_min", "t2m_max",                  
+"t2m_sd",  "t2m_mean_subt", "v10_mean",  "v10_min" , "v10_max" ,"v10_sd"  ,                 
+ "v10_mean_subt", "u10_mean" , "u10_min"  , "u10_max","u10_sd",
+"u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
+
+names(train_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",                 
+                      "ndvi" ,  "BCSMASS_dia",                  
+                      "DUSMASS_dia" ,"DUSMASS25_dia", "OCSMASS_dia", "SO2SMASS_dia" ,"SO4SMASS_dia",
+                      "SSSMASS_dia",  "SSSMASS25_dia",                  
+                      "blh_mean","blh_min","blh_max"  ,"blh_sd","blh_mean_subt", "sp_mean",                  
+                      "sp_min", "sp_max","sp_sd"   ,"sp_mean_subt","d2m_mean","d2m_min",                  
+                      "d2m_max","d2m_sd" , "d2m_mean_subt",  "t2m_mean", "t2m_min", "t2m_max",                  
+                      "t2m_sd",  "t2m_mean_subt", "v10_mean",  "v10_min" , "v10_max" ,"v10_sd"  ,                 
+                      "v10_mean_subt", "u10_mean" , "u10_min"  , "u10_max","u10_sd",
+                      "u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
+
+
+rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + #LandCover + 
+                       BCSMASS_dia +DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia
+                     + SO2SMASS_dia+
+                      SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia +
+                       blh_mean +
                        sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean +
                        tp_mean + DEM + dayWeek, data = train_data, method = "rf", 
                      trControl = train_control,importance = TRUE)
-
+16:26 - 18:03
 # rf_cv_model <- train(PM25 ~ AOD_055 + ndvi  + BCSMASS_dia +
 #                        DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia+
 #                        SO4SMASS_dia + SSSMASS_dia + blh_mean +
@@ -112,6 +111,7 @@ importance(rf_cv_model)
 
 # Predecir en el conjunto de testeo
 test_data$PM25 <- log(test_data$PM25)
+
 predictions <- predict(rf_cv_model, newdata = test_data)
 predictions_2 <- predict(rf_cv_model, newdata = test_data)
 predictions_train <- predict(rf_cv_model, newdata = train_data)
@@ -148,12 +148,12 @@ error_train <- postResample(predictions_train, train_data$PM25)
 error_test <- postResample(predictions, test_data$PM25)
 
 # Calcular el coeficiente de determinación (R²)
-lm_r_squared_hora <- cor(predicciones_hora, test_data$PM25_Completo)^2
-lm_r_squared_train <- cor(predictions_train, train_data$PM25_Completo)^2
+lm_r_squared_hora <- cor(predicciones_hora, test_data$PM25)^2
+lm_r_squared_train <- cor(predictions_train, train_data$PM25)^2
+
 
 # Calcular el coeficiente de Pearson
-pearson_cor_hora <- cor(test_data$PM25_Completo, predicciones_hora, method = "pearson")
-
+pearson_cor_hora <- cor(test_data$PM25, predicciones_hora, method = "pearson")
 pearson_train <- cor(train_data$PM25, predictions_train, method = "pearson")
 
 # Calcular el error cuadrático medio (RMSE)
@@ -200,18 +200,18 @@ View(b)
 # Guardar el modelo entrenado
 getwd()
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
-
-save(rf_cv_model, file="02-RF_cv_M6-281024.RData")
+setwd("D:/Josefina/Proyectos/ProyectoChile/SP/modelos/modelo")
+save(rf_cv_model, file="02-RF_cv_M5-251124_SP.RData")
 
 
 print("Modelo Random Forest entrenado y guardado en 'random_forest_model.RData'.")
 ################################################################################
 ################################################################################
 # cargar el modelo y aplicalo a otro set de datos
-setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
+setwd("D:/Josefina/Proyectos/ProyectoChile/SP/modelos/modelo")
 
 # Paso 1: Cargar el modelo
-load("02-RF_cv_M6-281024.RData")
+load("02-RF_cv_M1-131124_SP.RData")
 load("01-RF_cv_M1-050924.RData")
 load("01-RF_cv_M2-050924.RData")
 load("01-RF_cv_M3-050924.RData")

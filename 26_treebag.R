@@ -15,9 +15,9 @@ formula <- PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS + DUSMASS + DUSMASS25 +
   sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean + tp_mean + DEM + dayWeek
 
 # Definir la fórmula del modelo
-formula <- PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS_dia + DUSMASS_dia + DUSMASS25_dia + 
+formula <- PM25 ~ AOD_055 + ndvi +  BCSMASS_dia + DUSMASS_dia + DUSMASS25_dia + 
   OCSMASS_dia + SO2SMASS_dia + SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
-  sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean + tp_mean + DEM + dayWeek
+  sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean + tp_mean + DEM + dayWeek #LandCover
 
 cs_trControl = trainControl(
   method = "cv",
@@ -111,8 +111,8 @@ print(paste("MSE test:", round(mse_test, 2)))
 print(paste("MedAE test:", round(medae_test,2)))
 min(predicciones_test)
 max(predicciones_test)
-setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
+setwd("D:/Josefina/Proyectos/ProyectoChile/SP/modelos/modelo")
 
-save(treeBag_model_cv, file="02-TreeBag_cv_M1-141024.RData")
+save(treeBag_model_cv, file="02-TreeBag_cv_M1-201124_SP.RData")
 
 

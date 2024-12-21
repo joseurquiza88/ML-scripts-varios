@@ -5,24 +5,37 @@
 # Extraccion de datos de MERRA-2
 rm(list=ls())#
 year <- 2024
+
+estacion<- "CH"
 for (j in 1:1){
-  data_estacciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/sitios.csv")
+  #data_estacciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/sitios.csv")
+  #data_estacciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/MX/dataset/estaciones/sitios_MX.csv")
+  data_estacciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/sitios_",estacion,".csv",sep=""))
+  
   data_estacciones <- data_estacciones[data_estacciones$Considerado == "SI",]
+  #data_estacciones <- data_estacciones[22:24,]
   puntos <- data_estacciones
-  puntos$estacion <- puntos$Nombre.sitio 
+  # puntos$estacion <- puntos$Nombre.sitio 
+  
   
   crs_project <- "+proj=longlat +datum=WGS84"
   #punto <- SpatialPoints(coords, proj4string = CRS(crs_project))
   
   #Variables: DMSSMASS,DMSSMASS, DUSMASS, OCSMASS, SO2SMASS, SO4SMASS, y SSSMASS
   
-  dire <- paste("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/04_MERRA-2_Dia/",year, sep="")
+  #dire <- paste("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/04_MERRA-2_Dia/",year, sep="")
+  #dire <- paste("D:/Josefina/Proyectos/ProyectoChile/MX/dataset/04_MERRA-2_Dia/",year, sep="")
+  dire <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/04_MERRA-2_Dia/",year, sep="")
+  
   setwd(dire)
   id <- list.files(path = getwd(),
                    pattern = "*.nc",
                    full.names = FALSE)
-  raster_template <- raster("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/rasterTemplate/raster_template.tif")
-  for (i in 1:1){
+  #raster_template <- raster("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/rasterTemplate/raster_template.tif")
+  #raster_template <- raster("D:/Josefina/Proyectos/ProyectoChile/MX/dataset/rasterTemplate/raster_template.tif")
+  raster_template <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
+  
+  for (p in 1:1){
   
     
     
@@ -119,9 +132,11 @@ for (j in 1:1){
   }
   
   
-  write.csv(merged_df,paste("D:/Josefina/Proyectos/ProyectoChile/SP/proceed/04_MERRA-2_Dia/MERRA-2_Dia_",year,".csv",sep=""))
+  write.csv(merged_df,paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/04_MERRA-2_Dia/MERRA-2_Dia_",year,".csv",sep=""))
 }
 View(merged_df)
+unique(merged_df$ID)
+unique(merged_df$estacion.x)
 ######################################################################
 ########################################################################
 # Generar raster / tif para hacer el mapaa

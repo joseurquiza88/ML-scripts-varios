@@ -4,7 +4,7 @@ library(dplyr)
 # Especifica la ruta de los archivos TIFF
 ruta_archivos <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasMensuales/Salida_03-XGB_cv_M1-041024/2015/"
 meses <- c("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-           "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
+           "Julio")#, "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
 #archivos_tiff <- paste0(ruta_archivos, "PM25_", 2015, "_", sprintf("%02d", 1:12), ".tif")
 setwd(ruta_archivos)
 lista_raster <- list.files(pattern = "*.tif")
@@ -22,7 +22,7 @@ rango_pm25 <- c("0-5", "6-10", "11-15", "16-20","21-25","26-30","31-35","36-40",
 
 # Crear la lista de nombres de meses en orden
 meses <- c("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-           "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
+           "Julio")#, "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
 
 # Cargar cada TIFF y clasificar los valores de PM2.5
 for (i in 1:length(lista_raster)) {
@@ -57,7 +57,7 @@ p <- ggplot() +
   geom_sf(data = comunas, color = "black", fill = NA) + 
   geom_sf(data = estaciones, color = "black", fill = NA) +
   
-  labs(title = "Concentración de PM2.5 - {closest_state} - 2022") +
+  labs(title = "Concentración de PM2.5 - {closest_state} - 2024") +
   theme_minimal() +
   transition_states(Mes, transition_length = 0, state_length = 1) +
   enter_fade() + exit_fade()
@@ -65,7 +65,7 @@ p <- ggplot() +
 # Guardar el GIF
 #anim_save("concentracion_pm25_2015.gif", animate(p, duration = 10, width = 800, height = 600))
 
-anim_save("concentracion_pm25_2022.gif", 
+anim_save("concentracion_pm25_2024.gif", 
           animate(p, duration = 10, width = 800, height = 600,#, nframes = 12, fps = 1, 
                   renderer = gifski_renderer(loop = FALSE)))
 

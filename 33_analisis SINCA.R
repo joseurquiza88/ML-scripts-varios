@@ -1,12 +1,12 @@
 
-
+estacion <- "CH"
 
 #### Analisis SINCA
-data_estaciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/dataset/estaciones/diarios/PM25_tot.csv",colClasses = c("FECHA..YYMMDD."  = "character"))
+data_estaciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/diarios/V01/PM25_tot.csv",sep=""),colClasses = c("FECHA..YYMMDD."  = "character"))
 data_estaciones$date <- as.POSIXct(as.character(data_estaciones$FECHA..YYMMDD.), format = "%y%m%d")
 data_estaciones <- data_estaciones[year(data_estaciones$date) >= 2015, ]
 data_estaciones <- data_estaciones[!is.na(data_estaciones$estacion),]
-
+data_estaciones_2 <-data_estaciones[data_estaciones$Registros.completos != 0,]
 ggplot(data_estaciones, aes(x = date)) +
   # Línea para Registros.validados
   geom_line(aes(y = Registros.validados, color = "Registros.validados"), size = 0.3,na.rm = FALSE) +

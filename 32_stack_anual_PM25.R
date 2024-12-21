@@ -3,10 +3,15 @@
 library(raster)
 
 # Definir el directorio donde están tus archivos raster
-
+year<-2024
 year <- c(2015,2016,2017,2018,2019,2020,2021,2022,2023)
+i<-1
+modelo <- "Salida_03-XGB_cv_M1-041024"
+estacion <- "CH"
 for (i in 1:length(year)){
-  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasDiarias/Salida_03-XGB_cv_M1-041024/",year[i],"/",sep="")
+  #dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasDiarias/Salida_03-XGB_cv_M1-041024/",year[i],"/",sep="")
+  #dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion"/modelos/salidas/SalidasDiarias/",modelo,"/",year[i],"/",sep="")
+  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/salidas/SalidasDiarias/",modelo,"/",year,"/",sep="")
   
   setwd(dir_salida)
   
@@ -21,18 +26,20 @@ for (i in 1:length(year)){
   
   # Calcular el promedio anual
   promedio_anual <- calc(raster_stack, fun = mean, na.rm = TRUE)
-  sd_anual <- calc(raster_stack, fun = sd, na.rm = TRUE)
+  #sd_anual <- calc(raster_stack, fun = sd, na.rm = TRUE)
   # Calcular el coeficiente de variacion
-  coef_Var <- (sd_anual / promedio_anual) * 100
+  #coef_Var <- (sd_anual / promedio_anual) * 100
   #plot(promedio_anual)
-  modelo <- substr(lista_raster[1],15,33)
+  modelo2 <- substr(lista_raster[1],18,35)
   # Guardar el resultado en un nuevo archivo raster
   # dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasAnuales/Salida_03-XGB_cv_M1-041024/"
-  dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasAnuales/Salida_03-XGB_cv_M1-041024/Coef_Var/"
-  writeRaster(coef_Var, filename = paste(dir_salida,"CoefVar_anual_",year[i],"-",modelo,".tif",sep=""), format = "GTiff", overwrite = TRUE)
+  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/Salidas/SalidasAnuales/",modelo,"/",sep="")
+  writeRaster(promedio_anual, filename = paste(dir_salida,"Promedio_anual_",year[i],"-",modelo,".tif",sep=""), format = "GTiff", overwrite = TRUE)
 }
-###########################################################################
-############################################################################
+
+writeRaster(promedio_anual, filename = paste(dir_salida,"Promedio_anual_2024_01-07","-",modelo2,".tif",sep=""), format = "GTiff", overwrite = TRUE)
+
+
 data_estaciones_2024 <- read.csv("D:/Josefina/Proyectos/ProyectoChile/dataset/estaciones/diarios/PM25_2024_tot_validados.csv")
 data_estaciones_2024$date <- as.POSIXct(as.character(data_estaciones_2024$date), format = "%y%m%d")
 

@@ -3,14 +3,17 @@
 ## TUNED GRID XGboost
 
 
+rm(list=ls())
+estacion <- "BA"
+modelo <- "1"
 #Data modelo 1
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_train.csv")
+test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_test_",estacion,".csv",sep=""))
+train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_train_",estacion,".csv",sep=""))
 # Preparar los datos
-X <- train_data[, c("AOD_055", "ndvi", "LandCover", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
+X <- train_data[, c("AOD_055", "ndvi",  "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
                     "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
                     "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
-                    "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM", "dayWeek")]
+                    "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM", "dayWeek")]#"LandCover",
 
 
 y <- train_data$PM25
@@ -50,7 +53,7 @@ xgb_tuned <- train(
   maximize = FALSE                     # Minimizar RMSE
 )
 
-16:41
+07:54
 # Ver los mejores hiperparámetros encontrados
 print(xgb_tuned$bestTune)
 
@@ -66,10 +69,10 @@ X_test <- test_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS", "DUSMASS", "D
                          "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS",
                          "SSSMASS25", "blh_mean", "sp_mean", "d2m_mean",
                          "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
-X_test <- test_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
+X_test <- test_data[ , c("AOD_055", "ndvi", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25_dia",
                          "OCSMASS_dia", "SO2SMASS_dia", "SO4SMASS_dia", "SSSMASS_dia",
                          "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
-                         "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
+                         "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")] #"LandCover",
 
 y_test <- test_data$PM25
 dtest <- as.matrix(X_test)
@@ -127,6 +130,6 @@ min(train_predictions)
 max(train_predictions)
 # gUARDAMOS MODELO
 # Sin cv
-setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
+setwd("D:/Josefina/Proyectos/ProyectoChile/SP/modelos/modelo")
 
-save(xgb_tuned, file="03-XGB_cv_M5-071024.RData")
+save(xgb_tuned, file="03-XGB_cv_M1-131124_SP.RData")

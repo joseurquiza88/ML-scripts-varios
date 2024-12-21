@@ -123,3 +123,20 @@ crs(vector_data) <- crs(data_resampling)
 # Guardar el archivo como Shapefile
 writeOGR(vector_data, "D:/Josefina/Proyectos/ProyectoChile/talca/dataset/DEM/","DEM_resampled" , driver = "ESRI Shapefile")
 
+
+
+dem <- raster("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/DEM/S36W072.tif")
+
+
+
+#############################################################################
+############################################################################
+dem <- raster("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/03_DEM/S24W047.hgt")
+ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/rasterTemplate/raster_template.tif")
+data_crop <- raster::resample(dem, ndvi_raster)
+data_resampling <- raster::resample(data_crop, ndvi_raster)
+
+writeRaster(data_resampling , 
+            "D:/Josefina/Proyectos/ProyectoChile/SP/dataset/03_DEM/DEM_resampled.tif", 
+            format = "GTiff",
+            overwrite = TRUE)
