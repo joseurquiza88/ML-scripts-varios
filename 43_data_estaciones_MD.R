@@ -71,3 +71,31 @@ for (i in 1:length(id)) {
   df_rbind <- rbind(df_rbind, data)
 
 }
+
+class(df_rbind$date)
+df_rbind$date <- as.POSIXct( strptime (df_rbind$date, format = "%Y-%m-%d"))
+
+write.csv(df_rbind,"D:/Josefina/Proyectos/ProyectoChile/MD/proceed/06_estaciones/MD_estaciones.csv")
+ggplot(df_rbind, aes(x = date)) +
+  # Línea para Registros.validados
+  geom_line(aes(y = mean, color = "mean"), size = 0.3,na.rm = TRUE) +
+  
+  # Separar en subplots por estación
+  facet_wrap(~ df_rbind$ID, scales = "free_y") +
+  # 
+  scale_y_continuous(limits = c(0,120),breaks = seq(0, 120, by = 20)) +  # Ticks cada 10 en el eje Y
+  
+  # Títulos y etiquetas
+  labs(#title = "Modelo Salida_03-XGB_cv_M1-041024",
+    x = "Date",
+    y = "PM2.5",
+    color = "Variables") +
+  # Cambiar los colores de las líneas
+  scale_color_manual(values = c("mean" = "#2ca25f")) +
+  
+  # Personalización del tema
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
