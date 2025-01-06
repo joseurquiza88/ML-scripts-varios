@@ -1,7 +1,7 @@
 ##rm(list=ls())
 #NDVI
 
-estacion <- "BA"
+estacion <- "MX"
 ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
 
 
@@ -11,8 +11,8 @@ ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/da
 ###########################################################################
 
 
-dir_maiac <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/00_MAIAC/2022",sep="")
-dir_maiac_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/",sep="")
+dir_maiac <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/00_MAIAC/2021",sep="")
+dir_maiac_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2021/",sep="")
 
 setwd(dir_maiac)
 id <- list.files(path = dir_maiac,
@@ -21,7 +21,7 @@ id <- list.files(path = dir_maiac,
 crs_project <- "+proj=longlat +datum=WGS84"
 raster_template <- ndvi_raster
 # 08:51
-i<-1
+i<-10
 for (i in 1:length(id)){
   print(i)
   data_maiac <- id[i]
@@ -89,7 +89,7 @@ for (i in 1:length(id)){
     # Si solo hay un raster, no se necesita mosaico
     mosaic_r.055 <- rasters_list[[1]]
   }
-  
+  print(sum(is.na(mosaic_r.055[])))
     ## Guardamos raster 
   writeRaster(mosaic_r.055, filename = paste(dir_maiac_guardado,"tiff/00_MAIAC/",nombre_maiac,"-MAIAC_raster",sep = ""), format = "GTiff", overwrite = TRUE)
   
@@ -118,7 +118,7 @@ rm(list=ls())
 
 # dir_ndvi <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/01_NDVI"
 dir_ndvi <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/01_NDVI",sep="")
-dir_ndvi_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/",sep = "")
+dir_ndvi_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2015/",sep = "")
 
 ndvi_raster_recorte<- ndvi_raster
 setwd(dir_ndvi)
@@ -253,12 +253,13 @@ for (i in 245:length(id)){
 # -----------------------   04 MERRA  ------------------------------
 ###########################################################################
 #SP
-estacion <- "BA"
+estacion <- "MX"
+year <- "2022"
 ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
 
-dir_merra <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/04_MERRA-2_Dia/2022/",sep="")
+dir_merra <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/04_MERRA-2_Dia/",year,"/",sep="")
 
-dir_merra_guardado <-paste( "D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/",sep="")
+dir_merra_guardado <-paste( "D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/",sep="")
 
 setwd(dir_merra)
 
@@ -267,7 +268,8 @@ id <- list.files(path = dir_merra,
                  pattern = "*.nc",
                  full.names = FALSE)
 crs_project <- "+proj=longlat +datum=WGS84"
-for(i in 1:length(id)){
+i<-278
+for(i in 130:length(id)){
   print(i)
   merra <- id[i]
   
@@ -379,10 +381,11 @@ for(i in 1:length(id)){
 # -----------------------   06 dayweek  ------------------------------
 ###########################################################################
 #01-01-2016 dayweek = 2
-estacion <- "BA"
+estacion <- "MX"
+year <- 2023
 ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
-dir_era <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/TP/2022",sep="")
-dir_weekDay_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/",sep="")
+dir_era <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/TP/",year,sep="")
+dir_weekDay_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/",sep="")
 
 
 setwd(dir_era)

@@ -8,17 +8,10 @@ estacion <- "MX"
 data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/merge_tot/",estacion,"_merge_comp.csv",sep=""))
 
 data_completo <- data[complete.cases(data),]
-#data_completo <- data[complete.cases(data$PM25_Completo),]
-
-# data_completo <- data_completo %>%
-#   dplyr::select(-PM25)
-#data_completo2 <- data[complete.cases(data),]
+## Agreego la variable numero de dias
 data_completo$date <- strptime(data_completo$date, format = "%Y-%m-%d")
 data_completo$dayWeek <- wday(data_completo$date, week_start = 1)
 
-# data_completo <- data
-# data_completo$date <- strptime(data_completo$date, format = "%d/%m/%Y")
-# data_completo$dayWeek <- wday(data_completo$date, week_start = 1)
 
 ###### ------  Modelo 1 - Aleatorio  ------  ##### 
 
@@ -33,7 +26,7 @@ write.csv(train_data, paste(dir,"Modelo_1/M1_train_",estacion,".csv",sep=""))
 write.csv(test_data, paste(dir,"Modelo_1/M1_test_",estacion,".csv",sep=""))
 
 ################################################################
-# Modelo 2 - para SP
+# Modelo 2 - para SP hago otra separacion aleatoria
 data_completo_2<- data_completo[data_completo$AOD_055>0.1,]
 train_index <- createDataPartition(data_completo_2$PM25, p = 0.7, list = FALSE)
 train_data <- data_completo_2[train_index, ]
@@ -46,7 +39,7 @@ write.csv(train_data, paste(dir,"Modelo 2/M2_train.csv",sep=""))
 write.csv(test_data, paste(dir,"Modelo 2/M2_test.csv",sep=""))
 
 ################################################################
-# Modelo 2 - por años
+# Modelo 2 - por a�osos
 # Vemos cuanto datos hay por año
 year = 2024
 len_data <- nrow(data_completo[year(data_completo$date) == year ,])
@@ -69,23 +62,23 @@ train_data <- data_completo[year(data_completo$date) == 2015 | year(data_complet
                             year(data_completo$date) == 2017 | year(data_completo$date) == 2018 |
                               year(data_completo$date) == 2019 | year(data_completo$date) == 2020,]
 test_data <- data_completo[year(data_completo$date) == 2021 | year(data_completo$date) == 2022 |
-                            year(data_completo$date) == 2023,]
+                            year(data_completo$date) == 2023|year(data_completo$date) == 2024,]
 # Corroboramos que esten todos los datos
 nrow(train_data) + nrow(test_data) == nrow(data_completo)
 
 # Guardamos datos
-# dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
-dir <- "D:/Josefina/Proyectos/ProyectoChile/SP/modelos/ParticionDataSet/"
+dir <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/",sep="")
 setwd(dir)
-write.csv(train_data, paste(dir,"Modelo 2/M2_train.csv",sep=""))
-write.csv(test_data, paste(dir,"Modelo 2/M2_test.csv",sep=""))
+write.csv(train_data, paste(dir,"Modelo_2/M2_train.csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo_2/M2_test.csv",sep=""))
 
 ################################################################
 # Modelo 3 - por estacion
-data_completo$
+unique(data_completo$ID)
+# Para MX 
 # Vemos cuanto datos hay por año
 # estacion  = "QUI"
-estacion <- "24"
+estacion <- "22"
 # len_data <- nrow(data_completo[data_completo$estacion == estacion ,])
 len_data <- nrow(data_completo[data_completo$ID == estacion ,])
 #unique(data_completo$estacion) #"OHG" "BSQ" "CNA" "PDH" "FLD" "PTA" "CDE" "QUI"
@@ -132,27 +125,27 @@ len_data
 # train_data <- data_completo[data_completo$estacion != "OHG",]
 # test_data <- data_completo[data_completo$estacion == "OHG",]
 
-train_data <- data_completo[data_completo$estacion != "EMB",]
-test_data <- data_completo[data_completo$estacion == "EMB",]
-
-train_data <- data_completo[data_completo$ID == 1 | data_completo$ID == 2 
-                            | data_completo$ID == 4| data_completo$ID == 5
-                            | data_completo$ID == 8 | data_completo$ID == 9
+# train_data <- data_completo[data_completo$estacion != "EMB",]
+# test_data <- data_completo[data_completo$estacion == "EMB",]
+# Esto es para MX
+train_data <- data_completo[data_completo$ID == 1 | data_completo$ID == 2 | data_completo$ID == 3 
+                            | data_completo$ID == 4| data_completo$ID == 5 | data_completo$ID == 6
+                            | data_completo$ID == 7  | data_completo$ID == 8 | data_completo$ID == 9
                             | data_completo$ID == 10 | data_completo$ID == 11 | data_completo$ID == 12
-                            | data_completo$ID == 13 | data_completo$ID == 14 | data_completo$ID == 15
-                            | data_completo$ID == 16 | data_completo$ID == 17 | data_completo$ID == 18
+                            | data_completo$ID == 13 | data_completo$ID == 14 | data_completo$ID == 15 ,]
+test_data <- data_completo[ data_completo$ID == 16 | data_completo$ID == 17 | data_completo$ID == 18
                             | data_completo$ID == 19 | data_completo$ID == 20 | data_completo$ID == 21
-                            | data_completo$ID == 22 | data_completo$ID == 23 | data_completo$ID == 24,]
-test_data <- data_completo[data_completo$ID == 3 | data_completo$ID == 6 
-                           | data_completo$ID == 7,]
+                            | data_completo$ID == 22 ,]
+
 
 # Corroboramos que esten todos los datos
 nrow(train_data) + nrow(test_data) == nrow(data_completo)
 
-# Corroboramos que esten todos los datos         ST  SP
-(nrow(train_data) / nrow(data_completo))* 100 # 87%  71.16%
-(nrow(test_data) / nrow(data_completo))*100   # 13%  28.84%
+# Corroboramos que esten todos los datos         ST  SP      MX
+(nrow(train_data) / nrow(data_completo))* 100 # 87%  71.16%  75.43%
+(nrow(test_data) / nrow(data_completo))*100   # 13%  28.84%  24.57%
 # Guardamos datos
+estacion <- "MX"
 dir <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/",sep="")
 setwd(dir)
 getwd()
@@ -221,8 +214,8 @@ train_data <- data_completo_filtered[train_index, ]
 test_data <- data_completo_filtered[-train_index, ]
 dir <- "D:/Josefina/Proyectos/ProyectoChile/SP/modelos/ParticionDataSet/"
 setwd(dir)
-write.csv(train_data, paste(dir,"Modelo 5/M5_train.csv",sep=""))
-write.csv(test_data, paste(dir,"Modelo 5/M5_test.csv",sep=""))
+write.csv(train_data, paste(dir,"Modelo_5/M5_train_",estacion,".csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo_5/M5_test_",estacion,".csv",sep=""))
 
 
 ###### ------  Modelo 6 - Aleatorio eliminando outliers segun sd  ------  ##### 
@@ -248,5 +241,6 @@ train_data <- data_completo_filtered[train_index, ]
 test_data <- data_completo_filtered[-train_index, ]
 dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
 setwd(dir)
-write.csv(train_data, paste(dir,"Modelo 5/M5_train.csv",sep=""))
-write.csv(test_data, paste(dir,"Modelo 5/M5_test.csv",sep=""))
+write.csv(train_data, paste(dir,"Modelo_5/M5_train.csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo_5/M5_test.csv",sep=""))
+

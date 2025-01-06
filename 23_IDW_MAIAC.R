@@ -10,10 +10,11 @@ library(parallel)
 #TALCA
 # dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/tiff/00_MAIAC/00_MAIAC_IDW/"
 # dir_maiac <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/tiff/00_MAIAC/"
-estacion<- "BA"
+estacion<- "MX"
+year <- 2024
 #SP
-dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/tiff/00_MAIAC/00_MAIAC_IDW_02/",sep="")
-dir_maiac <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022/tiff/00_MAIAC/00_MAIAC_IDW/",sep="")
+dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/tiff/00_MAIAC/00_MAIAC_IDW/",sep="")
+dir_maiac <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/tiff/00_MAIAC/",sep="")
 
 setwd(dir_maiac)
 crs_project = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
@@ -31,11 +32,11 @@ idw.grid <- rasterToPoints(raster_template, spatial = TRUE)
 gridded(idw.grid) <- TRUE   #SpatialPixelsDataFrame
 
 RMSE_IDW <- data.frame()
-kfold = 3 # numero de k-fold cross validation
+kfold = 5# numero de k-fold cross validation
 
 i<-1
 
-for( i in 226:length(fs)){
+for( i in 1:length(fs)){
   print(i)
   raster_fs <- raster(fs[i], sep="")
   filename <- paste("IDW-", fs[i], sep="")
@@ -51,7 +52,7 @@ for( i in 226:length(fs)){
     # if(nrow(raster_points) > 105){ ## SANTIAGO
     ## SP 5235 pixeles ==> 10% 523 / 5% 261 PIXELES, 3% 157pixeles
     ## BA 8028.8pixeles ==> 20%
-    if(nrow(raster_points) > 5){
+    if(nrow(raster_points) > 300){
       coordinates(raster_points) <- ~x+y
       #raster_points@proj4string
       projection(raster_points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")

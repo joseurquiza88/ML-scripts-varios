@@ -1,11 +1,11 @@
 nameVar = "blh"
 #process_era5 <- function (coordenadas_sitio,sitio,path){
-year <- 2023
-estacion <- "BA"
+year <- 2024
+estacion <- "MX"
 #data_estacciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/sitios.csv")
 data_estacciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/sitios_",estacion,".csv",sep=""))
 
-data_estacciones <- data_estacciones[data_estacciones$Considerado == "SI",]
+#data_estacciones <- data_estacciones[data_estacciones$Considerado == "SI",]
 #data_estacciones <- data_estacciones[22:24,]
 puntos <- data_estacciones
 #puntos$estacion <- puntos$Nombre.sitio 
@@ -25,15 +25,15 @@ era.df<- data.frame()
 id <- list.files(path = getwd(),
                  pattern = "*.nc",
                  full.names = FALSE)
-
-i<-1
-for (i in 1:length(id)){
+id
+i<-10
+for (i in 10:length(id)){
     
     #print(paste("Esto es i = ", i, sep= ""))
   file.name = id[i]
   print(file.name)
   sds <- raster::stack(file.name) 
-  nameVar <- "blh"#c("t2m", "d2m", "sp", "u10", "v10", "blh")#, "tp")
+  nameVar <- c("t2m", "d2m", "sp", "u10", "v10", "blh")#, "tp")
   for (num_sds in 1:length(nameVar)){
     print(c("num_sds",num_sds))
     # Get orbit information
@@ -78,7 +78,7 @@ for (i in 1:length(id)){
       rm(MIRRAraster, rst_resampling)  #data_recorte
     }
     
-    nombre <-paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/05_ERA5/",year,"/",id[i],"_",name_sds,"_2.csv",sep = "")
+    nombre <-paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/05_ERA5/",year,"/",id[i],"_",name_sds,".csv",sep = "")
     
     write.csv(era.df ,nombre)
     
@@ -86,8 +86,3 @@ for (i in 1:length(id)){
   }
   
 }
-     
-  
-  
-  
-  

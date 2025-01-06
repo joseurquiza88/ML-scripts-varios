@@ -6,8 +6,8 @@ rm(list=ls())
 
 estacion <- "MX"
 #Data modelo 1
-test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_1/M1_test_",estacion,".csv",sep=""))
-train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_1/M1_train_",estacion,".csv",sep=""))
+test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_5/M5_test_",estacion,".csv",sep=""))
+train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_5/M5_train_",estacion,".csv",sep=""))
 
 
 # Entrenar el modelo de Random Forest
@@ -85,7 +85,8 @@ rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + #LandCover +
                        sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean +
                        tp_mean + DEM + dayWeek, data = train_data, method = "rf", 
                      trControl = train_control,importance = TRUE)
-16:26 - 18:03
+
+14:29
 # rf_cv_model <- train(PM25 ~ AOD_055 + ndvi  + BCSMASS_dia +
 #                        DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia+
 #                        SO4SMASS_dia + SSSMASS_dia + blh_mean +
@@ -113,11 +114,7 @@ importance(rf_cv_model)
 test_data$PM25 <- log(test_data$PM25)
 
 predictions <- predict(rf_cv_model, newdata = test_data)
-predictions_2 <- predict(rf_cv_model, newdata = test_data)
 predictions_train <- predict(rf_cv_model, newdata = train_data)
-a <- data.frame(predictions)
-b <- data.frame(predictions_train)
-c <- data.frame(predictions_2)
 predicciones_hora<- predictions
 ## Importancia de las variables
 importancia <- varImp(rf_cv_model, scale = TRUE)
@@ -200,8 +197,8 @@ View(b)
 # Guardar el modelo entrenado
 getwd()
 setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
-setwd("D:/Josefina/Proyectos/ProyectoChile/SP/modelos/modelo")
-save(rf_cv_model, file="02-RF_cv_M5-251124_SP.RData")
+setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep=""))
+save(rf_cv_model, file="02-RF_cv_M3-261224_MX.RData")
 
 
 print("Modelo Random Forest entrenado y guardado en 'random_forest_model.RData'.")
@@ -211,7 +208,7 @@ print("Modelo Random Forest entrenado y guardado en 'random_forest_model.RData'.
 setwd("D:/Josefina/Proyectos/ProyectoChile/SP/modelos/modelo")
 
 # Paso 1: Cargar el modelo
-load("02-RF_cv_M1-131124_SP.RData")
+load("02-RF_cv_M3-261224_MX.RData")
 load("01-RF_cv_M1-050924.RData")
 load("01-RF_cv_M2-050924.RData")
 load("01-RF_cv_M3-050924.RData")

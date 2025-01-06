@@ -1,7 +1,7 @@
 # Procesamiento de era en el pixel de la estacion de monitoreo EMCI_DS-PM25
 nameVar = "blh"
 #process_era5 <- function (coordenadas_sitio,sitio,path){
-  year <- 2015
+  year <- 2020
   estacion <- "MX"
   data_estacciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/sitios_",estacion,".csv",sep=""))
   #data_estacciones <- data_estacciones[data_estacciones$Considerado == "SI",]
@@ -13,7 +13,7 @@ nameVar = "blh"
 
   #dire <- paste("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/meteoSatelital/",year, "/01-03-2017",sep="")
   dire <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/TP/",year,sep="")
-  
+  dire <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/TP/",sep="")#,year,sep="")
   setwd(dire)
 
   raster_template <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
@@ -83,7 +83,7 @@ nameVar = "blh"
     
     
   }   
-
+       
     
   
 

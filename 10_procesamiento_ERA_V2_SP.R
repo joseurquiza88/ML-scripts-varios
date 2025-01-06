@@ -3,9 +3,9 @@
 #Manualmente los separamos despues del codigo 02_procesamiento
 rm(list=ls())
 # dire <- "DJosefina/Proyectos/ProyectoChile/dataset/meteoSatelital/2015/02-2015/proceed/v10"
-tipo <- "tp"#"tp"#c("blh","d2m","t2m","sp","u10","v10")
+tipo <- c("blh","d2m","t2m","sp","u10","v10","tp")
 estacion<- "MX"
-year <- 2015
+year <- 2023
 j<-1
 for (j in 1:length(tipo)){
   print("--------------------")
@@ -60,11 +60,10 @@ for (j in 1:length(tipo)){
 nrow(df_rbind)
 View(df_rbind)
 
-
 ################
-87714
+rm(list=ls())
 estacion <- "MX"
-tipo <- "tp"
+tipo <- "u10"
 dire <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/05_ERA5/tot/",tipo,sep="")
 setwd(dire)
 id <- list.files(path = getwd(), pattern = "*.csv", full.names = FALSE)
@@ -75,8 +74,7 @@ for(x in 1:length(id)){
   print(nrow(data))
   df_rbind <- rbind (df_rbind,data)
 }
-
-write.csv(df_rbind, paste("D:/Josefina/Proyectos/ProyectoChile/MX/proceed/05_ERA5/tot/",tipo,"_MX_dia.csv",sep=""))
+write.csv(df_rbind, paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/05_ERA5/tot/",tipo,"_MX_dia.csv",sep=""))
 ######
 #nimos dataset merge por dia
 rm(list=ls())
@@ -121,11 +119,12 @@ for (x in 1:1){
   data_t2m <- data_t2m[data_t2m$ID != 0,]
   ####################### VER!!!!!!
   data_tp <- read.csv(paste("tp_",estacion,"_dia.csv",sep=""))
-  #data_tp <- data.frame( x = data_tp$X, date = data_tp$date, estacion = data_tp$estacion,nombre_var = data_tp$nombre_var,
-   #                       unidad_tp = data_tp$unidad,
-  #                        mean_tp = data_tp$mean, min_tp = data_tp$min, max_tp = data_tp$max,
-    #                      sd_tp = data_tp$sd, n_tp = data_tp$n,mean_subt_tp= data_tp$mean_subt)
-  #data_tp$date <- as.Date(data_tp$date, format = "%d/%m/%Y")
+  data_tp <- data.frame( date = data_tp$date, estacion = data_tp$estacion,ID = data_tp$ID,nombre_var = data_tp$nombre_var,
+                          unidad_tp = data_tp$unidad,
+                          mean_tp = data_tp$mean, min_tp = data_tp$min, max_tp = data_tp$max,
+                          sd_tp = data_tp$sd, n_tp = data_tp$n)#,mean_subt_tp= data_tp$mean_subt)
+  data_tp$date <- as.Date(data_tp$date, format = "%Y-%m-%d")#"%d/%m/%Y")
+  data_tp <- data_tp[data_tp$ID != 0,]
   
   ##
   data_u10 <- read.csv(paste("u10_",estacion,"_dia.csv",sep=""))
@@ -135,10 +134,10 @@ for (x in 1:1){
                           sd_u10 = data_u10$sd, n_u10 = data_u10$n)#,mean_subt_u10= data_u10$mean_subt)
   data_u10$date <- as.Date(data_u10$date, format ="%Y-%m-%d")# "%Y-%m-%d")#"%d/%m/%Y")
   data_u10 <- data_u10[data_u10$ID != 0,]
-  class(data_u10$date)
+  #class(data_u10$date)
   ##
   data_v10 <- read.csv(paste("v10_",estacion,"_dia.csv",sep=""))
-  data_v10 <- data.frame( date = data_v10$date, estacion = data_v10$estacion,ID = data_v10$ID,nombre_var = data_v10$nombre_var,
+  data_v10 <- data.frame( date = data_v10$date, estacion_v10 = data_v10$estacion,ID = data_v10$ID,nombre_var = data_v10$nombre_var,
                           unidad_v10 = data_v10$unidad,
                           mean_v10 = data_v10$mean, min_v10 = data_v10$min, max_v10 = data_v10$max,
                           sd_v10 = data_v10$sd, n_v10 = data_v10$n)#,mean_subt_v10= data_v10$mean_subt)
@@ -147,12 +146,12 @@ for (x in 1:1){
   data_v10 <- data_v10[data_v10$ID != 0,]
   #length(unique(data_v10$ID))
   merged_df <- merge(data_blh, data_d2m, by = c("date", "estacion"), all.y = FALSE, all.x = FALSE)
-  merged_df2 <- merged_df[complete.cases(merged_df),]
+  merged_df <- merged_df[complete.cases(merged_df),]
   merged_df <- data_blh %>%
     left_join(data_d2m, by = c("ID","date")) %>%
     left_join(data_sp, by = c("ID","date") )%>%
     left_join(data_t2m, by = c("ID","date")) %>%
-    #left_join(data_tp, by = c("estacion","date")) %>%
+    left_join(data_tp, by = c("ID","date")) %>%
     left_join(data_u10,by = c("ID","date")) %>%
     left_join(data_v10,by = c("ID","date"))
   
@@ -190,9 +189,9 @@ for (x in 1:1){
                                u10_min=merged_df$min_u10,u10_max=merged_df$max_u10,
                                u10_sd=merged_df$sd_u10,# u10_mean_subt=merged_df$mean_subt_u10,
 
-                               # tp_mean=merged_df$mean_tp,
-                               # tp_min=merged_df$min_tp,tp_max=merged_df$max_tp,
-                               # tp_sd=merged_df$sd_tp, tp_mean_subt=merged_df$mean_subt_tp,
+                               tp_mean=merged_df$mean_tp,
+                               tp_min=merged_df$min_tp,tp_max=merged_df$max_tp,
+                                tp_sd=merged_df$sd_tp,#, tp_mean_subt=merged_df$mean_subt_tp,
                                ID = merged_df$ID,
                                estacion = merged_df$estacion.x)
   

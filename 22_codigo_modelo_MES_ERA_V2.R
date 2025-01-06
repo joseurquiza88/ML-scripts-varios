@@ -1,19 +1,18 @@
-  # Cargar la librería necesaria
+  # Cargar la librer?a necesaria
 
 library(raster)
 variable <- c("blh","d2m","sp","v10","u10","t2m")
-i<- 12 #mes
-n_dias <- 31  # Número de días del mes
-
-31*6
+i<- 06 #mes
+n_dias <- 30  # N?mero de d?as del mes
+year <- 2019
 for (p in 1:length(variable)){
 
   # _raster <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI/NDVI_raster/NDVI_raster.tif")
-  estacion <- "BA"
+  estacion <- "MX"
   ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
   
-  dir_era <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/2022/",sep="")
-  dir_era_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2022",sep="")
+  dir_era <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/",year,"/",sep="")
+  dir_era_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,sep="")
   
   
   
@@ -29,11 +28,11 @@ for (p in 1:length(variable)){
   
     nombre_era <- substr(era5, 0, 10)
   
-  # Parámetros del archivo
+  # Par?metros del archivo
   
-  n_horas <- 24 # Número de horas por día
+  n_horas <- 24 # N?mero de horas por d?a
   
-  # Lista vacía para almacenar las imágenes diarias
+  # Lista vac?a para almacenar las im?genes diarias
   data_ERA_t2m_daily <- list()
  
   # Bucle para calcular la media diaria
@@ -41,15 +40,15 @@ for (p in 1:length(variable)){
     print(c("--------",dia,"--------"))
     print(c("***", variable[p],"**"))
    
-    # Inicializar una lista para almacenar las 24 bandas del día
+    # Inicializar una lista para almacenar las 24 bandas del d?a
     daily_bands <- list()
    
     for (hora in 1:n_horas) {
       #print(hora)
-      # Calcular el índice de la banda correspondiente (1 a 744)
+      # Calcular el ?ndice de la banda correspondiente (1 a 744)
       banda <- (dia - 1) * n_horas + hora
       
-      # Cargar la banda específica usando raster()
+      # Cargar la banda espec?fica usando raster()
       MIRRAraster <- raster(era5, varname=variable[p], b=banda)
       fecha <- as.Date(as.POSIXct(MIRRAraster@z[[1]], origin = "1970-01-01", tz = "UTC"))
       SINU <- as.character(MIRRAraster@crs)
@@ -57,7 +56,7 @@ for (p in 1:length(variable)){
       daily_bands[[hora]] <- MIRRAraster
     }
     
-    # Crear un brick con las 24 bandas del día
+    # Crear un brick con las 24 bandas del d?a
     daily_brick <- brick(daily_bands)
     
     # Calcular la media diaria
@@ -77,7 +76,7 @@ for (p in 1:length(variable)){
     
   }
 }
-# Combinar todas las imágenes diarias en un solo objeto brick
+# Combinar todas las im?genes diarias en un solo objeto brick
 #daily_brick_final <- brick(data_ERA_t2m_daily)
 
-# Ahora `daily_brick_final` contiene una imagen por cada día del mes con la media diaria
+# Ahora `daily_brick_final` contiene una imagen por cada d?a del mes con la media diaria
