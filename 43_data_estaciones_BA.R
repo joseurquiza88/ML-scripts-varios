@@ -6,12 +6,15 @@ data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/BA/dataset/estaciones/proc
 data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/BA/dataset/estaciones/proceed/ACUMAR/PM25_Acumar.csv")
 
 names(data)
-data$horaDia <- paste(data$date, data$hora, sep=" ")
-data$horaDia <- as.POSIXct( strptime (data$horaDia, format = "%d/%m/%Y %H:%M:%S"))
+
+data$horaDia <- as.POSIXct( strptime (data$Fecha.y.hora, format = "%d/%m/%Y %H:%M"))
+## EMBAJADA
+data$horaDia <- as.POSIXct( strptime (data$Date..LT., format = "%d/%m/%Y %H:%M"))
+
 data$date <- as.POSIXct( strptime (data$date, format = "%d/%m/%Y"))
 data_comp <- data[complete.cases(data),]
-
-
+# PARA ACUMAR
+data_comp <- data_comp[data_comp$PM25 !=0,]
 # Agrupar por la columna 'estacion' y calcular las estad?sticas
 df <- data_comp %>%
   group_by(date, estacion) %>%
@@ -25,9 +28,14 @@ df <- data_comp %>%
     max = max(PM25, na.rm = TRUE),
     # Desviación estándar
     sd = sd(PM25, na.rm = TRUE),
-    mean_horario = mean(PM25[hour(horaDia) >= 8 & hour(horaDia) <= 23], na.rm = TRUE)
+    ## ACUMAR
+    mean_horario = mean(PM25[hour(horaDia) >= 8 & hour(horaDia) <= 20], na.rm = TRUE)
+    #EMBAJADA
+    #mean_horario = mean(PM25, na.rm = TRUE),
     
   )
+# prueba
+df_fil <- data_comp[hour(data_comp$horaDia) >= 8 & hour(data_comp$horaDia) <= 23,]
 
 df <- df[df$mean !=0,]
 df <- df[df$mean_horario !=0,]
@@ -36,16 +44,21 @@ df <- df[complete.cases(df$mean_horario),]
 
 
 write.csv(df,"D:/Josefina/Proyectos/ProyectoChile/BA/dataset/estaciones/proceed/PM25_Embajada_process.csv")
+
 write.csv(df,"D:/Josefina/Proyectos/ProyectoChile/BA/dataset/estaciones/proceed/PM25_ACUMAR_process.csv")
 
 data_embajada <- read.csv("D:/Josefina/Proyectos/ProyectoChile/BA/dataset/estaciones/proceed/PM25_embajada_process.csv")
 data_acumar <- read.csv("D:/Josefina/Proyectos/ProyectoChile/BA/dataset/estaciones/proceed/PM25_ACUMAR_process.csv")
 data_acumar$date <- as.POSIXct( strptime (data_acumar$date, format = "%Y-%m-%d"))#"%d/%m/%Y"))
-data_embajada$date <- as.POSIXct( strptime (data_embajada$date, format = "%Y-%m-%d"))
+data_embajada$date <- as.POSIXct( strptime (data_embajada$date, format = "%d/%m/%Y"))#"%Y-%m-%d"))
 data_embajada$mean_horario <- data_embajada$mean
 df_estaciones <- rbind(data_embajada,data_acumar)
 
 data_comp <- df_estaciones[complete.cases(df_estaciones$mean),]
+data_comp <- data_comp[data_comp$mean<100,]
+data_comp <- data_comp[data_comp$mean_horario<100,]
+write.csv(data_comp,"D:/Josefina/Proyectos/ProyectoChile/BA/proceed/06_estaciones/BA_estaciones.csv")
+
 ggplot(data_comp, aes(x = date)) +
 # Línea para Registros.validados
 geom_line(aes(y = mean, color = "mean"), size = 0.3,na.rm = TRUE) +

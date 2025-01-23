@@ -1,99 +1,102 @@
-##rm(list=ls())
-#NDVI
 
-estacion <- "MX"
-ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
-
-
-
-###########################################################################
-# -----------------------   01 MAIAC  ------------------------------
-###########################################################################
-
-
-dir_maiac <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/00_MAIAC/2021",sep="")
-dir_maiac_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2021/",sep="")
-
-setwd(dir_maiac)
-id <- list.files(path = dir_maiac,
-                 pattern = "*.hdf",
-                 full.names = FALSE)
-crs_project <- "+proj=longlat +datum=WGS84"
-raster_template <- ndvi_raster
-# 08:51
-i<-10
-for (i in 1:length(id)){
-  print(i)
-  data_maiac <- id[i]
-  nombre_maiac <- substr(data_maiac,10,16)
-  sds <- get_subdatasets(data_maiac)
-  info <- GDALinfo(data_maiac,returnScaleOffset=FALSE)
-  subdataset_metadata <- attr(info,"mdata")
-  orbitas<-(subdataset_metadata)[59]#58 Y 59
-  
-  orbit <- gsub(pattern = 'Orbit_time_stamp=', replacement = '', x = orbitas) # Remove "Orbit_time_stamp="
-  
-  orbit <- unlist(strsplit(orbit, split = ' ')) # Seperate the string array by spaces
-  sub.idx <- which(nchar(orbit) != 0) # Remove NA strings
-  orbit <- orbit[sub.idx]
-  
-  # --- For each orbit --- #
-
-  # Lista para guardar los rasters procesados
-  rasters_list <- list()
-  for (nband in 1: length(orbit)) {
-
-    #print(paste('Band:', orbit[nband]))
     
-    # --- Convert the data to raster --- #
+estacion <- "SP"
+numRaster<- "01"
+ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRaster,"_raster_template.tif",sep=""))
+year<- 2015
+
     
-    # Optical_Depth_055
-    gdal_translate(sds[2], dst_dataset = paste0('tmp055', basename(data_maiac), '.tiff'), b = nband)
-    # print(sds[2])
-    r.055 <- raster(paste0('tmp055', basename(data_maiac), '.tiff'))
+    ###########################################################################
+    # -----------------------   01 MAIAC  ------------------------------
+    ###########################################################################
     
-    # AOD_QA
-    gdal_translate(sds[6], dst_dataset = paste0('tmpqa', basename(data_maiac), '.tiff'), b = nband)
-    # print(sds[6])
-    r.QA <- raster(paste0('tmpqa', basename(data_maiac), '.tiff'))
-    SINU <- as.character(r.055@crs)
-    proj4string(r.055) <- CRS(SINU)
-    proj4string(r.QA) <- CRS(SINU)
-    r.055 <- projectRaster(r.055,crs = crs_project)
-    r.QA <- projectRaster(r.QA,crs = crs_project)
-    r.055 <- r.055 * 0.001   #factor de escala
-    cropped_r.055 <- crop(r.055, extent(ndvi_raster))
-    cropped_QA <- crop(r.QA, extent(ndvi_raster))
     
-    cropped_r.055 <- raster::resample(cropped_r.055, raster_template)
+    dir_maiac <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/00_MAIAC/",year,sep="")
+    dir_maiac_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/",sep="")
     
-    cropped_QA <- raster::resample(cropped_QA , raster_template)
-    # 1) Aplicar mascara de calidad (QA= 0000) a imagenes MODIS
-    cropped_QA[ cropped_QA] <- as.integer(substring(intToBin(cropped_QA[cropped_QA]), 4, 7)) #nos quedamos con los bits 8-11
-    cropped_QA[ cropped_QA != 0] <- NA
-    #Aplicar m?scara
-    r.055 <- mask(cropped_r.055, cropped_QA)
-    # Agregar el raster procesado a la lista
-    rasters_list[[nband]] <- r.055
-    file.remove(dir('./', paste0('tmp055', basename(data_maiac), '*')))
-    file.remove(dir('./', paste0('tmpqa', basename(data_maiac), '*')))
-    
-  }
-  #Crear el mosaico
-  if (length(rasters_list) > 1) {
-    # Crear el mosaico a partir de los rasters
-    mosaic_r.055 <- do.call(mosaic, c(rasters_list, fun = mean)) 
-    # Guardar el mosaico resultante
-    
-  } else {
-    # Si solo hay un raster, no se necesita mosaico
-    mosaic_r.055 <- rasters_list[[1]]
-  }
-  print(sum(is.na(mosaic_r.055[])))
-    ## Guardamos raster 
-  writeRaster(mosaic_r.055, filename = paste(dir_maiac_guardado,"tiff/00_MAIAC/",nombre_maiac,"-MAIAC_raster",sep = ""), format = "GTiff", overwrite = TRUE)
-  
-}
+    setwd(dir_maiac)
+    id <- list.files(path = dir_maiac,
+                     pattern = "*.hdf",
+                     full.names = FALSE)
+    crs_project <- "+proj=longlat +datum=WGS84"
+    raster_template <- ndvi_raster
+    # 08:51
+    i<-1
+    for (i in 1:length(id)){
+      print(i)
+      data_maiac <- id[i]
+      nombre_maiac <- substr(data_maiac,10,16)
+      sds <- get_subdatasets(data_maiac)
+      info <- GDALinfo(data_maiac,returnScaleOffset=FALSE)
+      subdataset_metadata <- attr(info,"mdata")
+      orbitas<-(subdataset_metadata)[59]#58 Y 59
+      
+      orbit <- gsub(pattern = 'Orbit_time_stamp=', replacement = '', x = orbitas) # Remove "Orbit_time_stamp="
+      
+      orbit <- unlist(strsplit(orbit, split = ' ')) # Seperate the string array by spaces
+      sub.idx <- which(nchar(orbit) != 0) # Remove NA strings
+      orbit <- orbit[sub.idx]
+      
+      # --- For each orbit --- #
+      
+      # Lista para guardar los rasters procesados
+      rasters_list <- list()
+      for (nband in 1: length(orbit)) {
+        
+        #print(paste('Band:', orbit[nband]))
+        
+        # --- Convert the data to raster --- #
+        
+        # Optical_Depth_055
+        gdal_translate(sds[2], dst_dataset = paste0('tmp055', basename(data_maiac), '.tiff'), b = nband)
+        # print(sds[2])
+        r.055 <- raster(paste0('tmp055', basename(data_maiac), '.tiff'))
+        
+        
+        # AOD_QA
+        #gdal_translate(sds[6], dst_dataset = paste0('tmpqa', basename(data_maiac), '.tiff'), b = nband)
+        # print(sds[6])
+        #r.QA <- raster(paste0('tmpqa', basename(data_maiac), '.tiff'))
+        SINU <- as.character(r.055@crs)
+        proj4string(r.055) <- CRS(SINU)
+        #proj4string(r.QA) <- CRS(SINU)
+        r.055 <- projectRaster(r.055,crs = crs_project)
+        #r.QA <- projectRaster(r.QA,crs = crs_project)
+        r.055 <- r.055 * 0.001   #factor de escala
+        cropped_r.055 <- crop(r.055, extent(ndvi_raster))
+        #cropped_QA <- crop(r.QA, extent(ndvi_raster))
+        
+        cropped_r.055 <- raster::resample(cropped_r.055, raster_template)
+        
+        #cropped_QA <- raster::resample(cropped_QA , raster_template)
+        # 1) Aplicar mascara de calidad (QA= 0000) a imagenes MODIS
+        #cropped_QA[ cropped_QA] <- as.integer(substring(intToBin(cropped_QA[cropped_QA]), 4, 7)) #nos quedamos con los bits 8-11
+        #cropped_QA[ cropped_QA != 0] <- NA
+        #Aplicar m?scara
+        #r.055 <- mask(cropped_r.055, cropped_QA)
+        r.055<-cropped_r.055
+        # Agregar el raster procesado a la lista
+        rasters_list[[nband]] <- r.055
+        file.remove(dir('./', paste0('tmp055', basename(data_maiac), '*')))
+        file.remove(dir('./', paste0('tmpqa', basename(data_maiac), '*')))
+        
+      }
+      #Crear el mosaico
+      if (length(rasters_list) > 1) {
+        #print("entro en length(rasters_list) > 1")
+        # Crear el mosaico a partir de los rasters
+        mosaic_r.055 <- do.call(mosaic, c(rasters_list, fun = mean, na.rm = TRUE)) 
+        # Guardar el mosaico resultante
+        
+      } else {
+        # Si solo hay un raster, no se necesita mosaico
+        mosaic_r.055 <- rasters_list[[1]]
+      }
+      print(sum(is.na(mosaic_r.055[])))
+      ## Guardamos raster 
+      writeRaster(mosaic_r.055, filename = paste(dir_maiac_guardado,"tiff/00_MAIAC/",nombre_maiac,"-MAIAC_raster_",numRaster,sep = ""), format = "GTiff", overwrite = TRUE)
+      
+    }
 1# cuantos valores NA hay
 num_na <- sum(is.na(mosaic_r.055[]))
 
@@ -110,15 +113,17 @@ print(num_na)
 # -----------------------   01 NDVI  ------------------------------
 ###########################################################################
 rm(list=ls())
-#01 NDVI
-#https://lpdaac.usgs.gov/products/mod13a3v061/
-# data_ndvi <- "01_NDVI/MOD13A3.A2019001.h12v12.061.2020286171223.hdf"
 
+
+estacion <- "MX"
+numRAster<- "01"
+ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRAster,"_raster_template.tif",sep=""))
+year<- 2015
 
 
 # dir_ndvi <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/01_NDVI"
 dir_ndvi <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/01_NDVI",sep="")
-dir_ndvi_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_2015/",sep = "")
+dir_ndvi_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/",sep = "")
 
 ndvi_raster_recorte<- ndvi_raster
 setwd(dir_ndvi)

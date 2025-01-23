@@ -5,15 +5,15 @@ library(raster)
 # Definir el directorio donde están tus archivos raster
 rm(list = ls())
 #dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/Salida/Salida_02-XGB_cv_M4-300924/"
-month <- c("01","02","03","04","05","06","07","08","09","10")#,"11","12")
-year <- "2024"
+month <- c("01","02","03","04","05","06","07","08","09","10","11","12")
+year <- "2018"
 i<-1
-month <- c("01")
-estacion <- "BA"
+modelo <- "02-RF_cv_M1-251124_SP"
+estacion <- "SP"
 for (i in 1:length(month)){
   print(i)
   #dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasDiarias/Salida_03-XGB_cv_M1-041024/",year,"/",month[i],sep="")
-  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/salidas/SalidasDiarias/Salida_02-RF_cv_M1-171224_BA/",year,"/",month[i],sep="")
+  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/salidas/SalidasDiarias/",modelo,"/",year,"/",month[i],sep="")
   setwd(dir_salida)
   
   # Lista de archivos raster (ajusta la extensión según sea necesario)
@@ -31,13 +31,13 @@ for (i in 1:length(month)){
   # Calcular el coeficiente de variacion
   #coef_Var <- (sd_mensual / promedio_mensual) * 100
   #plot(promedio_mensual)
-  modelo <- substr(lista_raster[1],15,35)
+  modelo_2 <- substr(lista_raster[1],14,34)
   # Guardar el resultado en un nuevo archivo raster
   #dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasMensuales/Salida_03-XGB_cv_M1-041024/"
   #dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasMensuales/Salida_03-XGB_cv_M1-041024/Coef_Var/"
-  dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/salidas/SalidasMensuales/Salida_02-RF_cv_M1-171224_BA/",year,"/",sep="")
+  dir_salida_tiff <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/salidas/SalidasMensuales/",modelo,"/",year,"/",sep="")
   
-  writeRaster(promedio_mensual, filename = paste(dir_salida,"mensual_",month[i],"-",year,"-",modelo,".tif",sep=""), format = "GTiff", overwrite = TRUE)
+  writeRaster(promedio_mensual, filename = paste(dir_salida_tiff,"mensual_",month[i],"-",year,"-",modelo_2,".tif",sep=""), format = "GTiff", overwrite = TRUE)
 }
 ###########################################################################
 ############################################################################

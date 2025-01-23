@@ -2,7 +2,7 @@
 nameVar = "blh"
 #process_era5 <- function (coordenadas_sitio,sitio,path){
   year <- 2020
-  estacion <- "MX"
+  estacion <- "MD"
   data_estacciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/sitios_",estacion,".csv",sep=""))
   #data_estacciones <- data_estacciones[data_estacciones$Considerado == "SI",]
   #data_estacciones <- data_estacciones[22:24,]
@@ -13,7 +13,7 @@ nameVar = "blh"
 
   #dire <- paste("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/meteoSatelital/",year, "/01-03-2017",sep="")
   dire <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/TP/",year,sep="")
-  dire <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/TP/",sep="")#,year,sep="")
+  #dire <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/TP/",sep="")#,year,sep="")
   setwd(dire)
 
   raster_template <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
@@ -21,7 +21,7 @@ nameVar = "blh"
   id <- list.files(path = getwd(),
                    pattern = "*.nc",
                    full.names = FALSE)
-  i<-1
+  i<-283
   for (i in 1:length(id)){
     
     #print(paste("Esto es i = ", i, sep= ""))

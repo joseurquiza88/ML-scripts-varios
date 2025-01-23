@@ -15,12 +15,13 @@ set.seed(42)
 # train_data <- data_completo[train_index, ]
 # test_data <- data_completo[-train_index, ]
 
+estacion <-"MD"
+modelo <- "3"
 
-dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
-dir <- "D:/Josefina/Proyectos/ProyectoChile/SP/modelos/ParticionDataSet/"
+dir <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/",sep="")
 setwd(dir)
-train_data <- read.csv(paste(dir,"Modelo 1/M1_train.csv",sep=""))
-test_data <- read.csv(paste(dir,"Modelo 1/M1_test.csv",sep=""))
+train_data <- read.csv(paste(dir,"Modelo_",modelo,"/M",modelo,"_train_",estacion,".csv",sep=""))
+test_data <- read.csv(paste(dir,"Modelo_",modelo,"/M",modelo,"_test_",estacion,".csv",sep=""))
 # Entrenar el modelo de regresión lineal múltiple
 lm_model <- lm(PM25 ~ AOD_055 + ndvi +  BCSMASS +#LandCover
                  DUSMASS + DUSMASS25 + OCSMASS + SO2SMASS+
@@ -51,29 +52,10 @@ cat("R²:", r_squared, "/n")
 
 ####################################################################
 ####################################################################
-####################################################################
-dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/"
-setwd(dir)
-train_data <- read.csv(paste(dir,"Modelo 1/M1_train.csv",sep=""))
-test_data <- read.csv(paste(dir,"Modelo 1/M1_test.csv",sep=""))
+
 # Definir el control de entrenamiento con validaciÃ³n cruzada de 10 pliegues
 train_control <- trainControl(method = "cv", number = 10)
 
-# Entrenar el modelo de regresión lineal múltiple con validación cruzada
-lm_cv_model <- train(PM25 ~ AOD_055 + ndvi +  LandCover + BCSMASS +
-                       DUSMASS + DUSMASS25 + OCSMASS + SO2SMASS+
-                       SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
-                       sp_mean + d2m_mean + t2m_mean + v10_mean + 
-                       u10_mean + tp_mean + DEM + dayWeek,
-                     data = train_data, method = "lm", trControl = train_control)
-lm_cv_model <- train(PM25 ~ AOD_055 + ndvi +  LandCover + BCSMASS_dia +
-                       DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia +
-                       SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
-                       sp_mean + d2m_mean + t2m_mean + v10_mean + 
-                       u10_mean + tp_mean + DEM + dayWeek,
-                     data = train_data, method = "lm", trControl = train_control)
-names(train_data)
-# SP
 names(test_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",                 
                       "ndvi" ,  "BCSMASS_dia",                  
                       "DUSMASS_dia" ,"DUSMASS25_dia", "OCSMASS_dia", "SO2SMASS_dia" ,"SO4SMASS_dia",
@@ -97,91 +79,74 @@ names(train_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",
                        "u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
 
 
-lm_cv_model <- train(PM25 ~ AOD_055 + ndvi +   BCSMASS_dia + #LandCover
+lm_cv_model <- train(PM25 ~ AOD_055 + ndvi +  BCSMASS_dia +
                        DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia +
                        SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia + blh_mean +
                        sp_mean + d2m_mean + t2m_mean + v10_mean + 
                        u10_mean + tp_mean + DEM + dayWeek,
                      data = train_data, method = "lm", trControl = train_control)
-
-lm_cv_model <- train(PM25 ~ AOD_055,
-                     data = train_data, method = "lm", trControl = train_control)
-
+names(train_data)
 # Mostrar los resultados del modelo
 print(lm_cv_model)
 
-# Hacer predicciones
-predicciones <- predict(lm_cv_model, newdata = test_data)
-#predicciones <- exp(predicciones)
+predictions <- predict(lm_cv_model, newdata = test_data)
+predictions_train <- predict(lm_cv_model, newdata = train_data)
+predicciones_hora<- predictions
+
+#Calcular el coeficiente de determinación (R²)
+lm_r_squared_hora <- cor(predicciones_hora, test_data$PM25)^2
+lm_r_squared_train <- cor(predictions_train, train_data$PM25)^2
 
 
+# Calcular el coeficiente de Pearson
+pearson_cor_hora <- cor(test_data$PM25, predicciones_hora, method = "pearson")
+pearson_train <- cor(train_data$PM25, predictions_train, method = "pearson")
 
-# Comparar predicciones con valores reales
-resultado <- data.frame(Real = test_data$PM25, Predicho = predicciones)
-#print(resultado)
+# Calcular el error cuadrático medio (RMSE)
+lm_rmse_hora <- sqrt(mean((predicciones_hora - test_data$PM25)^2))
+lm_rmse_train <- sqrt(mean((predictions_train - train_data$PM25)^2))
 
+# 3. Calcular el MAE (Mean Absolute Error)
+mae_hora <- mean(abs(test_data$PM25 - predicciones_hora))
+mae_train <- mean(abs(train_data$PM25 - predictions_train))
 
-rmse_cv <- sqrt(mean((predicciones - test_data$PM25)^2))
-r_squared_cv <- cor(predicciones, test_data$PM25)^2
-mae_cv <- mean(abs(test_data$PM25 - predicciones))
-mape_cv <- mean(abs((test_data$PM25 - predicciones) / test_data$PM25)) * 100
-mse_cv <- mean((test_data$PM25 - predicciones)^2)
-medae_cv <- median(abs(test_data$PM25 - predicciones))
-pearson_cor_cv <- cor(test_data$PM25, predicciones, method = "pearson")
+# 4. Calcular el MAPE (Mean Absolute Percentage Error)
+mape_hora <- mean(abs((test_data$PM25 - predicciones_hora) / test_data$PM25)) * 100
+mape_train <- mean(abs((train_data$PM25 - predictions_train) / train_data$PM25)) * 100
 
-cat("R²:", r_squared_cv, "\n")
-print(paste("R pearson cv:", round(pearson_cor_cv, 3)))
-cat("RMSE:", rmse_cv, "\n")
-print(paste("MAE cv:", round(mae_cv, 3)))
-print(paste("MAPE cv:", round(mape_cv, 2), "%"))
-print(paste("MSE:", round(mse_cv, 3)))
-print(paste("MedAE cv:", round(medae_cv, 3)))
-min(predicciones)
-max(predicciones)
+# 5. Calcular el MSE (Mean Squared Error)
+mse_hora <- mean((test_data$PM25 - predicciones_hora)^2)
+mse_train <- mean((train_data$PM25 - predictions_train)^2)
 
-#########################################################
-##########################################################
-#Predicciones con dataest de entrenamiento
-# Hacer predicciones
-predicciones_train <- predict(lm_cv_model, newdata = train_data)
-#predicciones_train <- exp(predicciones_train)
-# Comparar predicciones con valores reales
-resultado_train <- data.frame(Real = train_data$PM25, Predicho = predicciones_train)
+# 6. Calcular el MedAE (Median Absolute Error)
+medae_hora <- median(abs(test_data$PM25 - predicciones_hora))
+medae_train <- median(abs(train_data$PM25 - predictions_train))
 
+### Test
+print(paste("R2 test:", round(lm_r_squared_hora, 5)))
+print(paste("R pearson test:", round(pearson_cor_hora, 2)))
+print(paste("RMSE test:", round(lm_rmse_hora, 2)))
+print(paste("mae test:", round(mae_hora, 2)))
+print(paste("MAPE test:", round(mape_hora, 2), "%"))
+print(paste("MSE test:", round(mse_hora, 2)))
+print(paste("MedAE test:", round(medae_hora,2)))
+min(predictions)
+max(predictions)
+## Train
+print(paste("R2 train:", round(lm_r_squared_train, 5)))
+print(paste("R pearson train:", round(pearson_train, 2)))
+print(paste("RMSE train:", round(lm_rmse_train, 2)))
+print(paste("mae train:", round(mae_train, 2)))
+print(paste("MAPE train:", round(mape_train, 2), "%"))
+print(paste("MSE train:", round(mse_train, 2)))
+print(paste("MedAE train:", round(medae_train,2)))
+min(predictions_train)
+max(predictions_train)
 
-
-rmse_cv_train <- sqrt(mean((predicciones_train - train_data$PM25)^2))
-r_squared_cv_train <- cor(predicciones_train, train_data$PM25)^2
-mae_cv_train <- mean(abs(train_data$PM25 - predicciones_train))
-mape_cv_train <- mean(abs((train_data$PM25 - predicciones_train) / train_data$PM25)) * 100
-mse_cv_train <- mean((train_data$PM25 - predicciones_train)^2)
-medae_cv_train <- median(abs(train_data$PM25 - predicciones_train))
-pearson_cor_cv_train <- cor(train_data$PM25, predicciones_train, method = "pearson")
-
-cat("R² train:", r_squared_cv_train, "\n")
-print(paste("R pearson cv train:", round(pearson_cor_cv_train, 3)))
-cat("RMSE train:", rmse_cv_train, "\n")
-print(paste("MAE train cv:", round(mae_cv_train, 3)))
-print(paste("MAPE train cv:", round(mape_cv_train, 2), "%"))
-print(paste("MSE train:", round(mse_cv_train, 3)))
-print(paste("MedAE traincv:", round(medae_cv_train, 3)))
-min(predicciones_train)
-max(predicciones_train)
-
-
-
-
-
-
-# Guardar el modelo entrenado
+setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep=""))
 getwd()
-setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
+save(lm_cv_model, file=paste("02-RLM-M",modelo,"_090125",estacion,".RData",sep=""))
 
-# save(lm_model, file="01-RL_260824.RData")
-save(lm_cv_model, file="02-RLM_cv_M1-141024.RData")
-
-
-print("Modelo Random Forest entrenado y guardado en 'random_forest_model.RData'.")
 
 ################################################################################
 ################################################################################

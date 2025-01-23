@@ -4,10 +4,11 @@ library(raster)
 library(caret) #version 4.2.3
 rm(list=ls())
 
-estacion <- "MX"
+estacion <- "BA"
+modelo <- "1"
 #Data modelo 1
-test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_5/M5_test_",estacion,".csv",sep=""))
-train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_5/M5_train_",estacion,".csv",sep=""))
+test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_test_",estacion,".csv",sep=""))
+train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_train_",estacion,".csv",sep=""))
 
 
 # Entrenar el modelo de Random Forest
@@ -77,30 +78,23 @@ names(train_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",
                       "u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
 
 
-rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + #LandCover + 
+rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + #LandCover +
                        BCSMASS_dia +DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia
                      + SO2SMASS_dia+
                       SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia +
                        blh_mean +
                        sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean +
-                       tp_mean + DEM + dayWeek, data = train_data, method = "rf", 
+                       tp_mean + DEM + dayWeek, data = train_data, method = "rf",
                      trControl = train_control,importance = TRUE)
-
-14:29
-# rf_cv_model <- train(PM25 ~ AOD_055 + ndvi  + BCSMASS_dia +
-#                        DUSMASS_dia + DUSMASS25_dia + OCSMASS_dia + SO2SMASS_dia+
-#                        SO4SMASS_dia + SSSMASS_dia + blh_mean +
-#                        sp_mean + d2m_mean + t2m_mean + v10_mean +
-#                        u10_mean + tp_mean + DEM + dayWeek, data = train_data,
-#                      method = "rf", trControl = train_control,importance = TRUE)
-
-rf_cv_model <- train(PM25 ~ AOD_055 + ndvi  +  blh_mean +
-                       sp_mean + d2m_mean + t2m_mean + v10_mean +
-                       u10_mean + tp_mean + DEM + dayWeek, data = train_data,
-                     method = "rf", trControl = train_control,importance = TRUE)
-
-
-11:47 -
+09:10-09:42
+#########
+## Sin variables MERRA
+# rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + 
+#                        blh_mean +
+#                        sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean +
+#                        tp_mean + DEM + dayWeek, data = train_data, method = "rf", 
+#                      trControl = train_control,importance = TRUE)
+09:06-11
 print(rf_cv_model)
 print(rf_cv_model$results)
 
@@ -112,6 +106,7 @@ importance(rf_cv_model)
 
 # Predecir en el conjunto de testeo
 test_data$PM25 <- log(test_data$PM25)
+
 
 predictions <- predict(rf_cv_model, newdata = test_data)
 predictions_train <- predict(rf_cv_model, newdata = train_data)
@@ -195,11 +190,14 @@ min(predictions_train)
 max(predictions_train)
 View(b)
 # Guardar el modelo entrenado
-getwd()
-setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
-setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep=""))
-save(rf_cv_model, file="02-RF_cv_M3-261224_MX.RData")
 
+#setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
+setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep=""))
+getwd()
+save(rf_cv_model, file=paste("02-RF_cv_M",modelo,"-100125-",estacion,".RData",sep=""))
+
+# SIN MERRA
+#save(rf_cv_model, file=paste("06-RF_cv_M",modelo,"-090125-E_",estacion,".RData",sep=""))
 
 print("Modelo Random Forest entrenado y guardado en 'random_forest_model.RData'.")
 ################################################################################

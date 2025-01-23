@@ -1,6 +1,6 @@
 
 direccion <- "D:/Josefina/Proyectos/ProyectoChile/MD/dataset/estaciones/"
-estacion <- "ID 94 V02"
+estacion <- "ID 28 V02"
 setwd(paste(direccion,estacion, sep =""))
 id <- list.files(path = getwd(),
                  pattern = "*.csv",
@@ -76,6 +76,9 @@ class(df_rbind$date)
 df_rbind$date <- as.POSIXct( strptime (df_rbind$date, format = "%Y-%m-%d"))
 
 write.csv(df_rbind,"D:/Josefina/Proyectos/ProyectoChile/MD/proceed/06_estaciones/MD_estaciones.csv")
+
+df_rbind<- read.csv("D:/Josefina/Proyectos/ProyectoChile/MD/proceed/06_estaciones/MD_estaciones.csv")
+df_rbind$date <- as.POSIXct(strptime(df_rbind$date, format = "%d/%m/%Y"))
 ggplot(df_rbind, aes(x = date)) +
   # Línea para Registros.validados
   geom_line(aes(y = mean, color = "mean"), size = 0.3,na.rm = TRUE) +

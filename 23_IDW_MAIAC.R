@@ -3,16 +3,13 @@ library(maptools)
 library(dismo) #kfold
 library(caret)
 library(parallel)
-# SANTAIAGO
-# dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2022/tiff/00_MAIAC/00_MAIAC_IDW/"
-# dir_maiac <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2022/tiff/00_MAIAC/"
-
-#TALCA
-# dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/tiff/00_MAIAC/00_MAIAC_IDW/"
-# dir_maiac <- "D:/Josefina/Proyectos/ProyectoChile/talca/modelos/dataset_ejemplo/Prediccion_2015/tiff/00_MAIAC/"
 estacion<- "MX"
-year <- 2024
+year <- 2019
+numRaster<- "01"
 #SP
+#dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/tiff/00_MAIAC/00_MAIAC_IDW/",sep="")
+#dir_maiac <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/tiff/00_MAIAC/",sep="")
+
 dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/tiff/00_MAIAC/00_MAIAC_IDW/",sep="")
 dir_maiac <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/tiff/00_MAIAC/",sep="")
 
@@ -23,7 +20,7 @@ fs <- list.files(path = dir_maiac,
                  pattern = "tif",
                  full.names = FALSE)
 
-ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
+ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRaster,"_raster_template.tif",sep=""))
 
 
 raster_template <- ndvi_raster
@@ -36,7 +33,7 @@ kfold = 5# numero de k-fold cross validation
 
 i<-1
 
-for( i in 1:length(fs)){
+for( i in 65:length(fs)){
   print(i)
   raster_fs <- raster(fs[i], sep="")
   filename <- paste("IDW-", fs[i], sep="")
@@ -52,7 +49,10 @@ for( i in 1:length(fs)){
     # if(nrow(raster_points) > 105){ ## SANTIAGO
     ## SP 5235 pixeles ==> 10% 523 / 5% 261 PIXELES, 3% 157pixeles
     ## BA 8028.8pixeles ==> 20%
-    if(nrow(raster_points) > 300){
+    ### MD 952 Pixeles ==  10%
+    ## MX 9222 Pixeles ==% 10
+    
+    if(nrow(raster_points) > 922){ # esto no me habla de los nans me habla de los pixeles con datos
       coordinates(raster_points) <- ~x+y
       #raster_points@proj4string
       projection(raster_points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
@@ -87,7 +87,8 @@ for( i in 1:length(fs)){
       writeRaster(final.idw, paste(dir_salida, filename, sep = ""), 
                   format = "GTiff",
                   overwrite = TRUE)
-      
+      num_na_salida <- sum(is.na(final.idw[]))
+      print(c("NA ", num_na_salida,"------",nrow(raster_points)))
       rm(raster_template, train, test, kat.idw,raster_fs)
       
     }

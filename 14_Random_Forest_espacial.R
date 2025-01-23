@@ -5,6 +5,7 @@ library(raster)
 library(caret) #version 4.2.3
 rm(list=ls())
 
+
 #Data modelo 1
 # Estos datos corresponden al dataset completo - 4 estaciones que tenian
 # 4-5 datos
@@ -14,10 +15,12 @@ rm(list=ls())
 
 
 #Data modelo 1
-data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/SP/modelos/ParticionDataSet/Modelo 6/SP_merge_comp_modif.csv")
+estacion <- "MX"
+modelo<-6
+data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/",estacion,"_merge_comp.csv",sep=""))
 #data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 7/09_TOT_merge_tot.csv")
 data <- data[complete.cases(data), ]
-data$date <- strptime(data$date, format = "%d/%m/%Y")#"%Y-%m-%d")
+data$date <- strptime(data$date, format = "%Y-%m-%d")#"%d/%m/%Y")#
 data$dayWeek <- wday(data$date, week_start = 1)
 
 
@@ -45,6 +48,11 @@ length(estaciones)
 set.seed(123)  # Para reproducibilidad
 subsets <- createFolds(estaciones, k = 12, list = TRUE, returnTrain = FALSE)
 subsets <- createFolds(estaciones, k = 8, list = TRUE, returnTrain = FALSE)
+#MD
+subsets <- createFolds(estaciones, k = 17, list = TRUE, returnTrain = FALSE)
+#MX
+subsets <- createFolds(estaciones, k = 22, list = TRUE, returnTrain = FALSE)
+
 # Muestra los valores reales asociados a cada fold, los ID de cada estacion
 subsets <- lapply(subsets, function(idx) estaciones[idx])
 
@@ -52,19 +60,18 @@ subsets <- lapply(subsets, function(idx) estaciones[idx])
 # Los ID son caracteres por eso los ordena de esa forma
 print(subsets)
 
-dir <- "D:/Josefina/Proyectos/ProyectoChile/SP/modelos/modelo/ModeloEspacial/"
-dir <- "D:/Josefina/Proyectos/ProyectoChile/modelos/modelo/ModeloEspacial/"
+dir <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/",estacion,"modelo/ModeloEspacial/",sep="")
 
-spatial_cv <- function(data, subsets,dir) {
-  resultados_rbind <- data.frame()  # DataFrame para las métricas
+#spatial_cv <- function(data, subsets,dir,numFolds) {
+  resultados_rbind <- data.frame()  # DataFrame para las m?tricas
   models <- list()   # Lista para almacenar todos los modelos
   
   # Iniciar con valores altos
   best_model <- NULL
   best_rmse <- Inf 
   train_control <- trainControl(
-    method = "cv",          # Método de validación cruzada
-    number = 5,            # Número de pliegues para la validación cruzada
+    method = "cv",          # M?todo de validaci?n cruzada
+    number = 3,            # N?mero de pliegues para la validaci?n cruzada
     verboseIter = TRUE,     # Mostrar progreso de entrenamiento
     allowParallel = TRUE    # Permitir procesamiento paralelo
   )
@@ -72,8 +79,8 @@ spatial_cv <- function(data, subsets,dir) {
   for (i in 1:length(subsets)) {
     print(paste("Fold", i))
     
-    # Dividir el conjunto de datos en entrenamiento y validación según estaciones
-    validation_stations <- subsets[[i]]  # Estaciones para validación
+    # Dividir el conjunto de datos en entrenamiento y validaci?n seg?n estaciones
+    validation_stations <- subsets[[i]]  # Estaciones para validaci?n
     training_stations <- setdiff(estaciones, validation_stations)  # Resto de las estaciones para entrenar
     
     train_data_fold <- data[data$ID %in% training_stations, ]
@@ -89,10 +96,10 @@ spatial_cv <- function(data, subsets,dir) {
                       data = train_data_fold, method = "rf", #trControl = trainControl(method = "none"),
                       importance = TRUE)
     
-    # Realizar predicciones sobre el conjunto de validación
+    # Realizar predicciones sobre el conjunto de validaci?n
     predictions <- predict(rf_model, valid_data_fold)
     
-    # Calcular métricas de testeo
+    # Calcular m?tricas de testeo
     rmse <- sqrt(mean((predictions - valid_data_fold$PM25)^2))
     r2 <- cor(predictions, valid_data_fold$PM25)^2  
     r <- cor(valid_data_fold$PM25, predictions, method = "pearson")
@@ -115,12 +122,12 @@ spatial_cv <- function(data, subsets,dir) {
     min_train <- min(predictions_train)
     max_train <- max(predictions_train)
     
-    # Guardar el modelo con un nombre basado en la estación que quedó fuera
+    # Guardar el modelo con un nombre basado en la estaci?n que qued? fuera
     model_name <- paste0(dir,"modelo_estacion_", paste(validation_stations, collapse = "_"), ".RData")
     #save(rf_model, file = model_name)
     models[[i]] <- model_name  # Registrar el nombre del modelo
     
-    # Guardar métricas en el DataFrame
+    # Guardar m?tricas en el DataFrame
     # R2	R	RMSE	MAE	MAPE	MSE	MedAE	Min	Max
     resultados <- data.frame(iteracion = i, estacion_fuera = paste(validation_stations, collapse = ","),
                              r2 = r2,r=r,rmse = rmse,mae=mae, mape=mape, mse=mse,
@@ -140,25 +147,24 @@ spatial_cv <- function(data, subsets,dir) {
     #   best_model <- rf_model  
     # }
   }
-  16:40
+  
   # Guardar todos los resultados en un archivo .RData
   #save(resultados_rbind, file = "resultados_metricas.RData")
   
-  # Retornar el DataFrame con las métricas
-  return(resultados_rbind)
+  # Retornar el DataFrame con las m?tricas
+  #return(resultados_rbind)
 }
 
 
 # Correr la funcion
-cv_results <- spatial_cv(data, subsets,dir)
-16:40
+cv_results <- spatial_cv(data, subsets,dir,numFolds=3)
+08:51
 # Ver los resultados de la validacin cruzada
 cv_results$rmse_avg
 cv_results$r2_avg
+setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep=""))
+# getwd()
+# save(lm_cv_model, file=paste("02-RLM-M",modelo,"_100125",estacion,".RData",sep=""))
 
-# Guardar el mejor modelo
-save(cv_results$best_model, file = "best_rf_model.RData")
-setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
-save(cv_results, file="08-RF_cv_M6-261124.RData")
-write.csv(cv_results,"cv_results.csv")
+write.csv(cv_results,paste("cv_results_",estacion,".csv",sep=""))
 load("08-RF_cv_M6-261124_SP.RData")

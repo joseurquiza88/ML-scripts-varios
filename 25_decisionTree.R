@@ -1,13 +1,15 @@
 library(rpart)
 library(rpart.plot)
+estacion <- "SP"
+modelo <- 2
 
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 1/M1_train.csv")
+test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_test_",estacion,".csv",sep=""))
+train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_train_",estacion,".csv",sep=""))
 
 # Definir la fórmula del modelo
-formula <- PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS + DUSMASS + DUSMASS25 + 
-  OCSMASS + SO2SMASS + SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
-  sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean + tp_mean + DEM + dayWeek
+# formula <- PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS + DUSMASS + DUSMASS25 + 
+#   OCSMASS + SO2SMASS + SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
+#   sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean + tp_mean + DEM + dayWeek
 
 # Definir la fórmula del modelo
 formula <- PM25 ~ AOD_055 + ndvi +  BCSMASS_dia + DUSMASS_dia  + DUSMASS25_dia  + 
@@ -71,18 +73,38 @@ text(decision_tree_model, pretty = 1)
 
 ################################################################################################
 ################################################################################################
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 5/M5_train.csv")
-# Entrenar el modelo usando caret y rpart
-# decision_tree_model_cv <- train(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS + DUSMASS + DUSMASS25 + 
-#                                   OCSMASS + SO2SMASS + SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
-#                                   sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean + tp_mean + DEM + dayWeek, data = train_data, 
-#                                 method = "rpart", 
-#                                 tuneLength = 5,
-#                                 trControl = control)
+estacion <- "MD"
+modelo <- 3
+test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_test_",estacion,".csv",sep=""))
+train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_train_",estacion,".csv",sep=""))
+
+names(test_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",                 
+                      "ndvi" ,  "BCSMASS_dia",                  
+                      "DUSMASS_dia" ,"DUSMASS25_dia", "OCSMASS_dia", "SO2SMASS_dia" ,"SO4SMASS_dia",
+                      "SSSMASS_dia", "SSSMASS25_dia",                 
+                      "blh_mean","blh_min","blh_max"  ,"blh_sd","blh_mean_subt", "sp_mean",                  
+                      "sp_min", "sp_max","sp_sd"   ,"sp_mean_subt","d2m_mean","d2m_min",                  
+                      "d2m_max","d2m_sd" , "d2m_mean_subt",  "t2m_mean", "t2m_min", "t2m_max",                  
+                      "t2m_sd",  "t2m_mean_subt", "v10_mean",  "v10_min" , "v10_max" ,"v10_sd"  ,                 
+                      "v10_mean_subt", "u10_mean" , "u10_min"  , "u10_max","u10_sd",
+                      "u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
+
+names(train_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",                 
+                       "ndvi" ,  "BCSMASS_dia",                  
+                       "DUSMASS_dia" ,"DUSMASS25_dia", "OCSMASS_dia", "SO2SMASS_dia" ,"SO4SMASS_dia",
+                       "SSSMASS_dia",  "SSSMASS25_dia",                  
+                       "blh_mean","blh_min","blh_max"  ,"blh_sd","blh_mean_subt", "sp_mean",                  
+                       "sp_min", "sp_max","sp_sd"   ,"sp_mean_subt","d2m_mean","d2m_min",                  
+                       "d2m_max","d2m_sd" , "d2m_mean_subt",  "t2m_mean", "t2m_min", "t2m_max",                  
+                       "t2m_sd",  "t2m_mean_subt", "v10_mean",  "v10_min" , "v10_max" ,"v10_sd"  ,                 
+                       "v10_mean_subt", "u10_mean" , "u10_min"  , "u10_max","u10_sd",
+                       "u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
+
+
+
 # Definir la fórmula del modelo
-formula <- PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS + DUSMASS + DUSMASS25 + 
-  OCSMASS + SO2SMASS + SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
+formula <- PM25 ~ AOD_055 + ndvi + BCSMASS_dia + DUSMASS_dia + DUSMASS25_dia + 
+  OCSMASS_dia + SO2SMASS_dia + SO4SMASS_dia + SSSMASS_dia+ SSSMASS25_dia + blh_mean +
   sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean + tp_mean + DEM + dayWeek
 # Configurar la validación cruzada de 10 pliegues
 control <- trainControl(method = "cv", number = 10)
@@ -94,6 +116,8 @@ decision_tree_model_cv <- train(formula, data = train_data,
                                 method = "rpart", 
                                 trControl = control, 
                                 tuneGrid = tuneGrid)
+
+
 print(decision_tree_model_cv$bestTune)
 print(decision_tree_model_cv$results)
 # Predicción sobre el conjunto de test
@@ -150,9 +174,11 @@ print(paste("MedAE train:", round(medae_train,2)))
 min(predicciones_train)
 max(predicciones_train)
 
-setwd("D:/Josefina/Proyectos/ProyectoChile/SP/modelos/modelo")
+setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep=""))
+getwd()
+save(decision_tree_model_cv, file=paste("02-DTree-M",modelo,"_090125",estacion,".RData",sep=""))
 
-save(decision_tree_model_cv, file="02-DTree_cv_M1-201124.RData")
+
 
 ##############################################################################
 ##############################################################################

@@ -3,9 +3,9 @@
 #Manualmente los separamos despues del codigo 02_procesamiento
 rm(list=ls())
 # dire <- "DJosefina/Proyectos/ProyectoChile/dataset/meteoSatelital/2015/02-2015/proceed/v10"
-tipo <- c("blh","d2m","t2m","sp","u10","v10","tp")
-estacion<- "MX"
-year <- 2023
+tipo <- "tp"
+estacion<- "MD"
+year <- 2020
 j<-1
 for (j in 1:length(tipo)){
   print("--------------------")
@@ -62,7 +62,7 @@ View(df_rbind)
 
 ################
 rm(list=ls())
-estacion <- "MX"
+estacion <- "MD"
 tipo <- "u10"
 dire <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/05_ERA5/tot/",tipo,sep="")
 setwd(dire)
@@ -78,7 +78,7 @@ write.csv(df_rbind, paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proc
 ######
 #nimos dataset merge por dia
 rm(list=ls())
-estacion <- "MX"
+estacion <- "MD"
 dire <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/05_ERA5/tot/",sep="")
 
 setwd(dire)
@@ -145,8 +145,8 @@ for (x in 1:1){
   data_v10$date <- as.Date(data_v10$date, format = "%Y-%m-%d")#"%Y-%m-%d")#"%d/%m/%Y")
   data_v10 <- data_v10[data_v10$ID != 0,]
   #length(unique(data_v10$ID))
-  merged_df <- merge(data_blh, data_d2m, by = c("date", "estacion"), all.y = FALSE, all.x = FALSE)
-  merged_df <- merged_df[complete.cases(merged_df),]
+  #merged_df <- merge(data_blh, data_d2m, by = c("date", "estacion"), all.y = FALSE, all.x = FALSE)
+  #merged_df <- merged_df[complete.cases(merged_df),]
   merged_df <- data_blh %>%
     left_join(data_d2m, by = c("ID","date")) %>%
     left_join(data_sp, by = c("ID","date") )%>%

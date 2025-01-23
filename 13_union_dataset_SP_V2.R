@@ -2,7 +2,7 @@
 rm(list=ls())
 #Objetivo unir todos dataset, hacer un merge por dia
 # Directorio
-estacion <- "MX"
+estacion <- "BA"
 setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/",sep=""))
 
 ## Vemos cuantas estaciones hay
@@ -17,6 +17,7 @@ df_date <- data.frame(date = date)
 df_date$date <- strptime(df_date$date, format = "%Y-%m-%d")
 #unique(data_pm$estacion)
 
+
 df_date_1 <- df_date
 df_date_1$ID <- 1
 df_date_2 <- df_date
@@ -30,72 +31,96 @@ df_date_5$ID <- 5
 df_date_6 <- df_date
 df_date_6$ID <- 6
 df_date_7 <- df_date
-df_date_7$ID <- 7
+df_date_7$ID <-   41#7
 df_date_8 <- df_date
-df_date_8$ID <- 8
+df_date_8$ID <- 43#8
 df_date_9 <- df_date
-df_date_9$ID <- 9
+df_date_9$ID <-   46 # 9
 df_date_10 <- df_date
-df_date_10$ID <- 10
+df_date_10$ID <-  69#10
 df_date_11 <- df_date
-df_date_11$ID <- 11
+df_date_11$ID <-  78# 11
 df_date_12 <- df_date
-df_date_12$ID <- 12
+df_date_12$ID <-   79  #12
 df_date_13 <- df_date
-df_date_13$ID <- 13
+df_date_13$ID <-  80# 13
 df_date_14 <- df_date
-df_date_14$ID <- 14
+df_date_14$ID <-   81 #14
 df_date_15<- df_date
-df_date_15$ID <- 15
+df_date_15$ID <-   82 # 15
 df_date_16 <- df_date
-df_date_16$ID <- 16
+df_date_16$ID <-  83 #16
 
 df_date_17 <- df_date
-df_date_17$ID <- 17
+df_date_17$ID <- 84
+ # 17
 df_date_18<- df_date
-df_date_18$ID <- 18
+df_date_18$ID <- 85 # 18
 df_date_19 <- df_date
-df_date_19$ID <- 19
+df_date_19$ID <-  86# 19
 df_date_20 <- df_date
-df_date_20$ID <- 20
+df_date_20$ID <-   87   #20
 df_date_21 <- df_date
-df_date_21$ID <- 21
+df_date_21$ID <- 88  #21
 
 df_date_22 <- df_date
-df_date_22$ID <- 22
+df_date_22$ID <-  90 #22
 
-# df_date_23 <- df_date
-# df_date_23$ID <- 23
-# 
-# df_date_24 <- df_date
-# df_date_24$ID <- 24
+df_date_23 <- df_date
+df_date_23$ID <-  92   #23
 
-df_date_rbind <- rbind (df_date_1,df_date_2,df_date_3,df_date_4,df_date_5,df_date_6,
-                        df_date_7, df_date_8,df_date_9, df_date_10,df_date_11, df_date_12,
-                        df_date_13, df_date_14,df_date_15,df_date_16,df_date_17,df_date_18,
-                        df_date_19,df_date_20,df_date_21,df_date_22)#,df_date_23,df_date_24)
+df_date_24 <- df_date
+df_date_24$ID <-94 # 24
+
+df_date_25 <- df_date
+df_date_25$ID <- 100  #25
+
+df_date_26 <- df_date
+df_date_26$ID <-101 # 26
+
+df_date_27 <- df_date
+df_date_27$ID <-  103#27
+
+df_date_28 <- df_date
+df_date_28$ID <-  104#28
+
+df_date_29 <- df_date
+df_date_29$ID <- 106 #29
+
+df_date_30 <- df_date
+df_date_30$ID <- 107  #30
+
+
+df_date_rbind <- rbind (df_date_1,df_date_2,df_date_3,df_date_4,df_date_5,df_date_6)#,
+                        # df_date_7, df_date_8,df_date_9, df_date_10,df_date_11, df_date_12,
+                        # df_date_13, df_date_14,df_date_15,df_date_16,df_date_17,df_date_18,
+                        # df_date_19,df_date_20,df_date_21,df_date_22,df_date_23,df_date_24,
+                        # df_date_25,df_date_26,df_date_27,df_date_28,df_date_29,df_date_30)
 
 
 for (i in 1:1){
   ##################
   #01 Estaciones PM 25
   data_pm <- read.csv(paste("./06_estaciones/",estacion,"_estaciones.csv",sep=""))
-  data_pm <- data.frame(date=data_pm$date, estacion=data_pm$estacion, ID = data_pm$ID, PM25 = data_pm$mean)
-  data_pm$date  <- strptime(data_pm$date, format = "%Y-%m-%d")
+  # data_pm <- data.frame(date=data_pm$date, estacion=data_pm$estacion, ID = data_pm$ID, PM25 = data_pm$mean)
+  ### BA
+  data_pm <- data.frame(date=data_pm$date, estacion=data_pm$estacion, ID = data_pm$ID, PM25 = data_pm$mean, PM25_hora = data_pm$mean_horario)
   
+  data_pm$date  <- strptime(data_pm$date, format = "%d/%m/%Y")#"%Y-%m-%d")
+  length(unique(data_pm$ID))
   ##################
   ### --- 02 AOD
   data_aod <- read.csv(paste("./00_MAIAC/",estacion,"_MAIAC.csv",sep=""))
   data_aod <- data.frame(date=data_aod$date,estacion=data_aod$estacion, ID = data_aod$ID, AOD_055=data_aod$aod_550)
   data_aod$date  <- strptime(data_aod$date, format = "%Y%j")
-  
+  length(unique(data_aod$ID))
   ##################
   ### --- 03 NDVI
   data_NDVI<- read.csv(paste("./01_NDVI/",estacion,"_NDVI.csv",sep=""))
   data_NDVI <- data.frame(date=data_NDVI$date,estacion=data_NDVI$estacion, ID = data_NDVI$ID, ndvi=data_NDVI$ndvi)
   data_NDVI$date  <- strptime(data_NDVI$date, format = "%Y%j")
   names(data_NDVI)
-  
+  length(unique(data_NDVI$ID))
 
   # Función para expandir los valores mensuales a todos los días del mes por estación
   expandir_mensual <- function(df_mensual) {
@@ -112,7 +137,7 @@ for (i in 1:1){
   }
   # Expandir el dataframe mensual
   data_NDVI_dia <- expandir_mensual(data_NDVI)
-  
+  length(unique(data_NDVI_dia$ID))
   # ##################
   # ### --- 04 LandCover 
   # data_LandCover<- read.csv("./02_LandCover/SP_LandCover.csv")
@@ -198,6 +223,7 @@ for (i in 1:1){
   
   dem_expand$date <- strptime(dem_expand$date, format = "%Y-%m-%d")
   names(dem_expand) <- c("date", "DEM", "ID")
+  length(unique(dem_expand$ID))
   ##################
   ### --- 06 MERRA-2
   data_MERRA<- read.csv(paste("./04_MERRA-2_Dia/",estacion,"_MERRA-2_Dia.csv",sep=""))
@@ -209,14 +235,14 @@ for (i in 1:1){
                           SSSMASS = data_MERRA$SSSMASS,SSSMASS25= data_MERRA$SSSMASS25)
   
   data_MERRA$date <- strptime(data_MERRA$date, format = "%Y%m%d")
-  
+  length(unique(data_MERRA$ID))
   
   ##################
   ### --- 07 ERA-2
   data_ERA <- read.csv(paste("./05_ERA5/",estacion,"_ERA5.csv",sep=""))
   #data_ERA2 <- subset(data_ERA, select = -c(X,estacion))
   data_ERA$date <- strptime(data_ERA$date, format = "%Y-%m-%d")
-  
+  length(unique(data_ERA$ID))
 
 
   
@@ -227,10 +253,17 @@ for (i in 1:1){
   
   # Usar Reduce para hacer merge secuencial
   data_merged <- Reduce(function(x, y) merge(x, y, by = c("ID","date"), all.x = TRUE), dataframes)
+  length(unique(data_merged$ID))
+  nrow(data_merged2)
   data_merged <- data_merged[complete.cases(data_merged$PM25),]
+  
+  length(unique(data_merged2$ID))
   View(data_merged2)
   data_merged_subt <- data.frame(ID = data_merged$ID, date=data_merged$date, estacion = data_merged$estacion.x,
-                                 PM25 = data_merged$PM25,AOD_055= data_merged$AOD_055, ndvi= data_merged$ndvi,
+                                 ## ojo BA filtro hora, para el resto de las estaciones no
+                                 PM25 = data_merged$PM25, PM25_hora = data_merged$PM25_hora,
+                                 
+                                 AOD_055= data_merged$AOD_055, ndvi= data_merged$ndvi,
                                  
                                  #landCover= data_merged$landCover, 
                                  BCSMASS_dia= data_merged$BCSMASS, DUSMASS_dia =data_merged$DUSMASS,

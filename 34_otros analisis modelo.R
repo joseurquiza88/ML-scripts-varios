@@ -192,6 +192,7 @@ library(ggplot2)
 library(dplyr)
 library(broom)
 
+
 # Crear un data frame con métricas para cada estación
 # Crear un data frame con métricas para cada estación sin usar broom
 unique(data_merge_subt$estacion.x)
@@ -1367,3 +1368,353 @@ combined_plot_3 <- grid.arrange(plot_13, plot_14, plot_15,
                                 plot_16,
                                 nrow = 2, ncol = 2)
 combined_plot
+
+
+#########################################################
+######################################################
+#Analsiis de los LCS
+data_ch <- read.csv("D:/Josefina/Proyectos/ProyectoChile/CH/modelos/Salidas/Sensores/sensores_modelos_validacion.csv")
+data_merge_subt<- data_ch
+unique(data_merge_subt$archivo)
+#################################
+##### Quilicura_verano
+data_Quilicura_verano <- data_merge_subt[data_merge_subt$archivo == "Quilicura Verano",]
+# Ajuste del modelo de regresión lineal
+modelo_Quilicura_verano <- lm(mean ~ valor_raster, data = data_Quilicura_verano)
+
+R2_Quilicura_verano <- summary(modelo_Quilicura_verano)$r.squared
+RMSE_Quilicura_verano <- sqrt(mean(residuals(modelo_Quilicura_verano)^2))
+Bias_Quilicura_verano <- mean(data_Quilicura_verano$mean - data_Quilicura_verano$valor_raster)
+n_Quilicura_verano <- nrow(data_Quilicura_verano)
+
+# Crear el gráfico con ggplot2
+plot_Quilicura_verano <- ggplot(data_Quilicura_verano , aes(x = valor_raster, y = mean)) +
+  geom_point(color = "#3690c0", size = 1.5, alpha = 0.6) +  # Puntos de datos
+  geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE)+#+, linetype = "dashed") +  # Línea de regresión
+  scale_y_continuous(limits = c(0, 50),breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje Y
+  scale_x_continuous(limits = c(0, 50),breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje Y
+  labs(
+    x = "Modelo",
+    y = "LCS",
+    title = "Quilicura Verano",
+    subtitle = paste(
+      "R2 =", round(R2_Quilicura_verano , 3),
+      "| RMSE =", round(RMSE_Quilicura_verano , 2),
+      "| Bias =", round(Bias_Quilicura_verano , 2),
+      "| n =", n_Quilicura_verano
+    )
+  ) +
+  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed", size = 0.3) +  # Línea 1:1 negra
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold"),        # Tamaño del título
+    plot.subtitle = element_text(size = 8),                   # Tamaño del subtítulo
+    axis.title = element_text(size = 8),                      # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 6),                        # Tamaño de los textos de los ejes
+    axis.ticks.length = unit(0.1, "cm"),                      # Tamaño de los ticks
+    axis.line = element_line(size = 0.2)                       # Grosor de las líneas de los ejes
+  )
+plot_Quilicura_verano
+
+###########################################
+##### Quilicura_invierno
+data_Quilicura_invierno <- data_merge_subt[data_merge_subt$archivo == "Quilicura_invierno",]
+# Ajuste del modelo de regresión lineal
+modelo_Quilicura_invierno <- lm(mean ~ valor_raster, data = data_Quilicura_invierno)
+
+R2_Quilicura_invierno <- summary(modelo_Quilicura_invierno)$r.squared
+RMSE_Quilicura_invierno <- sqrt(mean(residuals(modelo_Quilicura_invierno)^2))
+Bias_Quilicura_invierno <- mean(data_Quilicura_invierno$mean - data_Quilicura_invierno$valor_raster)
+n_Quilicura_invierno <- nrow(data_Quilicura_invierno)
+
+# Crear el gráfico con ggplot2
+plot_Quilicura_invierno <- ggplot(data_Quilicura_invierno , aes(x = valor_raster, y = mean)) +
+  geom_point(color = "#3690c0", size = 1.5, alpha = 0.6) +  # Puntos de datos
+  geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE)+#+, linetype = "dashed") +  # Línea de regresión
+  scale_y_continuous(limits = c(0, 180),breaks = seq(0, 180, by = 40)) +  # Ticks cada 10 en el eje Y
+  scale_x_continuous(limits = c(0, 180),breaks = seq(0, 180, by = 40)) +  # Ticks cada 10 en el eje Y
+  labs(
+    x = "Modelo",
+    y = "LCS",
+    title = "Quilicura Invierno",
+    subtitle = paste(
+      "R2 =", round(R2_Quilicura_invierno , 3),
+      "| RMSE =", round(RMSE_Quilicura_invierno , 2),
+      "| Bias =", round(Bias_Quilicura_invierno , 2),
+      "| n =", n_Quilicura_invierno
+    )
+  ) +
+  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed", size = 0.3) +  # Línea 1:1 negra
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold"),        # Tamaño del título
+    plot.subtitle = element_text(size = 8),                   # Tamaño del subtítulo
+    axis.title = element_text(size = 8),                      # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 6),                        # Tamaño de los textos de los ejes
+    axis.ticks.length = unit(0.1, "cm"),                      # Tamaño de los ticks
+    axis.line = element_line(size = 0.2)                       # Grosor de las líneas de los ejes
+  )
+plot_Quilicura_invierno
+
+
+
+
+#################################
+##### Vitacura_Invierno
+data_Vitacura_Invierno <- data_merge_subt[data_merge_subt$archivo == "Vitacura Invierno",]
+# Ajuste del modelo de regresión lineal
+modelo_Vitacura_Invierno <- lm(mean ~ valor_raster, data = data_Vitacura_Invierno)
+
+R2_Vitacura_Invierno <- summary(modelo_Vitacura_Invierno)$r.squared
+RMSE_Vitacura_Invierno <- sqrt(mean(residuals(modelo_Vitacura_Invierno)^2))
+Bias_Vitacura_Invierno <- mean(data_Vitacura_Invierno$mean - data_Vitacura_Invierno$valor_raster)
+n_Vitacura_Invierno <- nrow(data_Vitacura_Invierno)
+
+# Crear el gráfico con ggplot2
+plot_Vitacura_Invierno <- ggplot(data_Vitacura_Invierno , aes(x = valor_raster, y = mean)) +
+  geom_point(color = "#3690c0", size = 1.5, alpha = 0.6) +  # Puntos de datos
+  geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE)+#+, linetype = "dashed") +  # Línea de regresión
+  scale_y_continuous(limits = c(0, 180),breaks = seq(0, 180, by = 40)) +  # Ticks cada 10 en el eje Y
+  scale_x_continuous(limits = c(0, 180),breaks = seq(0, 180, by = 40)) +  # Ticks cada 10 en el eje Y
+  labs(
+    x = "Modelo",
+    y = "LCS",
+    title = "Vitacura Invierno",
+    subtitle = paste(
+      "R2 =", round(R2_Vitacura_Invierno , 3),
+      "| RMSE =", round(RMSE_Vitacura_Invierno , 2),
+      "| Bias =", round(Bias_Vitacura_Invierno , 2),
+      "| n =", n_Vitacura_Invierno
+    )
+  ) +
+  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed", size = 0.3) +  # Línea 1:1 negra
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold"),        # Tamaño del título
+    plot.subtitle = element_text(size = 8),                   # Tamaño del subtítulo
+    axis.title = element_text(size = 8),                      # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 6),                        # Tamaño de los textos de los ejes
+    axis.ticks.length = unit(0.1, "cm"),                      # Tamaño de los ticks
+    axis.line = element_line(size = 0.2)                       # Grosor de las líneas de los ejes
+  )
+plot_Vitacura_Invierno
+
+#################################
+unique(data_merge_subt$archivo)
+##### Vitacura_verano
+data_Vitacura_verano <- data_merge_subt[data_merge_subt$archivo == "vitacura verano",]
+# Ajuste del modelo de regresión lineal
+modelo_Vitacura_verano <- lm(mean ~ valor_raster, data = data_Vitacura_verano)
+
+R2_Vitacura_verano <- summary(modelo_Vitacura_verano)$r.squared
+RMSE_Vitacura_verano <- sqrt(mean(residuals(modelo_Vitacura_verano)^2))
+Bias_Vitacura_verano <- mean(data_Vitacura_verano$mean - data_Vitacura_verano$valor_raster)
+n_Vitacura_verano <- nrow(data_Vitacura_verano)
+
+# Crear el gráfico con ggplot2
+plot_Vitacura_verano <- ggplot(data_Vitacura_verano , aes(x = valor_raster, y = mean)) +
+  geom_point(color = "#3690c0", size = 1.5, alpha = 0.6) +  # Puntos de datos
+  geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE)+#+, linetype = "dashed") +  # Línea de regresión
+  scale_y_continuous(limits = c(0, 50),breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje Y
+  scale_x_continuous(limits = c(0, 50),breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje Y
+  labs(
+    x = "Modelo",
+    y = "LCS",
+    title = "Vitacura Verano",
+    subtitle = paste(
+      "R2 =", round(R2_Vitacura_verano , 3),
+      "| RMSE =", round(RMSE_Vitacura_verano , 2),
+      "| Bias =", round(Bias_Vitacura_verano , 2),
+      "| n =", n_Vitacura_verano
+    )
+  ) +
+  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed", size = 0.3) +  # Línea 1:1 negra
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold"),        # Tamaño del título
+    plot.subtitle = element_text(size = 8),                   # Tamaño del subtítulo
+    axis.title = element_text(size = 8),                      # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 6),                        # Tamaño de los textos de los ejes
+    axis.ticks.length = unit(0.1, "cm"),                      # Tamaño de los ticks
+    axis.line = element_line(size = 0.2)                       # Grosor de las líneas de los ejes
+  )
+plot_Vitacura_verano
+
+
+#################################
+unique(data_merge_subt$archivo)
+##### florida_verano
+data_florida_verano <- data_merge_subt[data_merge_subt$archivo == "Florida Verano",]
+# Ajuste del modelo de regresión lineal
+modelo_florida_verano <- lm(mean ~ valor_raster, data = data_florida_verano)
+
+R2_florida_verano <- summary(modelo_florida_verano)$r.squared
+RMSE_florida_verano <- sqrt(mean(residuals(modelo_florida_verano)^2))
+Bias_florida_verano <- mean(data_florida_verano$mean - data_florida_verano$valor_raster)
+n_florida_verano <- nrow(data_florida_verano)
+
+# Crear el gráfico con ggplot2
+plot_florida_verano <- ggplot(data_florida_verano , aes(x = valor_raster, y = mean)) +
+  geom_point(color = "#3690c0", size = 1.5, alpha = 0.6) +  # Puntos de datos
+  geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE)+#+, linetype = "dashed") +  # Línea de regresión
+  scale_y_continuous(limits = c(0, 50),breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje Y
+  scale_x_continuous(limits = c(0, 50),breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje Y
+  labs(
+    x = "Modelo",
+    y = "LCS",
+    title = "Florida Verano",
+    subtitle = paste(
+      "R2 =", round(R2_florida_verano , 3),
+      "| RMSE =", round(RMSE_florida_verano , 2),
+      "| Bias =", round(Bias_florida_verano , 2),
+      "| n =", n_florida_verano
+    )
+  ) +
+  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed", size = 0.3) +  # Línea 1:1 negra
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold"),        # Tamaño del título
+    plot.subtitle = element_text(size = 8),                   # Tamaño del subtítulo
+    axis.title = element_text(size = 8),                      # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 6),                        # Tamaño de los textos de los ejes
+    axis.ticks.length = unit(0.1, "cm"),                      # Tamaño de los ticks
+    axis.line = element_line(size = 0.2)                       # Grosor de las líneas de los ejes
+  )
+plot_florida_verano
+
+
+#################################
+unique(data_merge_subt$archivo)
+##### florida_invierno
+data_florida_invierno <- data_merge_subt[data_merge_subt$archivo == "Florida Invierno",]
+# Ajuste del modelo de regresión lineal
+modelo_florida_invierno <- lm(mean ~ valor_raster, data = data_florida_invierno)
+
+R2_florida_invierno <- summary(modelo_florida_invierno)$r.squared
+RMSE_florida_invierno <- sqrt(mean(residuals(modelo_florida_invierno)^2))
+Bias_florida_invierno <- mean(data_florida_invierno$mean - data_florida_invierno$valor_raster)
+n_florida_invierno <- nrow(data_florida_invierno)
+
+# Crear el gráfico con ggplot2
+plot_florida_invierno <- ggplot(data_florida_invierno , aes(x = valor_raster, y = mean)) +
+  geom_point(color = "#3690c0", size = 1.5, alpha = 0.6) +  # Puntos de datos
+  geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE)+#+, linetype = "dashed") +  # Línea de regresión
+  scale_y_continuous(limits = c(0, 180),breaks = seq(0, 180, by = 40)) +  # Ticks cada 10 en el eje Y
+  scale_x_continuous(limits = c(0, 180),breaks = seq(0, 180, by = 40)) +  # Ticks cada 10 en el eje Y
+  labs(
+    x = "Modelo",
+    y = "LCS",
+    title = "Florida Invierno",
+    subtitle = paste(
+      "R2 =", round(R2_florida_invierno , 3),
+      "| RMSE =", round(RMSE_florida_invierno , 2),
+      "| Bias =", round(Bias_florida_invierno , 2),
+      "| n =", n_florida_invierno
+    )
+  ) +
+  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed", size = 0.3) +  # Línea 1:1 negra
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold"),        # Tamaño del título
+    plot.subtitle = element_text(size = 8),                   # Tamaño del subtítulo
+    axis.title = element_text(size = 8),                      # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 6),                        # Tamaño de los textos de los ejes
+    axis.ticks.length = unit(0.1, "cm"),                      # Tamaño de los ticks
+    axis.line = element_line(size = 0.2)                       # Grosor de las líneas de los ejes
+  )
+plot_florida_invierno
+
+
+
+#################################
+unique(data_merge_subt$archivo)
+##### maipu_invierno
+data_maipu_invierno <- data_merge_subt[data_merge_subt$archivo == "Maipu Invierno",]
+# Ajuste del modelo de regresión lineal
+modelo_maipu_invierno <- lm(mean ~ valor_raster, data = data_maipu_invierno)
+
+R2_maipu_invierno <- summary(modelo_maipu_invierno)$r.squared
+RMSE_maipu_invierno <- sqrt(mean(residuals(modelo_maipu_invierno)^2))
+Bias_maipu_invierno <- mean(data_maipu_invierno$mean - data_maipu_invierno$valor_raster)
+n_maipu_invierno <- nrow(data_maipu_invierno)
+
+# Crear el gráfico con ggplot2
+plot_maipu_invierno <- ggplot(data_maipu_invierno , aes(x = valor_raster, y = mean)) +
+  geom_point(color = "#3690c0", size = 1.5, alpha = 0.6) +  # Puntos de datos
+  geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE)+#+, linetype = "dashed") +  # Línea de regresión
+  scale_y_continuous(limits = c(0, 180),breaks = seq(0, 180, by = 40)) +  # Ticks cada 10 en el eje Y
+  scale_x_continuous(limits = c(0, 180),breaks = seq(0, 180, by = 40)) +  # Ticks cada 10 en el eje Y
+  labs(
+    x = "Modelo",
+    y = "LCS",
+    title = "Maipu Invierno",
+    subtitle = paste(
+      "R2 =", round(R2_maipu_invierno , 3),
+      "| RMSE =", round(RMSE_maipu_invierno , 2),
+      "| Bias =", round(Bias_maipu_invierno , 2),
+      "| n =", n_maipu_invierno
+    )
+  ) +
+  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed", size = 0.3) +  # Línea 1:1 negra
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold"),        # Tamaño del título
+    plot.subtitle = element_text(size = 8),                   # Tamaño del subtítulo
+    axis.title = element_text(size = 8),                      # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 6),                        # Tamaño de los textos de los ejes
+    axis.ticks.length = unit(0.1, "cm"),                      # Tamaño de los ticks
+    axis.line = element_line(size = 0.2)                       # Grosor de las líneas de los ejes
+  )
+plot_maipu_invierno
+
+
+#################################
+unique(data_merge_subt$archivo)
+##### maipu_verano
+data_maipu_verano <- data_merge_subt[data_merge_subt$archivo == "Maipu Verano",]
+# Ajuste del modelo de regresión lineal
+modelo_maipu_verano <- lm(mean ~ valor_raster, data = data_maipu_verano)
+
+R2_maipu_verano <- summary(modelo_maipu_verano)$r.squared
+RMSE_maipu_verano <- sqrt(mean(residuals(modelo_maipu_verano)^2))
+Bias_maipu_verano <- mean(data_maipu_verano$mean - data_maipu_verano$valor_raster)
+n_maipu_verano <- nrow(data_maipu_verano)
+
+# Crear el gráfico con ggplot2
+plot_maipu_verano <- ggplot(data_maipu_verano, aes(x = valor_raster, y = mean)) +
+  geom_point(color = "#3690c0", size = 1, alpha = 0.6) +  # Puntos de datos
+  geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE) +  # Línea de regresión
+  scale_y_continuous(limits = c(0, 50),breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje Y
+  scale_x_continuous(limits = c(0, 50),breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje Y
+  
+  labs(
+    x = "Modelo",
+    y = "LCS",
+    title = "Maipu Verano",
+    subtitle = paste(
+      "R2 =", round(R2_maipu_verano, 2),
+      "| RMSE =", round(RMSE_maipu_verano, 2),
+      "| Bias =", round(Bias_maipu_verano, 2),
+      "| n =", n_maipu_verano
+    )
+  ) +
+  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed", size = 0.3) +  # Línea 1:1 negra
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold"),        # Tamaño del título
+    plot.subtitle = element_text(size = 8),                   # Tamaño del subtítulo
+    axis.title = element_text(size = 8),                      # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 6),                        # Tamaño de los textos de los ejes
+    axis.ticks.length = unit(0.1, "cm"),                      # Tamaño de los ticks
+    axis.line = element_line(size = 0.2)                       # Grosor de las líneas de los ejes
+  )
+plot_maipu_verano
+
+
+combined_plot_1 <- grid.arrange(plot_maipu_verano, plot_maipu_invierno,
+                                plot_florida_verano, plot_florida_invierno,
+                                nrow = 2, ncol = 2)
+
+combined_plot_2 <- grid.arrange(plot_Vitacura_verano, plot_Vitacura_Invierno,
+                                plot_Quilicura_verano, plot_Quilicura_invierno,
+                                nrow = 2, ncol = 2)

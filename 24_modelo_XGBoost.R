@@ -116,9 +116,37 @@ load("03-XGB_cv_M2-071024.RData")
 library(xgboost)
 library(caret)  # Para el cálculo de métricas
 
-# Leer los datos
-test_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 4/M4_test.csv")
-train_data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 4/M4_train.csv")
+rm(list=ls())
+estacion <- "BA"
+modelo <- "3"
+#Data modelo 1
+test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_test_",estacion,".csv",sep=""))
+train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_train_",estacion,".csv",sep=""))
+
+
+names(test_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",                 
+                      "ndvi" ,  "BCSMASS_dia",                  
+                      "DUSMASS_dia" ,"DUSMASS25_dia", "OCSMASS_dia", "SO2SMASS_dia" ,"SO4SMASS_dia",
+                      "SSSMASS_dia", "SSSMASS25_dia",                 
+                      "blh_mean","blh_min","blh_max"  ,"blh_sd","blh_mean_subt", "sp_mean",                  
+                      "sp_min", "sp_max","sp_sd"   ,"sp_mean_subt","d2m_mean","d2m_min",                  
+                      "d2m_max","d2m_sd" , "d2m_mean_subt",  "t2m_mean", "t2m_min", "t2m_max",                  
+                      "t2m_sd",  "t2m_mean_subt", "v10_mean",  "v10_min" , "v10_max" ,"v10_sd"  ,                 
+                      "v10_mean_subt", "u10_mean" , "u10_min"  , "u10_max","u10_sd",
+                      "u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
+
+names(train_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",                 
+                       "ndvi" ,  "BCSMASS_dia",                  
+                       "DUSMASS_dia" ,"DUSMASS25_dia", "OCSMASS_dia", "SO2SMASS_dia" ,"SO4SMASS_dia",
+                       "SSSMASS_dia",  "SSSMASS25_dia",                  
+                       "blh_mean","blh_min","blh_max"  ,"blh_sd","blh_mean_subt", "sp_mean",                  
+                       "sp_min", "sp_max","sp_sd"   ,"sp_mean_subt","d2m_mean","d2m_min",                  
+                       "d2m_max","d2m_sd" , "d2m_mean_subt",  "t2m_mean", "t2m_min", "t2m_max",                  
+                       "t2m_sd",  "t2m_mean_subt", "v10_mean",  "v10_min" , "v10_max" ,"v10_sd"  ,                 
+                       "v10_mean_subt", "u10_mean" , "u10_min"  , "u10_max","u10_sd",
+                       "u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
+
+
 
 # Preparar los datos
 # X <- train_data[ , c("AOD_055", "ndvi","LandCover", "BCSMASS", "DUSMASS", "DUSMASS25",
@@ -139,8 +167,9 @@ X <- train_data[ , c("AOD_055", "ndvi", "BCSMASS_dia", "DUSMASS_dia", "DUSMASS25
 # X <- train_data[ , c("AOD_055", "ndvi","LandCover", "blh_mean", "sp_mean", "d2m_mean",
 #                      "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]
 
-# y <- log(train_data$PM25)
 y <- train_data$PM25
+# Para BA
+y <- train_data$PM25_hora
 # Convertir a matrices xgboost
 dtrain <- xgb.DMatrix(data = as.matrix(X), label = y)
 
@@ -197,9 +226,10 @@ X_test <- test_data[ , c("AOD_055", "ndvi","BCSMASS_dia", "DUSMASS_dia", "DUSMAS
                      "SSSMASS25_dia", "blh_mean", "sp_mean", "d2m_mean",
                      "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM","dayWeek")]#"LandCover", 
 
-# y_test <- log(test_data$PM25)
+#
 y_test <- test_data$PM25
-
+## PARA BA
+y_test <- test_data$PM25_hora
 dtest <- xgb.DMatrix(data = as.matrix(X_test), label = y_test)
 
 # Realizar predicciones sobre el conjunto de prueba
@@ -239,8 +269,6 @@ max(predicted)
 train_predictions <- predict(xgb_cv_model, dtrain)
 # train_predictions <- exp(train_predictions) # para log
 
-min(train_predictions)
-max(train_predictions)
 # Evaluar el modelo en el conjunto de entrenamiento
 train_actuals <- y
 train_predicted <- train_predictions
@@ -262,11 +290,10 @@ cat("Training MedAE: ", round(train_medae,2), "\n")
 min(train_predictions)
 max(train_predictions)
 # gUARDAMOS MODELO
-# Sin cv
-setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
-setwd("D:/Josefina/Proyectos/ProyectoChile/SP/modelos/modelo")
 
-save(xgb_cv_model, file="02-XGB_cv_M1-131124_SP.RData")
+setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep=""))
+getwd()
+save(xgb_cv_model, file=paste("02-XGB-M",modelo,"_100125",estacion,".RData",sep=""))
 
 
 ##################################################################
