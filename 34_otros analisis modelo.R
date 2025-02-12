@@ -1379,6 +1379,9 @@ unique(data_merge_subt$archivo)
 #################################
 ##### Quilicura_verano
 data_Quilicura_verano <- data_merge_subt[data_merge_subt$archivo == "Quilicura Verano",]
+data_estaciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/CH/proceed/06_estaciones/CH_estaciones.csv")
+data_estaciones_qui <- data_estaciones[data_estaciones$estacion == "QUI",]
+merge_qui_verano <- 
 # Ajuste del modelo de regresión lineal
 modelo_Quilicura_verano <- lm(mean ~ valor_raster, data = data_Quilicura_verano)
 

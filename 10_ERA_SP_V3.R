@@ -1,9 +1,11 @@
 nameVar = "blh"
 #process_era5 <- function (coordenadas_sitio,sitio,path){
 year <- 2024
-estacion <- "MX"
+estacion <- "CH"
+numRaster <- "01"
 #data_estacciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/sitios.csv")
 data_estacciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/sitios_",estacion,".csv",sep=""))
+data_estacciones <- data_estacciones[data_estacciones$tipo == "referencia",]
 
 #data_estacciones <- data_estacciones[data_estacciones$Considerado == "SI",]
 #data_estacciones <- data_estacciones[22:24,]
@@ -19,15 +21,15 @@ dire <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSat
 setwd(dire)
 
 #raster_template <- raster("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/rasterTemplate/raster_template.tif")
-raster_template <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
+raster_template <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRaster,"_raster_template.tif",sep=""))
 
 era.df<- data.frame()
 id <- list.files(path = getwd(),
                  pattern = "*.nc",
                  full.names = FALSE)
 id
-i<-10
-for (i in 10:length(id)){
+i<-1
+for (i in 1:length(id)){
     
     #print(paste("Esto es i = ", i, sep= ""))
   file.name = id[i]
@@ -78,7 +80,7 @@ for (i in 10:length(id)){
       rm(MIRRAraster, rst_resampling)  #data_recorte
     }
     
-    nombre <-paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/05_ERA5/",year,"/",id[i],"_",name_sds,".csv",sep = "")
+    nombre <-paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/05_ERA5/V03/",year,"/",name_sds,"/",id[i],"_",name_sds,".csv",sep = "")
     
     write.csv(era.df ,nombre)
     

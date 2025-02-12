@@ -15,15 +15,15 @@ rm(list=ls())
 
 
 #Data modelo 1
-estacion <- "MX"
-modelo<-6
+estacion <- "MD"
+modelo<- 6
 data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/",estacion,"_merge_comp.csv",sep=""))
 #data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 7/09_TOT_merge_tot.csv")
 data <- data[complete.cases(data), ]
 data$date <- strptime(data$date, format = "%Y-%m-%d")#"%d/%m/%Y")#
 data$dayWeek <- wday(data$date, week_start = 1)
-
-
+data<- data[year(data$date) != 2024,]
+unique(year(data$date))
 
 names(data) <- c("X.1" ,"ID", "date",
                  "estacion", "PM25","AOD_055",                 
@@ -42,7 +42,7 @@ names(data) <- c("X.1" ,"ID", "date",
 
 # Numero de estaciones (en este caso, 8)
 estaciones <- unique(data$ID)
-estaciones <- unique(data$estacion)
+#estaciones <- unique(data$estacion)
 length(estaciones)
 # Crear una lista considerando dejar una estacion afuera
 set.seed(123)  # Para reproducibilidad
@@ -52,6 +52,10 @@ subsets <- createFolds(estaciones, k = 8, list = TRUE, returnTrain = FALSE)
 subsets <- createFolds(estaciones, k = 17, list = TRUE, returnTrain = FALSE)
 #MX
 subsets <- createFolds(estaciones, k = 22, list = TRUE, returnTrain = FALSE)
+#BA
+subsets <- createFolds(estaciones, k = 6, list = TRUE, returnTrain = FALSE)
+#SP
+subsets <- createFolds(estaciones, k = 16, list = TRUE, returnTrain = FALSE)
 
 # Muestra los valores reales asociados a cada fold, los ID de cada estacion
 subsets <- lapply(subsets, function(idx) estaciones[idx])
@@ -71,7 +75,7 @@ dir <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/",estacion,"modelo/Mod
   best_rmse <- Inf 
   train_control <- trainControl(
     method = "cv",          # M?todo de validaci?n cruzada
-    number = 3,            # N?mero de pliegues para la validaci?n cruzada
+    number = 5,            # N?mero de pliegues para la validaci?n cruzada
     verboseIter = TRUE,     # Mostrar progreso de entrenamiento
     allowParallel = TRUE    # Permitir procesamiento paralelo
   )
@@ -147,7 +151,7 @@ dir <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/",estacion,"modelo/Mod
     #   best_model <- rf_model  
     # }
   }
-  
+15:14
   # Guardar todos los resultados en un archivo .RData
   #save(resultados_rbind, file = "resultados_metricas.RData")
   
@@ -158,13 +162,14 @@ dir <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/",estacion,"modelo/Mod
 
 # Correr la funcion
 cv_results <- spatial_cv(data, subsets,dir,numFolds=3)
-08:51
+09:07
 # Ver los resultados de la validacin cruzada
 cv_results$rmse_avg
 cv_results$r2_avg
 setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep=""))
 # getwd()
 # save(lm_cv_model, file=paste("02-RLM-M",modelo,"_100125",estacion,".RData",sep=""))
+getwd()
 
-write.csv(cv_results,paste("cv_results_",estacion,".csv",sep=""))
+write.csv(resultados_rbind,paste("cv_results_",estacion,"_1.csv",sep=""))
 load("08-RF_cv_M6-261124_SP.RData")

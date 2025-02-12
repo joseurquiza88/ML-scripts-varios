@@ -4,7 +4,7 @@ library(dismo) #kfold
 library(caret)
 library(parallel)
 estacion<- "MX"
-year <- 2019
+year <- 2023
 numRaster<- "01"
 #SP
 #dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/tiff/00_MAIAC/00_MAIAC_IDW/",sep="")
@@ -33,7 +33,7 @@ kfold = 5# numero de k-fold cross validation
 
 i<-1
 
-for( i in 65:length(fs)){
+for( i in 1:length(fs)){
   print(i)
   raster_fs <- raster(fs[i], sep="")
   filename <- paste("IDW-", fs[i], sep="")

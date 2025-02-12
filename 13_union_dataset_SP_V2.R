@@ -2,15 +2,16 @@
 rm(list=ls())
 #Objetivo unir todos dataset, hacer un merge por dia
 # Directorio
-estacion <- "BA"
+estacion <- "MX"
 setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/",sep=""))
 
 ## Vemos cuantas estaciones hay
 data_estacciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/sitios_",estacion,".csv",sep=""))
-unique(data_estacciones$ID)
 
+subt <- data_estacciones[data_estacciones$Considerado== "SI",]
+unique(subt$ID)
 # Generar la secuencia de fechas desde el 01-01-2015 hasta el 31-07-2024
-date <- seq.Date(from = as.Date("2015-01-01"), to = as.Date("2024-11-30"), by = "day")
+date <- seq.Date(from = as.Date("2015-01-01"), to = as.Date("2024-12-31"), by = "day")
 
 # Crear el dataframe con la columna 'date'
 df_date <- data.frame(date = date)
@@ -30,6 +31,58 @@ df_date_5 <- df_date
 df_date_5$ID <- 5
 df_date_6 <- df_date
 df_date_6$ID <- 6
+df_date_7 <- df_date
+df_date_7$ID <- 7
+df_date_8 <- df_date
+df_date_8$ID <- 8
+df_date_9 <- df_date
+df_date_9$ID <- 9
+df_date_10<- df_date
+df_date_10$ID <- 10
+df_date_11<- df_date
+df_date_11$ID <- 11
+df_date_12 <- df_date
+df_date_12$ID <- 12
+df_date_13 <- df_date
+df_date_13$ID <- 13
+df_date_14 <- df_date
+df_date_14$ID <- 14
+df_date_15<- df_date
+df_date_15$ID <- 15
+df_date_16 <- df_date
+df_date_16$ID <- 16
+df_date_17 <- df_date
+df_date_17$ID <- 17
+df_date_18 <- df_date
+df_date_18$ID <- 18
+df_date_19 <- df_date
+df_date_19$ID <- 19
+df_date_20 <- df_date
+df_date_20$ID <- 20
+df_date_21 <- df_date
+df_date_21$ID <- 21
+df_date_22 <- df_date
+df_date_22$ID <- 22
+df_date_23 <- df_date
+df_date_23$ID <- 23
+df_date_24 <- df_date
+df_date_24$ID <- 24
+
+
+
+###  MD
+df_date_1 <- df_date
+df_date_1$ID <- 6
+df_date_2 <- df_date
+df_date_2$ID <- 12
+df_date_3 <- df_date
+df_date_3$ID <- 28
+df_date_4 <- df_date
+df_date_4$ID <- 37
+df_date_5 <- df_date
+df_date_5$ID <- 38
+df_date_6 <- df_date
+df_date_6$ID <- 40
 df_date_7 <- df_date
 df_date_7$ID <-   41#7
 df_date_8 <- df_date
@@ -91,11 +144,11 @@ df_date_30 <- df_date
 df_date_30$ID <- 107  #30
 
 
-df_date_rbind <- rbind (df_date_1,df_date_2,df_date_3,df_date_4,df_date_5,df_date_6)#,
-                        # df_date_7, df_date_8,df_date_9, df_date_10,df_date_11, df_date_12,
-                        # df_date_13, df_date_14,df_date_15,df_date_16,df_date_17,df_date_18,
-                        # df_date_19,df_date_20,df_date_21,df_date_22,df_date_23,df_date_24,
-                        # df_date_25,df_date_26,df_date_27,df_date_28,df_date_29,df_date_30)
+df_date_rbind <- rbind (df_date_1,df_date_2,df_date_3,df_date_4,df_date_5,df_date_6,
+                        df_date_7, df_date_8,df_date_9, df_date_10,df_date_11, df_date_12,
+                        df_date_13, df_date_14,df_date_15,df_date_16,df_date_17,df_date_18,
+                        df_date_19,df_date_20,df_date_21,df_date_22)#,df_date_23,df_date_24,
+                         #df_date_25,df_date_26,df_date_27,df_date_28,df_date_29,df_date_30)
 
 
 for (i in 1:1){
@@ -104,7 +157,7 @@ for (i in 1:1){
   data_pm <- read.csv(paste("./06_estaciones/",estacion,"_estaciones.csv",sep=""))
   # data_pm <- data.frame(date=data_pm$date, estacion=data_pm$estacion, ID = data_pm$ID, PM25 = data_pm$mean)
   ### BA
-  data_pm <- data.frame(date=data_pm$date, estacion=data_pm$estacion, ID = data_pm$ID, PM25 = data_pm$mean, PM25_hora = data_pm$mean_horario)
+  data_pm <- data.frame(date=data_pm$date, estacion=data_pm$estacion, ID = data_pm$ID, PM25 = data_pm$mean)#, PM25_hora = data_pm$mean_horario)
   
   data_pm$date  <- strptime(data_pm$date, format = "%d/%m/%Y")#"%Y-%m-%d")
   length(unique(data_pm$ID))
@@ -199,7 +252,7 @@ for (i in 1:1){
   expandir_anual_dem <- function(df_anual) {
     # Definir el rango de fechas diarias entre 2015-01-01 y 2024-10-31
     start_date <- as.Date("2015-01-01")
-    end_date <- as.Date("2024-11-30")
+    end_date <- as.Date("2024-12-31")
     all_dates <- seq(start_date, end_date, by = "day")
     
     # Expansión por cada estación
@@ -256,12 +309,12 @@ for (i in 1:1){
   length(unique(data_merged$ID))
   nrow(data_merged2)
   data_merged <- data_merged[complete.cases(data_merged$PM25),]
-  
-  length(unique(data_merged2$ID))
-  View(data_merged2)
-  data_merged_subt <- data.frame(ID = data_merged$ID, date=data_merged$date, estacion = data_merged$estacion.x,
+  data_merged <- data_merged[complete.cases(data_merged$AOD_055),]
+  length(unique(data_merged$ID))
+  View(data_merged)
+  data_merged_subt <- data.frame(ID = data_merged$ID, date=data_merged$date,estacion = data_merged$estacion.x,
                                  ## ojo BA filtro hora, para el resto de las estaciones no
-                                 PM25 = data_merged$PM25, PM25_hora = data_merged$PM25_hora,
+                                 PM25 = data_merged$PM25, #PM25_hora = data_merged$PM25_hora,
                                  
                                  AOD_055= data_merged$AOD_055, ndvi= data_merged$ndvi,
                                  
@@ -300,6 +353,8 @@ for (i in 1:1){
 
 }
 ###############################################################
+
+
 View(data_merged)
 # Guardar archivo
 # getwd()

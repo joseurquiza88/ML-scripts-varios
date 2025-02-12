@@ -1,9 +1,11 @@
 # Procesamiento de era en el pixel de la estacion de monitoreo EMCI_DS-PM25
 nameVar = "blh"
 #process_era5 <- function (coordenadas_sitio,sitio,path){
-  year <- 2020
-  estacion <- "MD"
+  year <- 2022
+  estacion <- "CH"
+  numRaster<- "01"
   data_estacciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/sitios_",estacion,".csv",sep=""))
+  data_estacciones <- data_estacciones[data_estacciones$tipo == "referencia",]
   #data_estacciones <- data_estacciones[data_estacciones$Considerado == "SI",]
   #data_estacciones <- data_estacciones[22:24,]
   puntos <- data_estacciones
@@ -16,12 +18,12 @@ nameVar = "blh"
   #dire <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/TP/",sep="")#,year,sep="")
   setwd(dire)
 
-  raster_template <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
+  raster_template <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRaster,"_raster_template.tif",sep=""))
   era.df<- data.frame()
   id <- list.files(path = getwd(),
                    pattern = "*.nc",
                    full.names = FALSE)
-  i<-283
+  i<-1
   for (i in 1:length(id)){
     
     #print(paste("Esto es i = ", i, sep= ""))
@@ -43,7 +45,7 @@ nameVar = "blh"
       era.df <- data.frame()
       #print(Sys.time())
       #24 hs
-      for (nband in 1:num_bands) {
+      for (nband in 1:num_sds) {
         if(nband %%100==0){
           print(print(paste("Esto es nband = ", nband, sep= "")))
         }
@@ -74,7 +76,7 @@ nameVar = "blh"
         rm(MIRRAraster, rst_resampling)  #data_recorte
       }
 
-      nombre <-paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/05_ERA5/",year,"/",id[i],"_",name_sds,".csv",sep = "")
+      nombre <-paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/05_ERA5/V03/",year,"/",id[i],"_",name_sds,".csv",sep = "")
       
       write.csv(era.df ,nombre)
       

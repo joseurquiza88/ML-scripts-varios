@@ -2,18 +2,18 @@
 
 library(raster)
 variable <- c("blh","d2m","sp","v10","u10","t2m")
-i<- 1 #mes 6==>7
+i<- 1#mes 6==>7
             #7 ==> 8
             #8==>8
-n_dias <- 31 # N?mero de d?as del mes
+n_dias <- 29 # N?mero de d?as del mes
 year <- 2024
-#p<-1
+p<-1
 #dia <-1
 numRaster<- "01"
 for (p in 1:length(variable)){
 
   # _raster <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI/NDVI_raster/NDVI_raster.tif")
-  estacion <- "MX"
+  estacion <- "SP"
   ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRaster,"_raster_template.tif",sep=""))
   
   dir_era <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/",year,"/",sep="")

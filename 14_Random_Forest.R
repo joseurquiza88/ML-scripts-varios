@@ -83,10 +83,11 @@ rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + #LandCover +
                      + SO2SMASS_dia+
                       SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia +
                        blh_mean +
-                       sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean +
+                       sp_mean + d2m_mean + t2m_mean + #  v10_mean +
+                       #u10_mean +
                        tp_mean + DEM + dayWeek, data = train_data, method = "rf",
                      trControl = train_control,importance = TRUE)
-09:10-09:42
+ 09:34
 #########
 ## Sin variables MERRA
 # rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + 
@@ -194,7 +195,7 @@ View(b)
 #setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep=""))
 getwd()
-save(rf_cv_model, file=paste("02-RF_cv_M",modelo,"-100125-",estacion,".RData",sep=""))
+save(rf_cv_model, file=paste("prueba02_02-RF_cv_M",modelo,"-270125-",estacion,".RData",sep=""))
 
 # SIN MERRA
 #save(rf_cv_model, file=paste("06-RF_cv_M",modelo,"-090125-E_",estacion,".RData",sep=""))

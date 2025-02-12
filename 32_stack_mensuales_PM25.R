@@ -6,9 +6,10 @@ library(raster)
 rm(list = ls())
 #dir_salida <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_01-2024/Salida/Salida_02-XGB_cv_M4-300924/"
 month <- c("01","02","03","04","05","06","07","08","09","10","11","12")
-year <- "2018"
+year <- "2024"
 i<-1
-modelo <- "02-RF_cv_M1-251124_SP"
+# modelo <- "02-RF_cv_M1-261224_MX"
+modelo <- "07-RF-ESP_cv_M6-110225-SP"
 estacion <- "SP"
 for (i in 1:length(month)){
   print(i)

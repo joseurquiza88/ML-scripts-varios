@@ -1,6 +1,6 @@
 
 #Leer datos de MX
-year<-2023
+year<-2024
 ####años
 for (i in 1:1){
   data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/MX/dataset/estaciones/process/",year,"PM25.csv",sep=""),na.strings = -99)

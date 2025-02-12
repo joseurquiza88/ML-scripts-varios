@@ -95,4 +95,40 @@ df_ver <- df[df$estacion =="Guarulhos-Pa?o Municipal" ,]
 df_ver <- df[df$estacion =="Osasco" ,]
 df_ver <- df[df$estacion =="S?o Caetano do Sul" ,]
 
+################################################################
+#####################################################################
+
+
+dire <- "D:/Josefina/Proyectos/ProyectoChile/SP/dataset/estaciones/originales/12_2024/"
+#Leer datos de SP
+id <- list.files(path = dire, pattern = "*.csv", full.names = FALSE)
+df_rbind <- data.frame()
+setwd(dire)
+i<-19
+df_rbind <- data.frame()
+for (i in 1:length(id)){
+  print(i)
+  print(id[i])
+  data <- read.csv(id[i])
+  
+  data$date <- as.POSIXct( strptime (data$date, format = "%d/%m/%Y"))
+  #data$date <- as.Date(data$datetime, format = "%Y-%m-%d %H:%M:%S")
+  data <- data[complete.cases(data),]
+  df <- data %>%
+    group_by(date,estacion) %>%
+    summarise(                           # Primer valor de unidad
+      mean = mean(PM25, na.rm = TRUE),               # Media
+      min = min(PM25, na.rm = TRUE),                 # M?nimo
+      max = max(PM25, na.rm = TRUE),                 # M?ximo
+      sd = sd(PM25, na.rm = TRUE),                   # Desviaci?n est?ndar
+      num = nrow(PM25)#,                         # Conteo de valores no NA
+      #mean_subt = mean(data_subt$valor[data_subt$estacion == unique(estacion)], na.rm = TRUE) # Media para horas espec?ficas
+    )
+  df_rbind <- rbind(df_rbind,df)
+}
+
+
+write.csv(df_rbind,"D:/Josefina/Proyectos/ProyectoChile/SP/proceed/06_estaciones/SP_estaciones_12-2024.csv")
+
+
   

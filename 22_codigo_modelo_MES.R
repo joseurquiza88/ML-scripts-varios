@@ -3,7 +3,7 @@
 estacion <- "SP"
 numRaster<- "01"
 ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRaster,"_raster_template.tif",sep=""))
-year<- 2015
+year<- 2024
 
     
     ###########################################################################
@@ -115,10 +115,10 @@ print(num_na)
 rm(list=ls())
 
 
-estacion <- "MX"
+estacion <- "CH"
 numRAster<- "01"
 ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRAster,"_raster_template.tif",sep=""))
-year<- 2015
+year<- 2024
 
 
 # dir_ndvi <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/Prediccion_2024/01_NDVI"
@@ -170,11 +170,13 @@ for (i in 1:length(id)){
 # -----------------------   05 ERA  ------------------------------
 ###########################################################################
 # ndvi_raster <- raster("D:/Josefina/Proyectos/ProyectoChile/talca/dataset/01_NDVI/NDVI_raster/NDVI_raster.tif")
-estacion <- "BA"
-ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
+estacion <- "MX"
+numRaster<- "01"
+year<- "2024"
+ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRaster,"_raster_template.tif",sep=""))
 
-dir_era <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/2022/",sep="")
-dir_era_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"modelos/dataset_ejemplo/Prediccion_2022/",sep="")
+dir_era <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/TP/",year,"/",sep="")
+dir_era_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/",sep="")
 
 
 
@@ -183,85 +185,85 @@ id <- list.files(path = dir_era,
                  pattern = "*.nc",
                  full.names = FALSE)
 crs_project <- "+proj=longlat +datum=WGS84"
-for (i in 245:length(id)){
+for (i in 1:length(id)){
   print(i)
   era5 <- id[i]
   nombre_era <- substr(era5,0,10)
-  data_ERA_t2m <- brick(era5,varname="t2m")
-  data_ERA_t2m_mean <- calc(data_ERA_t2m, mean, na.rm=TRUE)
-  SINU <- as.character(data_ERA_t2m_mean@crs)
-  data_ERA_t2m_mean <- projectRaster(data_ERA_t2m_mean,crs = crs_project)
-  resampled_ERA_t2m <- raster::resample(data_ERA_t2m_mean, ndvi_raster,method = "bilinear")
-  cropped_ERA_t2m  <- crop(resampled_ERA_t2m, extent(ndvi_raster))
-  cropped_ERA_t2m <- cropped_ERA_t2m$layer -273.15
-  #02
-  data_ERA_d2m <- brick(era5,varname="d2m")
-  data_ERA_d2m_mean <- calc(data_ERA_d2m, mean, na.rm=TRUE)
-  SINU <- as.character(data_ERA_d2m_mean@crs)
-  data_ERA_d2m_mean <- projectRaster(data_ERA_d2m_mean,crs = crs_project)
-  resampled_ERA_d2m <- raster::resample(data_ERA_d2m_mean, ndvi_raster,method = "bilinear")
-  cropped_ERA_d2m  <- crop(resampled_ERA_d2m, extent(ndvi_raster))
-  cropped_ERA_d2m <- cropped_ERA_d2m$layer -273.15
-  
-  #03
-  data_ERA_sp <- brick(era5,varname="sp")
-  data_ERA_sp_mean <- calc(data_ERA_sp, mean, na.rm=TRUE)
-  SINU <- as.character(data_ERA_sp_mean@crs)
-  data_ERA_sp_mean <- projectRaster(data_ERA_sp_mean,crs = crs_project)
-  resampled_ERA_sp <- raster::resample(data_ERA_sp_mean, ndvi_raster,method = "bilinear")
-  cropped_ERA_sp  <- crop(resampled_ERA_sp, extent(ndvi_raster))
-  
-  #04
-  data_ERA_u10 <- brick(era5,varname="u10")
-  data_ERA_u10_mean <- calc(data_ERA_u10, mean, na.rm=TRUE)
-  SINU <- as.character(data_ERA_u10_mean@crs)
-  data_ERA_u10_mean <- projectRaster(data_ERA_u10_mean,crs = crs_project)
-  resampled_ERA_u10 <- raster::resample(data_ERA_u10_mean, ndvi_raster,method = "bilinear")
-  cropped_ERA_u10  <- crop(resampled_ERA_u10, extent(ndvi_raster))
-  
-  ### 05
-  data_ERA_v10 <- brick(era5,varname="v10")
-  data_ERA_v10_mean <- calc(data_ERA_v10, mean, na.rm=TRUE)
-  SINU <- as.character(data_ERA_v10_mean@crs)
-  data_ERA_v10_mean <- projectRaster(data_ERA_v10_mean,crs = crs_project)
-  resampled_ERA_v10 <- raster::resample(data_ERA_v10_mean, ndvi_raster,method = "bilinear")
-  cropped_ERA_v10  <- crop(resampled_ERA_v10, extent(ndvi_raster))
-  
-  ### 06
-  data_ERA_blh <- brick(era5,varname="blh")
-  data_ERA_blh_mean <- calc(data_ERA_blh, mean, na.rm=TRUE)
-  SINU <- as.character(data_ERA_blh_mean@crs)
-  data_ERA_blh_mean <- projectRaster(data_ERA_blh_mean,crs = crs_project)
-  resampled_ERA_blh <- raster::resample(data_ERA_blh_mean, ndvi_raster,method = "bilinear")
-  cropped_ERA_blh  <- crop(resampled_ERA_blh, extent(ndvi_raster))
-  
+  # data_ERA_t2m <- brick(era5,varname="t2m")
+  # data_ERA_t2m_mean <- calc(data_ERA_t2m, mean, na.rm=TRUE)
+  # SINU <- as.character(data_ERA_t2m_mean@crs)
+  # data_ERA_t2m_mean <- projectRaster(data_ERA_t2m_mean,crs = crs_project)
+  # resampled_ERA_t2m <- raster::resample(data_ERA_t2m_mean, ndvi_raster,method = "bilinear")
+  # cropped_ERA_t2m  <- crop(resampled_ERA_t2m, extent(ndvi_raster))
+  # cropped_ERA_t2m <- cropped_ERA_t2m$layer -273.15
+  # #02
+  # data_ERA_d2m <- brick(era5,varname="d2m")
+  # data_ERA_d2m_mean <- calc(data_ERA_d2m, mean, na.rm=TRUE)
+  # SINU <- as.character(data_ERA_d2m_mean@crs)
+  # data_ERA_d2m_mean <- projectRaster(data_ERA_d2m_mean,crs = crs_project)
+  # resampled_ERA_d2m <- raster::resample(data_ERA_d2m_mean, ndvi_raster,method = "bilinear")
+  # cropped_ERA_d2m  <- crop(resampled_ERA_d2m, extent(ndvi_raster))
+  # cropped_ERA_d2m <- cropped_ERA_d2m$layer -273.15
+  # 
+  # #03
+  # data_ERA_sp <- brick(era5,varname="sp")
+  # data_ERA_sp_mean <- calc(data_ERA_sp, mean, na.rm=TRUE)
+  # SINU <- as.character(data_ERA_sp_mean@crs)
+  # data_ERA_sp_mean <- projectRaster(data_ERA_sp_mean,crs = crs_project)
+  # resampled_ERA_sp <- raster::resample(data_ERA_sp_mean, ndvi_raster,method = "bilinear")
+  # cropped_ERA_sp  <- crop(resampled_ERA_sp, extent(ndvi_raster))
+  # 
+  # #04
+  # data_ERA_u10 <- brick(era5,varname="u10")
+  # data_ERA_u10_mean <- calc(data_ERA_u10, mean, na.rm=TRUE)
+  # SINU <- as.character(data_ERA_u10_mean@crs)
+  # data_ERA_u10_mean <- projectRaster(data_ERA_u10_mean,crs = crs_project)
+  # resampled_ERA_u10 <- raster::resample(data_ERA_u10_mean, ndvi_raster,method = "bilinear")
+  # cropped_ERA_u10  <- crop(resampled_ERA_u10, extent(ndvi_raster))
+  # 
+  # ### 05
+  # data_ERA_v10 <- brick(era5,varname="v10")
+  # data_ERA_v10_mean <- calc(data_ERA_v10, mean, na.rm=TRUE)
+  # SINU <- as.character(data_ERA_v10_mean@crs)
+  # data_ERA_v10_mean <- projectRaster(data_ERA_v10_mean,crs = crs_project)
+  # resampled_ERA_v10 <- raster::resample(data_ERA_v10_mean, ndvi_raster,method = "bilinear")
+  # cropped_ERA_v10  <- crop(resampled_ERA_v10, extent(ndvi_raster))
+  # 
+  # ### 06
+  # data_ERA_blh <- brick(era5,varname="blh")
+  # data_ERA_blh_mean <- calc(data_ERA_blh, mean, na.rm=TRUE)
+  # SINU <- as.character(data_ERA_blh_mean@crs)
+  # data_ERA_blh_mean <- projectRaster(data_ERA_blh_mean,crs = crs_project)
+  # resampled_ERA_blh <- raster::resample(data_ERA_blh_mean, ndvi_raster,method = "bilinear")
+  # cropped_ERA_blh  <- crop(resampled_ERA_blh, extent(ndvi_raster))
+  # 
   ### 07
-  # data_ERA_tp <- brick(era5,varname="tp")
-  # data_ERA_tp_mean <- calc(data_ERA_tp, mean, na.rm=TRUE)
-  # SINU <- as.character(data_ERA_tp_mean@crs)
-  # data_ERA_tp_mean <- projectRaster(data_ERA_tp_mean,crs = crs_project)
-  # resampled_ERA_tp <- raster::resample(data_ERA_tp_mean, ndvi_raster,method = "bilinear")
-  # cropped_ERA_tp  <- crop(resampled_ERA_tp, extent(ndvi_raster))
+  data_ERA_tp <- brick(era5,varname="tp")
+  data_ERA_tp_mean <- calc(data_ERA_tp, mean, na.rm=TRUE)
+  SINU <- as.character(data_ERA_tp_mean@crs)
+  data_ERA_tp_mean <- projectRaster(data_ERA_tp_mean,crs = crs_project)
+  resampled_ERA_tp <- raster::resample(data_ERA_tp_mean, ndvi_raster,method = "bilinear")
+  cropped_ERA_tp  <- crop(resampled_ERA_tp, extent(ndvi_raster))
   
   ## guardamos
   
-  writeRaster(cropped_ERA_blh, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-BLH_raster",sep=""), format="GTiff", overwrite=TRUE)
-  writeRaster(cropped_ERA_t2m, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-T2M_raster",sep=""), format="GTiff", overwrite=TRUE)
-  writeRaster(cropped_ERA_d2m, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-D2M_raster",sep=""), format="GTiff", overwrite=TRUE)
-  writeRaster(cropped_ERA_sp, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-SP_raster",sep=""), format="GTiff", overwrite=TRUE)
-  #writeRaster(cropped_ERA_tp, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-TP_raster",sep=""), format="GTiff", overwrite=TRUE)
-  writeRaster(cropped_ERA_v10, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-V10_raster",sep=""), format="GTiff", overwrite=TRUE)
-  writeRaster(cropped_ERA_u10, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-U10_raster",sep=""), format="GTiff", overwrite=TRUE)
+  # writeRaster(cropped_ERA_blh, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-BLH_raster",sep=""), format="GTiff", overwrite=TRUE)
+  # writeRaster(cropped_ERA_t2m, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-T2M_raster",sep=""), format="GTiff", overwrite=TRUE)
+  # writeRaster(cropped_ERA_d2m, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-D2M_raster",sep=""), format="GTiff", overwrite=TRUE)
+  # writeRaster(cropped_ERA_sp, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-SP_raster",sep=""), format="GTiff", overwrite=TRUE)
+   writeRaster(cropped_ERA_tp, paste(dir_era_guardado,"tiff/05_ERA5/",nombre_era,"-TP_raster",sep=""), format="GTiff", overwrite=TRUE)
+  # writeRaster(cropped_ERA_v10, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-V10_raster",sep=""), format="GTiff", overwrite=TRUE)
+  # writeRaster(cropped_ERA_u10, paste(dir_era_guardado,"/tiff/05_ERA5/",nombre_era,"-U10_raster",sep=""), format="GTiff", overwrite=TRUE)
 
 }
 ###########################################################################
 # -----------------------   04 MERRA  ------------------------------
 ###########################################################################
 #SP
-estacion <- "MX"
-year <- "2022"
-ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
-
+estacion <- "SP"
+numRaster<- "01"
+ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRaster,"_raster_template.tif",sep=""))
+year<- 2024
 dir_merra <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/04_MERRA-2_Dia/",year,"/",sep="")
 
 dir_merra_guardado <-paste( "D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/",sep="")
@@ -273,8 +275,8 @@ id <- list.files(path = dir_merra,
                  pattern = "*.nc",
                  full.names = FALSE)
 crs_project <- "+proj=longlat +datum=WGS84"
-i<-278
-for(i in 130:length(id)){
+i<-1
+for(i in 1:length(id)){
   print(i)
   merra <- id[i]
   
@@ -386,10 +388,13 @@ for(i in 130:length(id)){
 # -----------------------   06 dayweek  ------------------------------
 ###########################################################################
 #01-01-2016 dayweek = 2
-estacion <- "MX"
-year <- 2023
-ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
+estacion <- "CH"
+year <- 2024
+numRaster<- "01"
+ndvi_raster <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRaster,"_raster_template.tif",sep=""))
 dir_era <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/meteoSatelital/TP/",year,sep="")
+dir_era <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/07_MERRA-2_Dia_AOD/",year,sep="")
+
 dir_weekDay_guardado <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/",sep="")
 
 
@@ -403,6 +408,10 @@ for (i in 1:length(id)){
   print(i)
   era5 <- id[i]
   nombre_weekDay <- substr(era5,0,10)
+  # nombre_weekDay_YEAR <- substr(era5,28,31)
+  # nombre_weekDay_MES <- substr(era5,32,33)
+  # nombre_weekDay_DIA <- substr(era5,34,35)
+  #nombre_weekDay <- paste(nombre_weekDay_YEAR,"-",nombre_weekDay_MES,"-",nombre_weekDay_DIA,sep="")
   # Crear un nuevo raster con la misma extensi?n, resoluci?n y proyecci?n
   dayWeek_raster <- raster(extent(ndvi_raster), 
                            nrows = nrow(ndvi_raster), 

@@ -3,11 +3,11 @@
 library(raster)
 
 # Definir el directorio donde están tus archivos raster
-year<-2018
-year <- c(2020,2021,2022,2023)
+year<-2023
+#year <- c(2015,2016,2017,2018,2019,2020,2021,2022,2023)
 i<-1
-modelo <- "02-RF_cv_M1-251124_SP"
-estacion <- "SP"
+modelo <- "02-RF_cv_M1-261224_MX"
+estacion <- "MX"
 for (i in 1:length(year)){
   #dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasDiarias/Salida_03-XGB_cv_M1-041024/",year[i],"/",sep="")
   #dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion"/modelos/salidas/SalidasDiarias/",modelo,"/",year[i],"/",sep="")

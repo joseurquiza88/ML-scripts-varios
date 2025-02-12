@@ -1,10 +1,14 @@
 ##############################################################################
 ##otra forma de extraer los datos
-estacion <- "MD"
-modelo <-"Salida_02-RF_cv_M1-080125_MD"
+estacion <- "SP"
+modelo <-"02-RF_cv_M1-080125_MD"
+modelo <-"02-RF_cv_M1-251124_SP"
+modelo<- "02-RF_cv_M1-251124_SP_AOD-MERRA"
+modelo<- "07-RF-ESP_cv_M6-110225-SP"
 # modelo <- "Salida_03-XGB_cv_M1-041024"
+
 # modelo <- "02-RF_cv_M1-261224_MX"
-modelo <- "02-RF_cv_M1-251124_SP"
+#modelo <- "02-RF_cv_M1-251124_SP"
 dir <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/Salidas/SalidasDiarias/",modelo,sep="")
 
 
@@ -51,12 +55,15 @@ for (i in 1:length(id)){
 getwd()
 #write.csv(df_rbind, paste("Salida_03-XGB_cv_M1-041024_LCS-Sensor.csv",sep=""))
 # write.csv(df_rbind, paste("02-RF_cv_M1-261224_MX.csv",sep=""))
-write.csv(df_rbind, paste("02-RF_cv_M1-251124_SP.csv",sep=""))
-
+# write.csv(df_rbind, paste("02-RF_cv_M1-251124_SP_MERRA.csv",sep=""))
+write.csv(df_rbind, paste("07-RF-ESP_cv_M6-110225-SP",sep=""))
+#write.csv(df_rbind, paste("02-RF_cv_M1-080125_MD.csv",sep=""))
+df_rbind_merra<- df_rbind
 ###############################################################
 # Merge datos sensores
-estacion <- "MX"
-# modelo <-"Salida_02-RF_cv_M1-080125_MD"
+estacion <- "SP"
+modelo <-"02-RF_cv_M1-080125_MD"
+modelo <-"07-RF-ESP_cv_M6-110225-SP"
 # modelo <- "Salida_03-XGB_cv_M1-041024"
 modelo <- "02-RF_cv_M1-261224_MX"
 modelo <- "02-RF_cv_M1-251124_SP"
@@ -65,55 +72,78 @@ data_sensores <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,
 
 #CH
 #data_sensores <- read.csv("D:/Josefina/Proyectos/Sensores/proceed/data/media_diria_sensores.csv")
-
+data_modelo <- df_rbind_maiac
 #data_sensores <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/06_estaciones/",estacion,"_estaciones.csv",sep=""))
 data_modelo <- read.csv( paste(dir,modelo,".csv",sep=""))
 data_sensores <- data_sensores[complete.cases(data_sensores$date),]
 data_sensores$date <- as.POSIXct(data_sensores$date, format = "%d/%m/%Y")
 data_modelo$date <- as.POSIXct(data_modelo$date, format = "%Y-%m-%d")
-data_sensores$date <- as.POSIXct(data_sensores$date, format = "%Y-%m-%d")
+#df_rbind_merra$date <- as.POSIXct(df_rbind_merra$date, format = "%Y-%m-%d")
+#data_sensores$date <- as.POSIXct(data_sensores$date, format = "%Y-%m-%d")
 
 names(data_modelo)
 names(data_sensores)
 #CH
 #data_sensores$ID_archivo <- data_sensores$ID_archivo_num
 #merged_df <- merge(data_modelo, data_sensores, by = c("ID_archivo", "date","archivo"), all.x = TRUE)
-merged_df <- merge(data_modelo, data_sensores, by = c("ID", "date"), all.x = TRUE)
+merged_df <- merge(data_modelo,data_sensores, by = c("ID", "date"), all.x = TRUE)
 
 merged_df_subt <- merged_df[complete.cases(merged_df),]
+merged_df2 <- merge(merged_df_subt, df_rbind_merra, by = c("ID", "date"), all.x = TRUE)
+merged_df_subt <- merged_df2[complete.cases(merged_df2),]
+
 getwd()
 
 write.csv(merged_df_subt,"merged_df_subt.csv")
 merged_df_subt <- read.csv("merged_df_subt.csv")
 length(unique(merged_df_subt$estacion))
+merged_df_subt$estacion<-merged_df_subt$estacion.x
 # Filtrar solo las estaciones que están en el vector l
 merged_df_subt_2 <- merged_df_subt[merged_df_subt$estacion %in% unique(merged_df_subt$estacion)[1:9], ]
 
 merged_df_subt_2$date <- as.POSIXct(merged_df_subt_2$date, format = "%Y-%m-%d")
 merged_df_subt_2$date <- as.Date(merged_df_subt_2$date)
+# Generar la secuencia de fechas desde el 01-01-2015 hasta el 31-07-2024
+date <- seq.Date(from = as.Date("2024-01-01"), to = as.Date("2024-12-31"), by = "day")
 
-#ggplot(merged_df_subt_2, aes(x = date)) +
-  ggplot(merged_df_subt, aes(x = date)) +
+# Crear el dataframe con la columna 'date'
+df_date <- data.frame(date = date)
+df_date$date <- strptime(df_date$date, format = "%Y-%m-%d")
+#unique(data_pm$estacion)
+
+
+df_date_1 <- data.frame( X=0,ID=NA, date=date, X.x=0,estacion.x="NA",
+                        Direccion=NA, Zona=NA, lat=NA, long =NA,
+                        Considerado=NA, valor_raster= 0, X.y=NA,
+                        estacion.y=NA, mean=0, min=NA, max=NA,         
+                        sd=NA,      estacion=NA,    date_label=NA) 
+
+df_date_rbind <- rbind (merged_df_subt,df_date_1)
+df_date_rbind        <-merged_df_subt      
+ggplot(merged_df_subt, aes(x = date)) +
+  #ggplot(df_date_rbind, aes(x = date)) +
   # Línea para Registros.validados
     # Línea para valor_Raster
-  geom_line(aes(y = mean, color = "mean"), size = 0.3, na.rm = FALSE)+#, linetype = "dashed") +
-  geom_line(aes(y = valor_raster, color = "valor_raster"), size = 0.3,na.rm = FALSE) +
-    
+  geom_line(aes(y = mean, color = "Monitoreo"), size = 0.3,na.rm = FALSE) +
+  
+  geom_line(aes(y = valor_raster, color = "Modelo"), size = 0.3, na.rm = FALSE)+#, linetype = "dashed") +
+  #geom_line(aes(y = valor_raster.y, color = "MERRA-2"), size = 0.3, na.rm = FALSE)+#, linetype = "dashed") +
+  
     #geom_line(aes(y = Registros.preliminares, color = "Registros.no.validados"), size = 0.3, na.rm = FALSE)+#, linetype = "dashed") +
   
   # Separar en subplots por estación
-  facet_wrap(~ estacion, scales = "free_y") +
+  facet_wrap(~ ID, scales = "free_y") +
   # 
-  scale_y_continuous(limits = c(0, 120),breaks = seq(0, 120, by = 40)) +  # Ticks cada 10 en el eje Y
+  #scale_y_continuous(limits = c(0, 120),breaks = seq(0, 120, by = 40)) +  # Ticks cada 10 en el eje Y
   
   # Títulos y etiquetas
-  labs(title = "Salida_02-RF_cv_M1-251124_SP",
+  labs(title = "07-RF-ESP_cv_M6-110225-SP",
     x = "Date",
     y = "PM2.5",
     color = "Variables") +
   # Cambiar los colores de las líneas
-  scale_color_manual(values = c("valor_raster" = "#2ca25f", "mean" = "#feb24c"),
-                     labels = c("valor_raster" = "Modelo", "mean" = "Monitoreo")) +
+  scale_color_manual(values = c("Monitoreo" = "#2ca25f", "Modelo" = "#feb24c"),#,"Monitoreo"="blue"),
+                     labels = c("Monitoreo" = "Monitoreo", "Modelo" = "Modelo"))+#, "mean"="Monitoreo")) +
   
   # Personalización del tema
   
@@ -129,6 +159,34 @@ merged_df_subt_2$date <- as.Date(merged_df_subt_2$date)
       legend.title = element_text(size = 8),              # Tamaño del título de la leyenda
       legend.text = element_text(size = 5)                # Tamaño del texto de la leyenda
     )
+  
+  # Filtrar los datos para excluir el último ID (por ejemplo "ID_4")
+  df_date_rbind_filtered <- df_date_rbind %>%
+    filter(ID != "0")  # Reemplaza "ID_4" con el ID correspondiente
+  
+  # Realizar el gráfico con los datos filtrados
+  ggplot(df_date_rbind_filtered, aes(x = date)) +
+    geom_line(aes(y = mean, color = "mean"), size = 0.3, na.rm = FALSE) +
+    geom_line(aes(y = valor_raster, color = "valor_raster"), size = 0.3, na.rm = FALSE) +
+    facet_wrap(~ ID, scales = "free_y") +
+    labs(title = "Salida_02-RF_cv_M1-251124_SP",
+         x = "Date",
+         y = "PM2.5",
+         color = "Variables") +
+    scale_color_manual(values = c("valor_raster" = "#2ca25f", "mean" = "#feb24c"),
+                       labels = c("valor_raster" = "Modelo", "mean" = "Monitoreo")) +
+    theme_classic() +
+    theme(
+      plot.title = element_text(size = 10, hjust = 0.5),
+      axis.title.x = element_text(size = 8),
+      axis.title.y = element_text(size = 8),
+      axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+      axis.text.y = element_text(size = 6),
+      strip.text = element_text(size = 5),
+      legend.title = element_text(size = 8),
+      legend.text = element_text(size = 5)
+    )
+  
 
 ############ Sensores LCS CH
 data_sensores_ST <- read.csv("D:/Josefina/Proyectos/Sensores/proceed/data/media_diaria_sensores.csv")
@@ -527,7 +585,7 @@ ggsave("grafico_VitacuraVerano.png", plot = VitacuraVerano_date_plot, width = 11
 #################################################################
 #REGRESION LINEAL CON TODOS LOS SENSORES
 # Mi valor de referencia es el modelo no las mediciones de LCS
-merged_df_subt <- merged_df_subt[complete.cases(merged_df_subt),]
+merged_df_subt2 <- merged_df_subt[complete.cases(merged_df_subt),]
 # Ajuste del modelo de regresión lineal
 #modelo <- lm(valor_raster ~mean, data = merged_df_subt)
 modelo <- lm( mean~valor_raster , data = merged_df_subt)
@@ -547,9 +605,9 @@ plot <- ggplot(merged_df_subt, aes(y = mean, x= valor_raster)) +
   scale_y_continuous(limits = c(0, 180),breaks = seq(0, 180, by = 50)) +  # Ticks cada 10 en el eje Y
   scale_x_continuous(limits = c(0, 180),breaks = seq(0, 180, by = 50)) +  # Ticks cada 10 en el eje Y
   labs(
-    x = "Modelo",
-    y = "LCS",
-    title = "LCS - Modelo 03-XGB_cv_M1-041024",
+    x = "Monitoreo",
+    y = "Modelo",
+    title = "07-RF-ESP_cv_M6-110225-SP",
     subtitle = paste(
       "R2 =", round(R2, 3),
       "| RMSE =", round(RMSE, 2),

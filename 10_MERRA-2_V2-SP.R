@@ -5,7 +5,7 @@
 # Extraccion de datos de MERRA-2
 rm(list=ls())#
 year <- 2024
-
+numRaster<- "01"
 estacion<- "CH"
 for (j in 1:1){
   #data_estacciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/sitios.csv")
@@ -13,6 +13,8 @@ for (j in 1:1){
   data_estacciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/sitios_",estacion,".csv",sep=""))
   
   data_estacciones <- data_estacciones[data_estacciones$Considerado == "SI",]
+  data_estacciones <- data_estacciones[data_estacciones$tipo == "referencia",]
+  
   #data_estacciones <- data_estacciones[22:24,]
   puntos <- data_estacciones
   # puntos$estacion <- puntos$Nombre.sitio 
@@ -33,7 +35,7 @@ for (j in 1:1){
                    full.names = FALSE)
   #raster_template <- raster("D:/Josefina/Proyectos/ProyectoChile/SP/dataset/rasterTemplate/raster_template.tif")
   #raster_template <- raster("D:/Josefina/Proyectos/ProyectoChile/MX/dataset/rasterTemplate/raster_template.tif")
-  raster_template <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/raster_template.tif",sep=""))
+  raster_template <- raster(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/rasterTemplate/",numRaster,"_raster_template.tif",sep=""))
   
   for (p in 1:1){
   
@@ -131,8 +133,8 @@ for (j in 1:1){
     
   }
   
-  
-  write.csv(merged_df,paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/04_MERRA-2_Dia/MERRA-2_Dia_",year,".csv",sep=""))
+}
+  write.csv(merged_df,paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/04_MERRA-2_Dia/MERRA-2_Dia_11-12_",year,".csv",sep=""))
 }
 View(merged_df)
 unique(merged_df$ID)

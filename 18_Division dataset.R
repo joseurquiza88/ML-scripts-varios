@@ -4,7 +4,7 @@
 rm(list=ls())
 # Generar datos aleatorios para las variables predictoras
 set.seed(42)
-estacion <- "BA"
+estacion <- "MX"
 data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/merge_tot/",estacion,"_merge_comp.csv",sep=""))
 
 data_completo <- data[complete.cases(data),]
@@ -12,7 +12,10 @@ data_completo <- data[complete.cases(data),]
 data_completo$date <- strptime(data_completo$date, format = "%Y-%m-%d")
 data_completo$dayWeek <- wday(data_completo$date, week_start = 1)
 
-
+# Sin 2024 que lo usamos para verificar despues con los mapas
+data_completo <- data_completo[year(data_completo$date) != 2024,]
+# verifficamos que solo esten los años 2015-2023
+unique(year(data_completo$date))
 ###### ------  Modelo 1 - Aleatorio  ------  ##### 
 
 # Dividir el dataframe en 70% entrenamiento y 30% testeo
@@ -228,7 +231,9 @@ train_data <- data_completo[data_completo$ID == 1 | data_completo$ID == 2 | data
 test_data <- data_completo[data_completo$ID == 22 | data_completo$ID == 23 
                            | data_completo$ID == 24| data_completo$ID == 17  ,]
 
-
+train_data <- data_completo[data_completo$ID == 1 | data_completo$ID == 2 | data_completo$ID == 5 
+                            | data_completo$ID == 4| data_completo$ID == 6,]
+test_data <- data_completo[data_completo$ID == 3 ,]                          
 # Corroboramos que esten todos los datos
 nrow(train_data) + nrow(test_data) == nrow(data_completo)
 
@@ -236,11 +241,14 @@ nrow(train_data) + nrow(test_data) == nrow(data_completo)
 (nrow(train_data) / nrow(data_completo))* 100 # 87%  70.74%
 (nrow(test_data) / nrow(data_completo))*100   # 13%  29.66%
 # Guardamos datos
-dir <- "D:/Josefina/Proyectos/ProyectoChile/SP/modelos/ParticionDataSet/"
+dir <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/",sep="")
 
 setwd(dir)
-write.csv(train_data, paste(dir,"Modelo 4/M4_train.csv",sep=""))
-write.csv(test_data, paste(dir,"Modelo 4/M4_test.csv",sep=""))
+write.csv(train_data, paste(dir,"Modelo_4/M4_train_",estacion,".csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo_4/M4_test_",estacion,".csv",sep=""))
+
+write.csv(train_data, paste(dir,"Modelo_3/M3_train_",estacion,".csv",sep=""))
+write.csv(test_data, paste(dir,"Modelo_3/M3_test_",estacion,".csv",sep=""))
 
 ###### ------  Modelo 5 - Aleatorio eliminando outliers segun IQX  ------  ##### 
 # Dividir el dataframe en 70% entrenamiento y 30% testeo
