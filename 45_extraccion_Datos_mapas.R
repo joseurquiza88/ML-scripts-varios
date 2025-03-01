@@ -1,15 +1,23 @@
 ##############################################################################
 ##otra forma de extraer los datos
-estacion <- "SP"
+estacion <- "MX"
+modelo <- "02-RF_cv_M1-070225-MX"
+modelo <- "07-RF_ESP_cv_M6-180225-MX"
 modelo <-"02-RF_cv_M1-080125_MD"
 modelo <-"02-RF_cv_M1-251124_SP"
 modelo<- "02-RF_cv_M1-251124_SP_AOD-MERRA"
 modelo<- "07-RF-ESP_cv_M6-110225-SP"
+modelo<- "07-RF-ESP_cv_M6-110225-MD"
+modelo <- "02-RF_cv_M1-120225-CH"
+modelo <- "07-RF_esp_cv_M6-180225-CH"
+modelo <- "02-RF_cv_M1-070225-SP"
+modelo <- "07-RF-ESP_cv_M6-110225-SP"
+year<-2024
 # modelo <- "Salida_03-XGB_cv_M1-041024"
 
 # modelo <- "02-RF_cv_M1-261224_MX"
 #modelo <- "02-RF_cv_M1-251124_SP"
-dir <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/Salidas/SalidasDiarias/",modelo,sep="")
+dir <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/Salidas/SalidasDiarias/",modelo,"/",year,"/",sep="")
 
 
 
@@ -22,6 +30,8 @@ id <- list.files(path = dir,
 data_estacciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/sitios_",estacion,".csv",sep=""))
 # data_estacciones <- data_estacciones[data_estacciones$tipo == "LCS",]
 data_estacciones <- data_estacciones[data_estacciones$Considerado=="SI",]
+data_estacciones <- data_estacciones[data_estacciones$tipo=="referencia",]
+
 #data_estacciones <- data_estacciones[22:24,]
 puntos <- data_estacciones
 unique(puntos$archivo)
@@ -56,89 +66,83 @@ getwd()
 #write.csv(df_rbind, paste("Salida_03-XGB_cv_M1-041024_LCS-Sensor.csv",sep=""))
 # write.csv(df_rbind, paste("02-RF_cv_M1-261224_MX.csv",sep=""))
 # write.csv(df_rbind, paste("02-RF_cv_M1-251124_SP_MERRA.csv",sep=""))
-write.csv(df_rbind, paste("07-RF-ESP_cv_M6-110225-SP",sep=""))
-#write.csv(df_rbind, paste("02-RF_cv_M1-080125_MD.csv",sep=""))
-df_rbind_merra<- df_rbind
+write.csv(df_rbind, paste("07-RF-ESP_cv_M6-110225-SP.csv",sep=""))
+write.csv(df_rbind, paste("07-RF-ESP_cv_M6-110225-MD.csv",sep=""))
+write.csv(df_rbind, paste("02-RF_cv_M1-120225-CH.csv",sep=""))
+write.csv(df_rbind, paste("02-RF_cv_M1-080125_MD.csv",sep=""))
+write.csv(df_rbind, paste("07-RF_esp_cv_M6-180225-CH.csv",sep=""))
+write.csv(df_rbind, paste("02-RF_cv_M1-070225-SP.csv",sep=""))
+write.csv(df_rbind, paste("07-RF-ESP_cv_M6-110225-SP.csv",sep=""))
+write.csv(df_rbind, paste("07-RF_ESP_cv_M6-180225-MX.csv",sep=""))
+write.csv(df_rbind, paste("02-RF_cv_M1-070225-MX.csv",sep=""))
 ###############################################################
 # Merge datos sensores
-estacion <- "SP"
+estacion <- "MX"
+modelo <- "02-RF_cv_M1-070225-MX"
+modelo <- "07-RF_ESP_cv_M6-180225-MX"
+modelo <- "07-RF-ESP_cv_M6-110225-SP"
+modelo <- "02-RF_cv_M1-070225-SP"
 modelo <-"02-RF_cv_M1-080125_MD"
 modelo <-"07-RF-ESP_cv_M6-110225-SP"
+modelo <-"07-RF-ESP_cv_M6-110225-MD"
+modelo <- "02-RF_cv_M1-080125_MD"
 # modelo <- "Salida_03-XGB_cv_M1-041024"
 modelo <- "02-RF_cv_M1-261224_MX"
 modelo <- "02-RF_cv_M1-251124_SP"
+modelo <- "02-RF_cv_M1-120225-CH"
+modelo <- "07-RF_esp_cv_M6-180225-CH"
 dir <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/Salidas/SalidasDiarias/",modelo,"/",sep="")
 data_sensores <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/06_estaciones/",estacion,"_estaciones.csv",sep=""))
 
 #CH
 #data_sensores <- read.csv("D:/Josefina/Proyectos/Sensores/proceed/data/media_diria_sensores.csv")
-data_modelo <- df_rbind_maiac
+year<-2024
 #data_sensores <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/06_estaciones/",estacion,"_estaciones.csv",sep=""))
-data_modelo <- read.csv( paste(dir,modelo,".csv",sep=""))
+data_modelo <- read.csv( paste(dir,"/2024/",modelo,".csv",sep=""))
 data_sensores <- data_sensores[complete.cases(data_sensores$date),]
-data_sensores$date <- as.POSIXct(data_sensores$date, format = "%d/%m/%Y")
+data_sensores$date <- as.POSIXct(data_sensores$date, format = "%Y-%m-%d")#"%d/%m/%Y")
 data_modelo$date <- as.POSIXct(data_modelo$date, format = "%Y-%m-%d")
 #df_rbind_merra$date <- as.POSIXct(df_rbind_merra$date, format = "%Y-%m-%d")
 #data_sensores$date <- as.POSIXct(data_sensores$date, format = "%Y-%m-%d")
 
-names(data_modelo)
-names(data_sensores)
 #CH
 #data_sensores$ID_archivo <- data_sensores$ID_archivo_num
 #merged_df <- merge(data_modelo, data_sensores, by = c("ID_archivo", "date","archivo"), all.x = TRUE)
 merged_df <- merge(data_modelo,data_sensores, by = c("ID", "date"), all.x = TRUE)
 
-merged_df_subt <- merged_df[complete.cases(merged_df),]
-merged_df2 <- merge(merged_df_subt, df_rbind_merra, by = c("ID", "date"), all.x = TRUE)
-merged_df_subt <- merged_df2[complete.cases(merged_df2),]
-
+#merged_df_subt <- merged_df[complete.cases(merged_df$Registros.completos),]
+merged_df_subt <- merged_df[complete.cases(merged_df$mean),]
+merged_df_subt2 <- merged_df_subt[complete.cases(merged_df_subt$valor_raster),]
+View(merged_df_subt)
 getwd()
 
 write.csv(merged_df_subt,"merged_df_subt.csv")
 merged_df_subt <- read.csv("merged_df_subt.csv")
+
 length(unique(merged_df_subt$estacion))
 merged_df_subt$estacion<-merged_df_subt$estacion.x
-# Filtrar solo las estaciones que están en el vector l
-merged_df_subt_2 <- merged_df_subt[merged_df_subt$estacion %in% unique(merged_df_subt$estacion)[1:9], ]
-
-merged_df_subt_2$date <- as.POSIXct(merged_df_subt_2$date, format = "%Y-%m-%d")
-merged_df_subt_2$date <- as.Date(merged_df_subt_2$date)
-# Generar la secuencia de fechas desde el 01-01-2015 hasta el 31-07-2024
-date <- seq.Date(from = as.Date("2024-01-01"), to = as.Date("2024-12-31"), by = "day")
-
-# Crear el dataframe con la columna 'date'
-df_date <- data.frame(date = date)
-df_date$date <- strptime(df_date$date, format = "%Y-%m-%d")
-#unique(data_pm$estacion)
-
-
-df_date_1 <- data.frame( X=0,ID=NA, date=date, X.x=0,estacion.x="NA",
-                        Direccion=NA, Zona=NA, lat=NA, long =NA,
-                        Considerado=NA, valor_raster= 0, X.y=NA,
-                        estacion.y=NA, mean=0, min=NA, max=NA,         
-                        sd=NA,      estacion=NA,    date_label=NA) 
-
-df_date_rbind <- rbind (merged_df_subt,df_date_1)
-df_date_rbind        <-merged_df_subt      
+merged_df_subt$mean<-merged_df_subt$Registros.completos
+merged_df_subt$date<- as.POSIXct(merged_df_subt$date, format = "%Y-%m-%d")
+merged_df_subt <- merged_df_subt[complete.cases(merged_df_subt$valor_raster),]
 ggplot(merged_df_subt, aes(x = date)) +
   #ggplot(df_date_rbind, aes(x = date)) +
   # Línea para Registros.validados
     # Línea para valor_Raster
-  geom_line(aes(y = mean, color = "Monitoreo"), size = 0.3,na.rm = FALSE) +
+  geom_line(aes(y = mean, color = "Monitoreo"), size = 0.3,na.rm = TRUE) +
   
-  geom_line(aes(y = valor_raster, color = "Modelo"), size = 0.3, na.rm = FALSE)+#, linetype = "dashed") +
+  geom_line(aes(y = valor_raster, color = "Modelo"), size = 0.3, na.rm = TRUE)+#, linetype = "dashed") +
   #geom_line(aes(y = valor_raster.y, color = "MERRA-2"), size = 0.3, na.rm = FALSE)+#, linetype = "dashed") +
   
     #geom_line(aes(y = Registros.preliminares, color = "Registros.no.validados"), size = 0.3, na.rm = FALSE)+#, linetype = "dashed") +
   
   # Separar en subplots por estación
-  facet_wrap(~ ID, scales = "free_y") +
+  facet_wrap(~ estacion , scales = "free_y") +
   # 
-  #scale_y_continuous(limits = c(0, 120),breaks = seq(0, 120, by = 40)) +  # Ticks cada 10 en el eje Y
+  scale_y_continuous(limits = c(0, 120),breaks = seq(0, 120, by = 40)) +  # Ticks cada 10 en el eje Y
   
   # Títulos y etiquetas
-  labs(title = "07-RF-ESP_cv_M6-110225-SP",
-    x = "Date",
+  labs(title = "02-RF_cv_M1-070225-MX",
+    x = "",
     y = "PM2.5",
     color = "Variables") +
   # Cambiar los colores de las líneas
@@ -160,10 +164,61 @@ ggplot(merged_df_subt, aes(x = date)) +
       legend.text = element_text(size = 5)                # Tamaño del texto de la leyenda
     )
   
-  # Filtrar los datos para excluir el último ID (por ejemplo "ID_4")
-  df_date_rbind_filtered <- df_date_rbind %>%
-    filter(ID != "0")  # Reemplaza "ID_4" con el ID correspondiente
+ 
+  ###################################################################
+  ################################################################
+  #################################################################
+  #REGRESION LINEAL CON TODOS LOS SENSORES
+  # Mi valor de referencia es el modelo no las mediciones de LCS
+  #merged_df_subt <- merged_df_subt[complete.cases(merged_df_subt),]
+  # Ajuste del modelo de regresión lineal
+getwd()
+  nombreModelo <- "02-RF_cv_M1-070225-MX"
+  #modelo <- lm(valor_raster ~mean, data = merged_df_subt)
+  modelo <- lm( mean~valor_raster , data = merged_df_subt)
+  # Calculo de métricas de desempeño
+  R2 <- summary(modelo)$r.squared
+  RMSE <- sqrt(mean(residuals(modelo)^2))
+  # Bias <- mean(merged_df_subt$valor_raster - merged_df_subt$mean)
+  Bias <- mean(merged_df_subt$mean - merged_df_subt$valor_raster)
+  n <- nrow(merged_df_subt)
   
+  # Crear el gráfico con ggplot2
+  plot <- ggplot(merged_df_subt, aes(y = mean, x= valor_raster)) +
+    geom_abline(slope = 1, intercept = 0,  color = "black", size = 0.5) +  # Línea 1:1
+    
+    geom_point(color = "#3690c0", size = 1.5, alpha = 0.6) +  # Puntos de datos
+    geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE, linetype = "dashed") +  # Línea de regresión
+    # scale_y_continuous(limits = c(0, 140),breaks = seq(0, 140, by = 40)) +  # Ticks cada 10 en el eje Y
+    # scale_x_continuous(limits = c(0, 140),breaks = seq(0, 140, by = 40)) +  # Ticks cada 10 en el eje Y
+    scale_y_continuous(limits = c(0, 80),breaks = seq(0, 80, by = 20)) +  # Ticks cada 10 en el eje Y
+    scale_x_continuous(limits = c(0, 80),breaks = seq(0, 80, by = 20)) +  # Ticks cada 10 en el eje Y
+    
+    labs(
+      x = "Monitoreo",
+      y = "Modelo",
+      title = 
+        nombreModelo,#"02-RF_cv_M1-120225-CH",
+      subtitle = paste(
+        "R2 =", round(R2, 2),
+        "| RMSE =", round(RMSE, 2),
+        "| Bias =", round(Bias, 2),
+        "| n = ", n
+      )
+    ) +
+    theme_classic() #+
+  #theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  plot
+  
+  
+  
+  
+  
+  
+  ###################################################################
+  ################################################################
+  ###################################################################
+  ################################################################
   # Realizar el gráfico con los datos filtrados
   ggplot(df_date_rbind_filtered, aes(x = date)) +
     geom_line(aes(y = mean, color = "mean"), size = 0.3, na.rm = FALSE) +

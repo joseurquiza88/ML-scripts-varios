@@ -1,33 +1,55 @@
 #########################################################
 ######################################################
 #Analsiis de los LCS
-data_ch <- read.csv("D:/Josefina/Proyectos/ProyectoChile/CH/modelos/Salidas/Sensores/sensores_modelos_validacion.csv")
+#data modelo 
+data_Modelo_LCS <- read.csv("D:/Josefina/Proyectos/ProyectoChile/CH/modelos/Salidas/Sensores/sensores_modelos_validacion.csv")
+# data SICA
 data_estaciones <- read.csv("D:/Josefina/Proyectos/ProyectoChile/CH/proceed/06_estaciones/CH_estaciones.csv")
+# dATA MEDIDFA lcs
+data_LCS <- read.csv("D:/Josefina/Proyectos/Sensores/proceed/data/media_diaria_sensores.csv")
 
-data_LCS <- data.frame(ID_archivo = data_ch$ID_archivo,date= data_ch$date,
-                             archivo = data_ch$archivo, ID_LCS = data_ch$ID,
-                             estacion_LCS = data_ch$estacion, valor_raster_LCS=data_ch$valor_raster,
-                             mean_LCS = data_ch$mean)
+
+data_LCS_modelo <- data.frame(ID_archivo = data_Modelo_LCS$ID_archivo,date= data_Modelo_LCS$date,
+                             archivo = data_Modelo_LCS$archivo, ID_LCS = data_Modelo_LCS$ID,
+                             estacion_LCS = data_Modelo_LCS$estacion, valor_raster_LCS=data_Modelo_LCS$valor_raster,
+                             mean_LCS_model = data_Modelo_LCS$mean)
 data_SINCA <- data.frame(date=data_estaciones$date, ID_SINCA =data_estaciones$ID,
                               estacion_SINCA = data_estaciones$estacion, Registros.validados=data_estaciones$Registros.validados,
                               Registros.preliminares = data_estaciones$Registros.preliminares,Registros.no.validados= data_estaciones$Registros.no.validados,
                               Registros.completos = data_estaciones$Registros.completos)
-data_SINCA_Prueba <- data_SINCA[data_SINCA$estacion_SINCA == "CER-II",]
-data_SINCA_Prueba$date <- as.POSIXct(as.character(data_SINCA_Prueba$date), format = "%d/%m/%Y" )#"%y%m%d")
-unique(year(data_SINCA_Prueba$date))
+data_LCS <- data.frame(ID_archivo = data_LCS$ID_archivo,date= data_LCS$date,
+                              archivo = data_LCS$archivo, ID_LCS = data_LCS$ID_archivo_num,
+                              estacion_LCS = data_LCS$archivo, #valor_raster_LCS=data_ch$valor_raster,
+                              mean_LCS = data_LCS$mean)
+
 #################################
 ##### Quilicura_verano
 data_LCS_Qui_verano <- data_LCS[data_LCS$archivo == "Quilicura Verano",]
 data_SINCA_Qui <- data_SINCA[data_SINCA$estacion_SINCA == "QUI",]
+data_LCS_Modelo_Qui_verano <- data_LCS_modelo[data_LCS_modelo$archivo == "Quilicura Verano",]
 
-data_LCS_Qui_verano$date <- as.POSIXct(as.character(data_LCS_Qui_verano$date), format = "%Y-%m-%d" )#"%y%m%d")
+#meduciones LCS
+data_LCS_Qui_verano$date <- as.POSIXct(as.character(data_LCS_Qui_verano$date), format = "%d/%m/%Y" )#"%y%m%d")
 data_SINCA_Qui$date <- as.POSIXct(as.character(data_SINCA_Qui$date), format = "%d/%m/%Y" )#"%y%m%d")
+
+data_LCS_Modelo_Qui_verano$date <- as.POSIXct(as.character(data_LCS_Modelo_Qui_verano$date), format = "%Y-%m-%d" )#"%y%m%d")
 
 
 data_SINCA_Qui <- data_SINCA_Qui[year(data_SINCA_Qui$date) == 2021,]
+#UniSINCA - Meidiones LCS
 merge_Qui_verano <- merge(data_SINCA_Qui, data_LCS_Qui_verano, by = "date", all.y = TRUE)
+#Unir SINCA y Medicioones LCS - Modelo en sitios lCS
+names(merge_Qui_verano)
+names(data_LCS_Modelo_Qui_verano)
 
-  # Ajuste del modelo de regresión lineal
+unique(data_LCS_Modelo_Qui_verano$ID_archivo)
+data_LCS_Modelo_Qui_verano$ID_LCS <- data_LCS_Modelo_Qui_verano$ID_archivo
+length(unique(merge_Qui_verano$ID_LCS))
+
+
+merge_Qui_verano_2 <-merge(merge_Qui_verano, data_LCS_Modelo_Qui_verano, by = c("date","ID_LCS"), all.y = TRUE)
+merge_Qui_verano_2 <- merge_Qui_verano_2[complete.cases(merge_Qui_verano_2$Registros.completos),]
+# Ajuste del modelo de regresión lineal
 #modelo_Quilicura_verano <- lm(mean ~ valor_raster, data = data_Quilicura_verano)
 # R2_Quilicura_verano <- summary(modelo_Quilicura_verano)$r.squared
 # RMSE_Quilicura_verano <- sqrt(mean(residuals(modelo_Quilicura_verano)^2))
@@ -43,45 +65,78 @@ merge_Qui_verano <- merge(data_SINCA_Qui, data_LCS_Qui_verano, by = "date", all.
 # n_Quilicura_verano <- nrow(merge_Qui_verano)
 
 # Sinca mas cercano vs modelo en sensores LCS
-modelo_Qui_verano <- lm(valor_raster_LCS ~ Registros.completos, data = merge_Qui_verano)
-R2_Quilicura_verano <- summary(modelo_Qui_verano)$r.squared
-RMSE_Quilicura_verano <- sqrt(mean(residuals(modelo_Qui_verano)^2))
-Bias_Quilicura_verano <- mean(merge_Qui_verano$valor_raster_LCS - merge_Qui_verano$Registros.completos)
-n_Quilicura_verano <- nrow(merge_Qui_verano)
+modelo_raster_Qui_verano <- lm(valor_raster_LCS ~ Registros.completos, data = merge_Qui_verano_2)
+R2_Quilicura_verano_modelo <- round(summary(modelo_raster_Qui_verano)$r.squared,2)
+RMSE_Quilicura_verano_modelo <- round(sqrt(mean(residuals(modelo_raster_Qui_verano)^2)),2)
+Bias_Quilicura_verano_modelo <- round(mean(merge_Qui_verano_2$valor_raster_LCS - merge_Qui_verano_2$Registros.completos),2)
+n_Quilicura_verano_modelo <- nrow(merge_Qui_verano_2)
+
+#monitoreo
+modelo_monitoreo_Qui_verano <- lm(mean_LCS_model ~ Registros.completos, data = merge_Qui_verano_2)
+R2_Quilicura_verano_monitoreo<- round(summary(modelo_monitoreo_Qui_verano)$r.squared,2)
+RMSE_Quilicura_verano_monitoreo <- round(sqrt(mean(residuals(modelo_monitoreo_Qui_verano)^2)),2)
+Bias_Quilicura_verano_monitoreo <- round(mean(merge_Qui_verano_2$mean_LCS_model - merge_Qui_verano_2$Registros.completos),2)
+n_Quilicura_verano_monitoreo <- nrow(merge_Qui_verano_2)
+
 
 # Crear el gráfico con ggplot2
 #plot_Quilicura_verano <- ggplot(data_Quilicura_verano , aes(x = valor_raster, y = mean)) +
 # Crear el gráfico con ggplot2
 #plot_Qui_verano <- ggplot(merge_Qui_verano , aes(x = Registros.completos, y = mean_LCS)) +
-plot_Qui_verano <- ggplot(merge_Qui_verano , aes(x = Registros.completos, y = valor_raster_LCS)) +
+plot_Qui_verano <- ggplot() +
   
- geom_point(color = "#3690c0", size = 1.5, alpha = 0.6) +  # Puntos de datos
-  geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE)+#+, linetype = "dashed") +  # Línea de regresión
-  #scale_y_continuous(limits = c(0, 160),breaks = seq(0, 160, by = 40)) +  # Ticks cada 10 en el eje Y
-  #scale_x_continuous(limits = c(0, 160),breaks = seq(0, 160, by = 40)) +  # Ticks cada 10 en el eje Y
-  scale_y_continuous(limits = c(0, 50),breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje Y
-  scale_x_continuous(limits = c(0, 50),breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje Y
-  labs(
-    x = "SINCA",
-    y = "Modelo (LCS)",
-    title = "Quilicura Verano",
-    subtitle = paste(
-      "R2 =", round(R2_Quilicura_verano , 3),
-      "| RMSE =", round(RMSE_Quilicura_verano , 2),
-      "| Bias =", round(Bias_Quilicura_verano , 2),
-      "| n =", n_Quilicura_verano
-    )
-  ) +
+  geom_point(merge_Qui_verano_2, mapping = aes(x = Registros.completos, y = mean_LCS, color = "Monitoreo"), size = 1.5, alpha = 0.6) +  # Puntos de datos (mean_LCS)
+  geom_point(merge_Qui_verano_2, mapping = aes(x = Registros.completos, y = valor_raster_LCS, color = "Modelo"), size = 1.5, alpha = 0.6) +  # Puntos de datos (valor_raster_LCS)
+  
+  geom_smooth(merge_Qui_verano_2, mapping = aes(x = Registros.completos, y = valor_raster_LCS, color = "Modelo"), method = "lm", se = FALSE) +  # Línea de regresión (valor_raster_LCS)
+  geom_smooth(merge_Qui_verano_2, mapping = aes(x = Registros.completos, y = mean_LCS, color = "Monitoreo"), method = "lm", se = FALSE) +  # Línea de regresión (mean_LCS)
+  
+  scale_y_continuous(limits = c(0, 50), breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje Y
+  scale_x_continuous(limits = c(0, 50), breaks = seq(0, 50, by = 10)) +  # Ticks cada 10 en el eje X
+  
   geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed", size = 0.3) +  # Línea 1:1 negra
+  
+  labs(color = "") +  # Título de la leyenda
+  
+  # Usar geom_text para agregar el texto en las coordenadas deseadas
+  geom_text(aes(x = 35, y = 15, label = "Monitoreo"), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  geom_text(aes(x = 46, y = 15, label = "Modelo"), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  
+  ##Metricas
+  geom_text(aes(x = 25, y = 12, label = "R2"), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  geom_text(aes(x = 25, y = 9, label = "RMSE"), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  geom_text(aes(x = 25, y = 6, label = "Bias"), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  geom_text(aes(x = 25, y = 3, label = "n"), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  
+  
+  ##Raster
+  geom_text(aes(x = 46, y = 12, label = R2_Quilicura_verano_modelo), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  geom_text(aes(x = 46, y = 9, label = RMSE_Quilicura_verano_modelo), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  geom_text(aes(x = 46, y = 6, label = Bias_Quilicura_verano_modelo), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  geom_text(aes(x = 46, y = 3, label = n_Quilicura_verano_modelo), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  
+  
+  ##Monitoreo
+  geom_text(aes(x = 36, y = 12, label = R2_Quilicura_verano_monitoreo), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  geom_text(aes(x = 36, y = 9, label = RMSE_Quilicura_verano_monitoreo), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  geom_text(aes(x = 36, y = 6, label = Bias_Quilicura_verano_monitoreo), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  geom_text(aes(x = 36, y = 3, label = n_Quilicura_verano_monitoreo), size = 2.5, color = "black") +  # Agregar texto en (40, 10)
+  labs(
+    title = "Quilicura Verano",  # Título del gráfico
+    #subtitle = "Análisis de desempeño del modelo",     # Subtítulo
+    x = "SINCA",                         # Texto para el eje X
+    y = "LCS Monitoreo - Modelado"                                 # Texto para el eje Y
+  ) +
   theme_classic() +
   theme(
-    plot.title = element_text(size = 10, face = "bold"),        # Tamaño del título
-    plot.subtitle = element_text(size = 8),                   # Tamaño del subtítulo
-    axis.title = element_text(size = 8),                      # Tamaño de los títulos de los ejes
-    axis.text = element_text(size = 6),                        # Tamaño de los textos de los ejes
-    axis.ticks.length = unit(0.1, "cm"),                      # Tamaño de los ticks
-    axis.line = element_line(size = 0.2)                       # Grosor de las líneas de los ejes
+    plot.title = element_text(size = 10, face = "bold"),  # Tamaño del título
+    plot.subtitle = element_text(size = 8),               # Tamaño del subtítulo
+    axis.title = element_text(size = 8),                   # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 6),                    # Tamaño de los textos de los ejes
+    axis.ticks.length = unit(0.1, "cm"),                   # Tamaño de los ticks
+    axis.line = element_line(size = 0.2)                   # Grosor de las líneas de los ejes
   )
+
 plot_Qui_verano
 
 ###########################################

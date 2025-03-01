@@ -15,7 +15,7 @@ rm(list=ls())
 
 
 #Data modelo 1
-estacion <- "MD"
+estacion <- "MX"
 modelo<- 6
 data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/",estacion,"_merge_comp.csv",sep=""))
 #data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 7/09_TOT_merge_tot.csv")
@@ -80,7 +80,7 @@ dir <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/",estacion,"modelo/Mod
     allowParallel = TRUE    # Permitir procesamiento paralelo
   )
   
-  for (i in 1:length(subsets)) {
+  for (i in 20:20){#length(subsets)) {
     print(paste("Fold", i))
     
     # Dividir el conjunto de datos en entrenamiento y validaci?n seg?n estaciones
@@ -127,9 +127,9 @@ dir <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/",estacion,"modelo/Mod
     max_train <- max(predictions_train)
     
     # Guardar el modelo con un nombre basado en la estaci?n que qued? fuera
-    model_name <- paste0(dir,"modelo_estacion_", paste(validation_stations, collapse = "_"), ".RData")
+    #model_name <- paste0(dir,"modelo_estacion_", paste(validation_stations, collapse = "_"), ".RData")
     #save(rf_model, file = model_name)
-    models[[i]] <- model_name  # Registrar el nombre del modelo
+    #models[[i]] <- model_name  # Registrar el nombre del modelo
     
     # Guardar m?tricas en el DataFrame
     # R2	R	RMSE	MAE	MAPE	MSE	MedAE	Min	Max
@@ -151,7 +151,7 @@ dir <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/",estacion,"modelo/Mod
     #   best_model <- rf_model  
     # }
   }
-15:14
+08:41
   # Guardar todos los resultados en un archivo .RData
   #save(resultados_rbind, file = "resultados_metricas.RData")
   
@@ -162,7 +162,7 @@ dir <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/",estacion,"modelo/Mod
 
 # Correr la funcion
 cv_results <- spatial_cv(data, subsets,dir,numFolds=3)
-09:07
+6:05
 # Ver los resultados de la validacin cruzada
 cv_results$rmse_avg
 cv_results$r2_avg
@@ -171,5 +171,5 @@ setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",se
 # save(lm_cv_model, file=paste("02-RLM-M",modelo,"_100125",estacion,".RData",sep=""))
 getwd()
 
-write.csv(resultados_rbind,paste("cv_results_",estacion,"_1.csv",sep=""))
+write.csv(resultados_rbind,paste("resultados_07-RF-ESP_cv_M6-110225_",estacion,"_06_J.csv",sep=""))
 load("08-RF_cv_M6-261124_SP.RData")

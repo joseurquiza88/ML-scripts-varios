@@ -8,9 +8,17 @@ rm(list = ls())
 month <- c("01","02","03","04","05","06","07","08","09","10","11","12")
 year <- "2024"
 i<-1
+modelo <- "07-RF_ESP_cv_M6-180225-MX"
+modelo <- "02-RF_cv_M1-070225-MX"
+modelo <- "02-RF_cv_M1-070225-SP"
 # modelo <- "02-RF_cv_M1-261224_MX"
 modelo <- "07-RF-ESP_cv_M6-110225-SP"
-estacion <- "SP"
+modelo <- "07-RF-ESP_cv_M6-110225-MD"
+modelo <- "02-RF_cv_M1-120225-CH"
+modelo <- "03-XGB_cv_M1-041024_CH"
+modelo <- "07-RF_esp_cv_M6-180225-CH"
+modelo <- "02-RF_cv_M1-080125_MD"
+estacion <- "MX"
 for (i in 1:length(month)){
   print(i)
   #dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/modelos/Salidas/SalidasDiarias/Salida_03-XGB_cv_M1-041024/",year,"/",month[i],sep="")

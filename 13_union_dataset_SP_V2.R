@@ -2,13 +2,14 @@
 rm(list=ls())
 #Objetivo unir todos dataset, hacer un merge por dia
 # Directorio
-estacion <- "MX"
+estacion <- "CH"
 setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/",sep=""))
 
 ## Vemos cuantas estaciones hay
 data_estacciones <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/dataset/estaciones/sitios_",estacion,".csv",sep=""))
 
 subt <- data_estacciones[data_estacciones$Considerado== "SI",]
+subt <- data_estacciones[data_estacciones$tipo== "referencia",]
 unique(subt$ID)
 # Generar la secuencia de fechas desde el 01-01-2015 hasta el 31-07-2024
 date <- seq.Date(from = as.Date("2015-01-01"), to = as.Date("2024-12-31"), by = "day")
@@ -145,7 +146,7 @@ df_date_30$ID <- 107  #30
 
 
 df_date_rbind <- rbind (df_date_1,df_date_2,df_date_3,df_date_4,df_date_5,df_date_6,
-                        df_date_7, df_date_8,df_date_9, df_date_10,df_date_11, df_date_12,
+                        df_date_7, df_date_8,df_date_9, df_date_10,df_date_11, df_date_12)#,
                         df_date_13, df_date_14,df_date_15,df_date_16,df_date_17,df_date_18,
                         df_date_19,df_date_20,df_date_21,df_date_22)#,df_date_23,df_date_24,
                          #df_date_25,df_date_26,df_date_27,df_date_28,df_date_29,df_date_30)
@@ -156,7 +157,8 @@ for (i in 1:1){
   #01 Estaciones PM 25
   data_pm <- read.csv(paste("./06_estaciones/",estacion,"_estaciones.csv",sep=""))
   # data_pm <- data.frame(date=data_pm$date, estacion=data_pm$estacion, ID = data_pm$ID, PM25 = data_pm$mean)
-  ### BA
+  ### 
+  data_pm$mean <- data_pm$Registros.completos
   data_pm <- data.frame(date=data_pm$date, estacion=data_pm$estacion, ID = data_pm$ID, PM25 = data_pm$mean)#, PM25_hora = data_pm$mean_horario)
   
   data_pm$date  <- strptime(data_pm$date, format = "%d/%m/%Y")#"%Y-%m-%d")
@@ -294,7 +296,7 @@ for (i in 1:1){
   ### --- 07 ERA-2
   data_ERA <- read.csv(paste("./05_ERA5/",estacion,"_ERA5.csv",sep=""))
   #data_ERA2 <- subset(data_ERA, select = -c(X,estacion))
-  data_ERA$date <- strptime(data_ERA$date, format = "%Y-%m-%d")
+  data_ERA$date <- strptime(data_ERA$date, format = "%d/%m/%Y")#"%Y-%m-%d")
   length(unique(data_ERA$ID))
 
 
@@ -312,7 +314,7 @@ for (i in 1:1){
   data_merged <- data_merged[complete.cases(data_merged$AOD_055),]
   length(unique(data_merged$ID))
   View(data_merged)
-  data_merged_subt <- data.frame(ID = data_merged$ID, date=data_merged$date,estacion = data_merged$estacion.x,
+  data_merged_subt <- data.frame(ID = data_merged$ID, date=data_merged$date,estacion = data_merged$estacion,
                                  ## ojo BA filtro hora, para el resto de las estaciones no
                                  PM25 = data_merged$PM25, #PM25_hora = data_merged$PM25_hora,
                                  
@@ -345,7 +347,7 @@ for (i in 1:1){
                                  u10_max= data_merged$u10_max, u10_sd = data_merged$u10_sd, #data_merged$u10_mean_subt,
                                  
                                  tp_mean = data_merged$tp_mean, tp_min= data_merged$tp_min,
-                                 tp_max = data_merged$tp_max, tp_sd = data_merged$tp_sd, #tp_mean_subt = data_merged$tp_mean_subt,
+                                 tp_max = data_merged$tp_max,# tp_sd = data_merged$tp_sd, #tp_mean_subt = data_merged$tp_mean_subt,
                                  DEM = data_merged$DEM
                                  
                        
@@ -366,3 +368,4 @@ write.csv(data_merged_subt_complete,paste("./merge_tot/",estacion,"_merge_comp.c
 
 nrow(data_merged_subt_complete)
 nrow(data_merged_subt)
+

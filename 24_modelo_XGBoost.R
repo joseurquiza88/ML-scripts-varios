@@ -5,7 +5,7 @@ library(Matrix)
 # Supongamos que tienes un dataframe llamado 'train_data' con la variable objetivo 'PM25'
 # y las características que mencionaste.
 rm(list=ls())
-estacion <- "BA"
+estacion <- "CH"
 modelo <- "1"
 #Data modelo 1
 test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_test_",estacion,".csv",sep=""))
@@ -15,10 +15,14 @@ train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/m
 # y las características que mencionaste.
 
 # Separar las características y la variable objetivo
-X <- train_data[ , c("AOD_055", "ndvi", "BCSMASS", "DUSMASS", "DUSMASS25",
-                     "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS",
-                     "SSSMASS25", "blh_mean", "sp_mean", "d2m_mean",
-                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM")]
+X <- train_data[ , c("AOD_055", "ndvi", "BCSMASS_dia", "DUSMASS_dia",
+                     "DUSMASS25_dia","OCSMASS_dia", "SO2SMASS_dia",
+                     "SO4SMASS_dia", "SSSMASS_dia", "SSSMASS25_dia", 
+                     "blh_mean", "sp_mean", "d2m_mean",
+                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean",
+                     "DEM","dayWeek")]
+
+
 y <- train_data$PM25
 
 
@@ -48,10 +52,12 @@ xgb_model <- xgb.train(
 08:56 09:02
 # Preparar datos de prueba
 
-X_test <- test_data[ , c("AOD_055", "ndvi", "BCSMASS", "DUSMASS", "DUSMASS25",
-                     "OCSMASS", "SO2SMASS", "SO4SMASS", "SSSMASS",
-                     "SSSMASS25", "blh_mean", "sp_mean", "d2m_mean",
-                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean", "DEM")]
+X_test <- test_data[ , c("AOD_055", "ndvi", "BCSMASS_dia", "DUSMASS_dia",
+                     "DUSMASS25_dia","OCSMASS_dia", "SO2SMASS_dia",
+                     "SO4SMASS_dia", "SSSMASS_dia", "SSSMASS25_dia", 
+                     "blh_mean", "sp_mean", "d2m_mean",
+                     "t2m_mean", "v10_mean", "u10_mean", "tp_mean",
+                     "DEM","dayWeek")]
 y_test<- test_data$PM25
 
 

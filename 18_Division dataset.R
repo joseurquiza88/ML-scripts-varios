@@ -4,7 +4,7 @@
 rm(list=ls())
 # Generar datos aleatorios para las variables predictoras
 set.seed(42)
-estacion <- "MX"
+estacion <- "CH"
 data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/merge_tot/",estacion,"_merge_comp.csv",sep=""))
 
 data_completo <- data[complete.cases(data),]
@@ -22,6 +22,7 @@ unique(year(data_completo$date))
 train_index <- createDataPartition(data_completo$PM25, p = 0.7, list = FALSE)
 train_data <- data_completo[train_index, ]
 test_data <- data_completo[-train_index, ]
+
 dir <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/",sep="")
 setwd(dir)
 getwd()

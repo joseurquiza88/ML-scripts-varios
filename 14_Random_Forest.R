@@ -4,14 +4,30 @@ library(raster)
 library(caret) #version 4.2.3
 rm(list=ls())
 
-estacion <- "BA"
+estacion <- "MX"
 modelo <- "1"
 #Data modelo 1
 test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_test_",estacion,".csv",sep=""))
 train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_train_",estacion,".csv",sep=""))
-
-
+nrow(test_data)+nrow(train_data)
+unique(year(test_data$date))
 # Entrenar el modelo de Random Forest
+
+estacion <- "MX"
+modelo<- 6
+data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/",estacion,"_merge_comp.csv",sep=""))
+#data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 7/09_TOT_merge_tot.csv")
+data <- data[complete.cases(data), ]
+data$date <- strptime(data$date, format = "%Y-%m-%d")#"%d/%m/%Y")#
+data$dayWeek <- wday(data$date, week_start = 1)
+data<- data[year(data$date) != 2024,]
+
+test_data <- data[data$ID==16,]
+train_data <- data[data$ID!=16,]
+nrow(test_data)/(nrow(test_data)+nrow(train_data))
+
+
+
 rf_model <- randomForest(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS +
                            DUSMASS + DUSMASS25 + OCSMASS + SO2SMASS+
                            SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
@@ -46,36 +62,6 @@ train_control <- trainControl(
   verboseIter = TRUE,     # Mostrar progreso de entrenamiento
   allowParallel = TRUE    # Permitir procesamiento paralelo
 )
-# Entrenar el modelo con validaciÃ³n cruzada
-# rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + LandCover + BCSMASS +
-#                        DUSMASS + DUSMASS25 + OCSMASS + SO2SMASS+
-#                        SO4SMASS + SSSMASS + SSSMASS25 + blh_mean +
-#                        sp_mean + d2m_mean + t2m_mean + v10_mean + 
-#                        u10_mean + tp_mean + DEM + dayWeek, data = train_data, 
-#                      method = "rf", trControl = train_control,importance = TRUE)
-# 
-
-names(test_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",                 
-                      "ndvi" ,  "BCSMASS_dia",                  
-"DUSMASS_dia" ,"DUSMASS25_dia", "OCSMASS_dia", "SO2SMASS_dia" ,"SO4SMASS_dia",
-"SSSMASS_dia", "SSSMASS25_dia",                 
-"blh_mean","blh_min","blh_max"  ,"blh_sd","blh_mean_subt", "sp_mean",                  
- "sp_min", "sp_max","sp_sd"   ,"sp_mean_subt","d2m_mean","d2m_min",                  
- "d2m_max","d2m_sd" , "d2m_mean_subt",  "t2m_mean", "t2m_min", "t2m_max",                  
-"t2m_sd",  "t2m_mean_subt", "v10_mean",  "v10_min" , "v10_max" ,"v10_sd"  ,                 
- "v10_mean_subt", "u10_mean" , "u10_min"  , "u10_max","u10_sd",
-"u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
-
-names(train_data) <- c("X.1" ,"X" ,"ID", "date", "estacion","PM25","AOD_055",                 
-                      "ndvi" ,  "BCSMASS_dia",                  
-                      "DUSMASS_dia" ,"DUSMASS25_dia", "OCSMASS_dia", "SO2SMASS_dia" ,"SO4SMASS_dia",
-                      "SSSMASS_dia",  "SSSMASS25_dia",                  
-                      "blh_mean","blh_min","blh_max"  ,"blh_sd","blh_mean_subt", "sp_mean",                  
-                      "sp_min", "sp_max","sp_sd"   ,"sp_mean_subt","d2m_mean","d2m_min",                  
-                      "d2m_max","d2m_sd" , "d2m_mean_subt",  "t2m_mean", "t2m_min", "t2m_max",                  
-                      "t2m_sd",  "t2m_mean_subt", "v10_mean",  "v10_min" , "v10_max" ,"v10_sd"  ,                 
-                      "v10_mean_subt", "u10_mean" , "u10_min"  , "u10_max","u10_sd",
-                      "u10_mean_subt","tp_mean", "tp_min","tp_max",  "tp_sd", "tp_mean_subt", "DEM" , "dayWeek")
 
 
 rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + #LandCover +
@@ -83,11 +69,11 @@ rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + #LandCover +
                      + SO2SMASS_dia+
                       SO4SMASS_dia + SSSMASS_dia + SSSMASS25_dia +
                        blh_mean +
-                       sp_mean + d2m_mean + t2m_mean + #  v10_mean +
-                       #u10_mean +
+                       sp_mean + d2m_mean + t2m_mean +   v10_mean +
+                       u10_mean +
                        tp_mean + DEM + dayWeek, data = train_data, method = "rf",
                      trControl = train_control,importance = TRUE)
- 09:34
+08:052
 #########
 ## Sin variables MERRA
 # rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + 
@@ -95,7 +81,7 @@ rf_cv_model <- train(PM25 ~ AOD_055 + ndvi + #LandCover +
 #                        sp_mean + d2m_mean + t2m_mean + v10_mean + u10_mean +
 #                        tp_mean + DEM + dayWeek, data = train_data, method = "rf", 
 #                      trControl = train_control,importance = TRUE)
-09:06-11
+
 print(rf_cv_model)
 print(rf_cv_model$results)
 
@@ -195,7 +181,7 @@ View(b)
 #setwd("D:/Josefina/Proyectos/ProyectoChile/modelos/modelo")
 setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep=""))
 getwd()
-save(rf_cv_model, file=paste("prueba02_02-RF_cv_M",modelo,"-270125-",estacion,".RData",sep=""))
+save(rf_cv_model, file=paste("07-RF_esp_cv_M",modelo,"-180225-",estacion,".RData",sep=""))
 
 # SIN MERRA
 #save(rf_cv_model, file=paste("06-RF_cv_M",modelo,"-090125-E_",estacion,".RData",sep=""))
@@ -204,13 +190,16 @@ print("Modelo Random Forest entrenado y guardado en 'random_forest_model.RData'.
 ################################################################################
 ################################################################################
 # cargar el modelo y aplicalo a otro set de datos
-setwd("D:/Josefina/Proyectos/ProyectoChile/SP/modelos/modelo")
+estacion<- "MD"
+setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep = ""))
 
 # Paso 1: Cargar el modelo
 load("02-RF_cv_M3-261224_MX.RData")
 load("01-RF_cv_M1-050924.RData")
 load("01-RF_cv_M2-050924.RData")
 load("01-RF_cv_M3-050924.RData")
+load("02-RF_cv_M1-080125_MD.RData")
+load("prueba_02-RF_cv_M1-120225-CH.RData")
 dir_tiff <- "D:/Josefina/Proyectos/ProyectoChile/modelos/dataset_ejemplo/tiff/"
 # Paso 2: Preparar el nuevo conjunto de datos
 # Supongamos que tienes un nuevo data.frame llamado 'new_data'
@@ -265,5 +254,171 @@ getwd()
 writeRaster(pred_raster, filename = "D:/Josefina/Proyectos/ProyectoChile/modelos/SalidaModelo/01-RFM4_cv_060924.tif", format = "GTiff", overwrite = TRUE)
 
 
+#############################################################
+###############################################################
+
+estacion <- "MD"
+modelo <- "6"
+#Data modelo 1
+data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/",estacion,"_merge_comp.csv",sep=""))
+#data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 7/09_TOT_merge_tot.csv")
+data <- data[complete.cases(data), ]
+data$date <- strptime(data$date, format = "%Y-%m-%d")#"%d/%m/%Y")#
+data$dayWeek <- wday(data$date, week_start = 1)
+data<- data[year(data$date) != 2024,]
+
+test_data <- data[data$ID == 84,]
+train_data <- data[data$ID != 84,]
+
+test_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_test_",estacion,".csv",sep=""))
+train_data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/M",modelo,"_train_",estacion,".csv",sep=""))
 
 
+nrow(test_data)+nrow(train_data) == nrow(data)
+nrow(test_data)/ nrow(data)
+nrow(train_data)/ nrow(data)
+unique(year(data$date))
+
+
+# cargar el modelo y aplicalo a otro set de datos
+setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo",sep=""))
+
+# Paso 1: Cargar el modelo
+load("07-RF-ESP_cv_M6-110225-SP.RData")
+load("02-RF_cv_M1-080125_MD.RData")
+load("07-RF-ESP_cv_M6-110225-MD.RData")
+
+## Importancia de las variables
+importancia <- varImp(rf_cv_model, scale = TRUE)
+print(importancia)
+plot(importancia, main = "Importancia de Variables M1")
+
+# Gráfico personalizado con ggplot2
+importancia_df <- as.data.frame(importancia$importance)
+importancia_df$Variable <- rownames(importancia_df)
+
+ggplot(importancia_df, aes(x = reorder(Variable, Overall), y = Overall)) +
+  
+  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_hline(yintercept = 50, linetype = "dashed", color = "red") +
+  coord_flip() +
+  theme_classic()+
+  
+  labs(title = "Importancia de Variables 07-RF-ESP_cv_M6-110225-MD", x = "Variables", y = "Importancia")
+
+####################################
+######################################
+
+y_train_pred <- predict(rf_cv_model, newdata = train_data)
+y_test_pred <- predict(rf_cv_model, newdata = test_data)
+# Calcular los residuos
+residuals_train <- train_data$PM25 - y_train_pred
+residuals_test <- test_data$PM25 - y_test_pred
+# Crear un dataframe con los valores predichos y los residuos
+data_test <- data.frame(predicted = y_test_pred,real=test_data$PM25, residuals = residuals_test)
+data_train <- data.frame(predicted = y_train_pred, real=train_data$PM25,residuals = residuals_train)
+
+################
+# Calcular los residuos
+residuals_train <- train_data$PM25 - y_train_pred
+residuals_test <- test_data$PM25 - y_test_pred
+
+
+# Crear un dataframe con los valores predichos y los residuos
+data_test <- data.frame(predicted = y_test_pred,real=test_data$PM25, residuals = residuals_test)
+data_train <- data.frame(predicted = y_train_pred, real=train_data$PM25,residuals = residuals_train)
+
+###-- 
+plot_residuos_test <- ggplot(data_test, aes(x = predicted, y = residuals)) +
+  geom_point(color = "#2c7fb8",size=2,alpha=0.5) + # Puntos en azul
+  geom_hline(yintercept = 0, color = "#de2d26", linetype = "dashed", size = 0.7) + # Línea horizontal
+  #ggtitle("Test") +
+  xlab("PM2.5 Observado") +
+  ylab("Residuos") +
+  
+  #scale_x_continuous(limits = c(0, 145),breaks = seq(0, 140, by = 20)) +  # Ticks cada 10 en el eje X
+  scale_x_continuous(limits = c(0, 105),breaks = seq(0, 100, by = 20)) +  # Ticks cada 10 en el eje X
+  scale_y_continuous(limits = c(-50, 50),breaks = seq(-50, 50, by = 10)) +  # Ticks cada 10 en el eje Y
+  theme_classic()+
+  theme(
+    plot.title = element_text(size = 10),  # Tamaño del título
+    axis.title.x = element_text(size = 8),  # Tamaño etiqueta eje X
+    axis.title.y = element_text(size = 8)   # Tamaño etiqueta eje Y
+  )
+
+plot_residuos_train <- ggplot(data_train, aes(x = predicted, y = residuals)) +
+  geom_point(color = "#31a354",size=2,alpha=0.5) + # Puntos en azul
+  geom_hline(yintercept = 0, color = "#de2d26", linetype = "dashed", size = 0.7) + # Línea horizontal
+  #ggtitle("Train") +
+  xlab("Valores predichos (Train)") +
+  # scale_x_continuous(limits = c(0, 145),breaks = seq(0, 140, by = 20)) +  # Ticks cada 10 en el eje X
+  scale_x_continuous(limits = c(0, 105),breaks = seq(0, 100, by = 20)) +  # Ticks cada 10 en el eje X
+  scale_y_continuous(limits = c(-50, 50),breaks = seq(-50, 50, by = 10)) +  # Ticks cada 10 en el eje Y
+  
+  ylab("Residuos") +
+  theme_classic()+
+  theme(
+    plot.title = element_text(size = 10),  # Tamaño del título
+    axis.title.x = element_text(size = 8),  # Tamaño etiqueta eje X
+    axis.title.y = element_text(size = 8)   # Tamaño etiqueta eje Y
+  )
+plot_residuos_test
+plot_residuos_train
+
+
+# Combinar los gráficos en una fila y dos columnas
+combinacion_residuos<- grid.arrange(plot_residuos_train, plot_residuos_test, 
+                                    nrow = 1, ncol = 2, top = "02-RLM_cv_M1-141024")
+
+
+
+########################################################
+##### ---- Gráfico de dispersión de Predicciones vs Valores Reales
+#muestra cómo se alinean las predicciones del modelo SVR con los valores
+#reales. La línea y = x sirve como referencia para una predicción perfecta.
+
+###-- 
+
+plot_y_test <- ggplot(data_test, aes(x = real, y = predicted)) +
+  geom_point(color = "#2c7fb8",size=2,alpha=0.5) + # Puntos en azul
+  geom_abline(intercept = 0, slope=1,color = "#de2d26", linetype = "dashed", size = 0.7) + # Línea horizontal
+  #ggtitle("Test") +
+  xlab("PM2.5 Observado") +
+  ylab("Predicción") +
+  
+  scale_x_continuous(limits = c(0, 100),breaks = seq(0, 100, by = 20)) +  # Ticks cada 10 en el eje X
+  scale_y_continuous(limits = c(0,100),breaks = seq(0, 100, by = 20)) +   # Ticks cada 10 en el eje Y
+  theme_classic()+
+  theme(
+    plot.title = element_text(size = 10),  # Tamaño del título
+    axis.title.x = element_text(size = 8),  # Tamaño etiqueta eje X
+    axis.title.y = element_text(size = 8)   # Tamaño etiqueta eje Y
+  )
+
+plot_y_train <- ggplot(data_train, aes(y = predicted, x = real)) +
+  geom_point(color = "#31a354",size=2,alpha=0.5) + # Puntos en azul
+  geom_abline(intercept = 0, slope=1, color = "#de2d26", linetype = "dashed", size = 0.7) + # Línea horizontal
+  ggtitle("Train") +
+  
+  scale_x_continuous(limits = c(0, 100),breaks = seq(0, 100, by = 20)) +  # Ticks cada 10 en el eje X
+  scale_y_continuous(limits = c(0,100),breaks = seq(0, 100, by = 20)) +   # Ticks cada 10 en el eje Y
+  
+  xlab("Observed") +
+  ylab("Predicted") +
+  theme_classic()+
+  theme(
+    plot.title = element_text(size = 10),  # Tamaño del título
+    axis.title.x = element_text(size = 8),  # Tamaño etiqueta eje X
+    axis.title.y = element_text(size = 8)   # Tamaño etiqueta eje Y
+  )
+plot_y_test
+plot_y_train
+
+
+# Combinar los gráficos en una fila y dos columnas
+combinacion_valores<- grid.arrange(plot_y_train, plot_y_test, 
+                                   nrow = 1, ncol = 2, top = "02-RLM_cv_M1-141024")
+
+# Combinar los gráficos en una fila y dos columnas
+combinacion_valores<- grid.arrange(plot_y_test, plot_residuos_test, 
+                                   nrow = 1, ncol = 2, top = "07-RF-ESP_cv_M6-110225-MD")
