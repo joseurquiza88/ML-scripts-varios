@@ -1,18 +1,22 @@
 
-estacion <- "MD"
+estacion <- "CH"
 data_sensores <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/proceed/06_estaciones/",estacion,"_estaciones.csv",sep=""))
 data_sensores$date <- as.POSIXct(data_sensores$date, format = "%d/%m/%Y")
-unique(data_sensores$estacion)
+data_sensores<-data_sensores[year(data_sensores$date) >=2015,]
+data_sensores<- data_sensores[complete.cases(data_sensores$Registros.completos),]
+data_sensores<- data_sensores[data_sensores$Registros.completos !=0,]
+data_sensores$mean <- data_sensores$Registros.completos
+length(unique(data_sensores$estacion))
 ggplot(data_sensores, aes(x = date)) +
   geom_line(aes(y = mean, color = "Monitoreo"), size = 0.3,na.rm = FALSE) +
   facet_wrap(~ estacion, scales = "free_y") +
   # 
-  scale_y_continuous(limits = c(0, 100),breaks = seq(0, 100, by = 20)) +  # Ticks cada 10 en el eje Y
+  scale_y_continuous(limits = c(0, 200),breaks = seq(0, 200, by = 50)) +  # Ticks cada 10 en el eje Y
   
   # Títulos y etiquetas
-  labs(title = "Estaciones de monitoreo",
+  labs(#title = "Estaciones de monitoreo",
        x = "Date",
-       y = "PM2.5",
+       y = "SINCA PM2.5",
        color = "Variables") +
   # Cambiar los colores de las líneas
   scale_color_manual(values = c("Monitoreo" = "#2ca25f"))+#, "mean"="Monitoreo")) +

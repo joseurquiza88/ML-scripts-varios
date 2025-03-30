@@ -12,7 +12,7 @@ df_rbind <- data.frame()
 
 for (l in 1:1){
 rm(list = setdiff(ls(), "df_rbind"))
-estacion <- "MX"
+estacion <- "CH"
 year<- 2024
 numRaster <- "01"
 #modelo <- "06-RF_cv_M1-090125-E_MX.RData"
@@ -31,7 +31,7 @@ numRaster <- "01"
 modelo <- "02-XGB_M1-260225_MX.RData"
 #nombre_salida <- "02-RF_cv_M1-251124_SP_AOD-MERRA"
 # nombre_salida <- "07-RF-ESP_cv_M6-110225-MD_MERRA"
-#nombre_salida <- "02-RF_cv_M1-120225-CH"
+nombre_salida <- "02-RF_cv_M1-120225-CH"
 # nombre_salida <- "03-XGB_cv_M1-041024_CH"
 # nombre_salida <- "07-RF_esp_cv_M6-180225-CH"
 # nombre_salida <- "02-RF_cv_M1-070225-SP"
@@ -43,10 +43,10 @@ nombre_salida <- "02-XGB_M1-260225_MX"
 setwd(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/dataset_ejemplo/Prediccion_",year,"/tiff/",sep=""))
 dir_salida <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/salidas/SalidasDiarias/",nombre_salida,"/",sep="")
 # Fechas de inter?1
-fechaInicio <- as.Date("21-07-2024", format = "%d-%m-%Y")
-fechaFin <- as.Date("31-07-2024", format = "%d-%m-%Y")
+fechaInicio <- as.Date("25-12-2024", format = "%d-%m-%Y")
+fechaFin <- as.Date("31-12-2024", format = "%d-%m-%Y")
 ###
-fechaNDVI<- as.Date("01-07-2024", format = "%d-%m-%Y")
+fechaNDVI<- as.Date("01-12-2024", format = "%d-%m-%Y")
 lista_fecha <- data.frame(date=seq.Date(fechaInicio, fechaFin, by = "day"))
 dir_modelos <- paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/modelo/",sep="")
 load(paste(dir_modelos,modelo,sep=""))
@@ -235,8 +235,8 @@ for (j in 1:nrow(lista_fecha)) {
   #print(c("T2M",T2M_raster_NA))
   
   ## TP
-  TP_raster <- raster(paste("05_ERA5/",fechaInteres,"-TP_raster_",numRaster,".tif",sep=""))
-#TP_raster <- raster(paste("05_ERA5/",fechaInteres,"-TP_raster.tif",sep=""))
+  #TP_raster <- raster(paste("05_ERA5/",fechaInteres,"-TP_raster_",numRaster,".tif",sep=""))
+TP_raster <- raster(paste("05_ERA5/",fechaInteres,"-TP_raster.tif",sep=""))
   
   #plot(TP_raster)
   #TP_raster_NA <- sum(is.na(TP_raster[]))

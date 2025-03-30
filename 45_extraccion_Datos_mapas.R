@@ -1,17 +1,26 @@
 ##############################################################################
 ##otra forma de extraer los datos
 estacion <- "MX"
+modelo <- "02-XGB_M1-260225_MX"
+modelo <- "02-XGB_M1-260225_SP"
 modelo <- "02-RF_cv_M1-070225-MX"
 modelo <- "07-RF_ESP_cv_M6-180225-MX"
 modelo <-"02-RF_cv_M1-080125_MD"
-modelo <-"02-RF_cv_M1-251124_SP"
-modelo<- "02-RF_cv_M1-251124_SP_AOD-MERRA"
+
 modelo<- "07-RF-ESP_cv_M6-110225-SP"
 modelo<- "07-RF-ESP_cv_M6-110225-MD"
 modelo <- "02-RF_cv_M1-120225-CH"
 modelo <- "07-RF_esp_cv_M6-180225-CH"
 modelo <- "02-RF_cv_M1-070225-SP"
 modelo <- "07-RF-ESP_cv_M6-110225-SP"
+modelo <- "02-XGB_M1-260225_MD"
+modelo <- "02-XGB_M1-260225_CH"
+modelo <- "02-XGB-cv-TunGrid_M1-280224_CH"
+modelo <- "02-XGB-cv-TunGrid_M1-280224_MD"
+modelo <- "02-XGB_M1-260225_MD"
+modelo <- "02-XGB-cv-TunGrid_M1-280224_SP"
+modelo <- "02-XGB_M1-260225_MX"
+modelo <- "02-XGB-cv-TunGrid_M1-280224_MX"
 year<-2024
 # modelo <- "Salida_03-XGB_cv_M1-041024"
 
@@ -75,9 +84,18 @@ write.csv(df_rbind, paste("02-RF_cv_M1-070225-SP.csv",sep=""))
 write.csv(df_rbind, paste("07-RF-ESP_cv_M6-110225-SP.csv",sep=""))
 write.csv(df_rbind, paste("07-RF_ESP_cv_M6-180225-MX.csv",sep=""))
 write.csv(df_rbind, paste("02-RF_cv_M1-070225-MX.csv",sep=""))
+write.csv(df_rbind, paste("02-XGB_M1-260225_MD.csv",sep=""))
+write.csv(df_rbind, paste("02-XGB_M1-260225_CH.csv",sep=""))
+write.csv(df_rbind, paste("02-XGB_M1-260225_SP.csv",sep=""))
+write.csv(df_rbind, paste("02-XGB_M1-260225_MX.csv",sep=""))
+
 ###############################################################
 # Merge datos sensores
-estacion <- "MX"
+estacion <- "CH"
+modelo <- "02-XGB_M1-260225_MX"
+modelo <- "02-XGB_M1-260225_SP"
+modelo <- "02-XGB_M1-260225_CH"
+modelo <- "02-XGB_M1-260225_MD"
 modelo <- "02-RF_cv_M1-070225-MX"
 modelo <- "07-RF_ESP_cv_M6-180225-MX"
 modelo <- "07-RF-ESP_cv_M6-110225-SP"
@@ -111,19 +129,25 @@ data_modelo$date <- as.POSIXct(data_modelo$date, format = "%Y-%m-%d")
 merged_df <- merge(data_modelo,data_sensores, by = c("ID", "date"), all.x = TRUE)
 
 #merged_df_subt <- merged_df[complete.cases(merged_df$Registros.completos),]
+merged_df_subt$mean <- merged_df_subt$Registros.completos
 merged_df_subt <- merged_df[complete.cases(merged_df$mean),]
-merged_df_subt2 <- merged_df_subt[complete.cases(merged_df_subt$valor_raster),]
+merged_df_subt <- merged_df_subt[complete.cases(merged_df_subt$valor_raster),]
 View(merged_df_subt)
 getwd()
 
 write.csv(merged_df_subt,"merged_df_subt.csv")
 merged_df_subt <- read.csv("merged_df_subt.csv")
+merged_df_subt<-merged_df_subt[merged_df_subt$mean !=0,]
+summary(merged_df_subt$Registros.completos)
+summary(merged_df_subt$mean)
 
+summary(merged_df_subt$valor_raster)
 length(unique(merged_df_subt$estacion))
 merged_df_subt$estacion<-merged_df_subt$estacion.x
 merged_df_subt$mean<-merged_df_subt$Registros.completos
 merged_df_subt$date<- as.POSIXct(merged_df_subt$date, format = "%Y-%m-%d")
 merged_df_subt <- merged_df_subt[complete.cases(merged_df_subt$valor_raster),]
+
 ggplot(merged_df_subt, aes(x = date)) +
   #ggplot(df_date_rbind, aes(x = date)) +
   # Línea para Registros.validados
@@ -141,7 +165,7 @@ ggplot(merged_df_subt, aes(x = date)) +
   scale_y_continuous(limits = c(0, 120),breaks = seq(0, 120, by = 40)) +  # Ticks cada 10 en el eje Y
   
   # Títulos y etiquetas
-  labs(title = "02-RF_cv_M1-070225-MX",
+  labs(title = modelo,
     x = "",
     y = "PM2.5",
     color = "Variables") +
@@ -163,8 +187,97 @@ ggplot(merged_df_subt, aes(x = date)) +
       legend.title = element_text(size = 8),              # Tamaño del título de la leyenda
       legend.text = element_text(size = 5)                # Tamaño del texto de la leyenda
     )
+###################################################################
+################################################################
+###################################################################
+################################################################
+# promedio mensual total
+df$date <- as.Date(df$date)
+merged_df_subt$month <- month(merged_df_subt$date)
+# Agrupar por mes, y calcular el promedio
+promedio_mensual <- merged_df_subt %>%
+  #mutate(Month = floor_date(date, "month")) %>%  # Extraer el año y mes
+  group_by(month) %>%
+  summarise(mean = round(mean(mean, na.rm = TRUE),2),
+            mean_valor_raster = round(mean(valor_raster, na.rm = TRUE),2)) %>%
+  ungroup()
+
+# Agrupar por estación y mes, y calcular el promedio
+promedio_mensual_estacion <- merged_df_subt %>%
+  mutate(Month = floor_date(date, "month")) %>%  # Extraer el año y mes
+  group_by(estacion,Month) %>%
+  summarise(mean = round(mean(mean, na.rm = TRUE),2),
+            mean_valor_raster = round(mean(valor_raster, na.rm = TRUE),2)) %>%
+  ungroup()
+################################################################# 
+# Metricas por estacion
+
+# Suponiendo que tu dataframe se llama df
+# Agrupar por estación y calcular las métricas
+df_metrics <- merged_df_subt %>%
+  group_by(estacion) %>%
+  summarise(
+    min_valor_raster = round(min(valor_raster, na.rm = TRUE),2),
+    max_valor_raster = round(max(valor_raster, na.rm = TRUE),2),
+    mean_valor_raster = round(mean(valor_raster, na.rm = TRUE),2),
+    min_mean = round(min(mean, na.rm = TRUE),2),
+    max_mean = round(max(mean, na.rm = TRUE),2),
+    mean_mean =round( mean(mean, na.rm = TRUE),2)
+  )
+modelo
+# Ver el resultado
+View(df_metrics)
+###################################################################
+################################################################
+###################################################################
+################################################################
+################################################################# 
+df_daily <- merged_df_subt %>%
+  group_by(date) %>%
+  summarise(
+    mean = mean(mean, na.rm = TRUE),  # Promedio de PM25
+    valor_raster = mean(valor_raster, na.rm = TRUE)  # Promedio del valor raster
+  )
+
+ggplot(df_daily, aes(x = date)) +
+  #ggplot(df_date_rbind, aes(x = date)) +
+  # Línea para Registros.validados
+  # Línea para valor_Raster
+  geom_line(aes(y = mean, color = "Monitoreo"), size = 0.3,na.rm = TRUE) +
   
- 
+  geom_line(aes(y = valor_raster, color = "Modelo"), size = 0.3, na.rm = TRUE)+#, linetype = "dashed") +
+  #geom_line(aes(y = valor_raster.y, color = "MERRA-2"), size = 0.3, na.rm = FALSE)+#, linetype = "dashed") +
+  
+  #geom_line(aes(y = Registros.preliminares, color = "Registros.no.validados"), size = 0.3, na.rm = FALSE)+#, linetype = "dashed") +
+  
+  # Separar en subplots por estación
+  #facet_wrap(~ estacion , scales = "free_y") +
+  # 
+  scale_y_continuous(limits = c(0, 120),breaks = seq(0, 120, by = 40)) +  # Ticks cada 10 en el eje Y
+  
+  # Títulos y etiquetas
+  labs(title = "02-RF_cv_M1-080125_MD",
+       x = "",
+       y = "PM2.5",
+       color = "Variables") +
+  # Cambiar los colores de las líneas
+  scale_color_manual(values = c("Monitoreo" = "#2ca25f", "Modelo" = "#feb24c"),#,"Monitoreo"="blue"),
+                     labels = c("Monitoreo" = "Monitoreo", "Modelo" = "Modelo"))+#, "mean"="Monitoreo")) +
+  
+  # Personalización del tema
+  
+  #theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 10, hjust = 0.5),  # Tamaño y alineación del título
+    axis.title.x = element_text(size = 8),              # Tamaño del título del eje X
+    axis.title.y = element_text(size = 8),              # Tamaño del título del eje Y
+    axis.text.x = element_text(size = 6, angle = 45, hjust = 1), # Tamaño y rotación de los ticks del eje X
+    axis.text.y = element_text(size = 6),               # Tamaño de los ticks del eje Y
+    strip.text = element_text(size = 5),                # Tamaño del texto de los subplots
+    legend.title = element_text(size = 8),              # Tamaño del título de la leyenda
+    legend.text = element_text(size = 5)                # Tamaño del texto de la leyenda
+  )
   ###################################################################
   ################################################################
   #################################################################
@@ -173,7 +286,7 @@ ggplot(merged_df_subt, aes(x = date)) +
   #merged_df_subt <- merged_df_subt[complete.cases(merged_df_subt),]
   # Ajuste del modelo de regresión lineal
 getwd()
-  nombreModelo <- "02-RF_cv_M1-070225-MX"
+  nombreModelo <- "02-XGB_M1-260225_MX"
   #modelo <- lm(valor_raster ~mean, data = merged_df_subt)
   modelo <- lm( mean~valor_raster , data = merged_df_subt)
   # Calculo de métricas de desempeño
@@ -191,9 +304,9 @@ getwd()
     geom_smooth(method = "lm", color = "#ef3b2c", se = FALSE, linetype = "dashed") +  # Línea de regresión
     # scale_y_continuous(limits = c(0, 140),breaks = seq(0, 140, by = 40)) +  # Ticks cada 10 en el eje Y
     # scale_x_continuous(limits = c(0, 140),breaks = seq(0, 140, by = 40)) +  # Ticks cada 10 en el eje Y
-    scale_y_continuous(limits = c(0, 80),breaks = seq(0, 80, by = 20)) +  # Ticks cada 10 en el eje Y
-    scale_x_continuous(limits = c(0, 80),breaks = seq(0, 80, by = 20)) +  # Ticks cada 10 en el eje Y
-    
+    scale_y_continuous(limits = c(0, 100),breaks = seq(0, 100, by = 20)) +  # Ticks cada 10 en el eje Y
+    scale_x_continuous(limits = c(0, 100),breaks = seq(0, 100, by = 20)) +  # Ticks cada 10 en el eje Y
+
     labs(
       x = "Monitoreo",
       y = "Modelo",

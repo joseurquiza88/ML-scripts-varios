@@ -15,8 +15,8 @@ rm(list=ls())
 
 
 #Data modelo 1
-estacion <- "MX"
-modelo<- 6
+estacion <- "CH"
+modelo<- 1
 data <- read.csv(paste("D:/Josefina/Proyectos/ProyectoChile/",estacion,"/modelos/ParticionDataSet/Modelo_",modelo,"/",estacion,"_merge_comp.csv",sep=""))
 #data <- read.csv("D:/Josefina/Proyectos/ProyectoChile/modelos/ParticionDataSet/Modelo 7/09_TOT_merge_tot.csv")
 data <- data[complete.cases(data), ]
